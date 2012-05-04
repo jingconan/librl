@@ -1,0 +1,142 @@
+[2012-03-31 17:31:36]
+It seems that I need to write a Learning Agent by myself
+
+The learner LSTDAC is the subclass of policygradient class.
+How policygradient works
+
+important class member function ::
+
+      def learn(self):
+
+call the calculateGradient() to calculate the gradient
+update the 
+
+   Use the gradient to update the parameter in the neural network. 
+   so p is equivalent to the theta in my notation. 
+
+
+pybrain is based on neural network. 
+So all the parameters are store in neural network. 
+
+I need to combine some code from valuebased and direct method. 
+
+
+I need to write 
+    - LSTDACLearner
+    - LSTDACAgent
+    - RobotMotionTask
+
+Learner focus on  Actor-Critic
+
+Experiment::
+
+    def _oneInteraction(self):
+        """ Give the observation to the agent, takes its resulting action and returns
+            it to the task. Then gives the reward to the agent again and returns it.
+        """
+        self.stepid += 1
+        self.agent.integrateObservation(self.task.getObservation())
+        self.task.performAction(self.agent.getAction())
+        reward = self.task.getReward()
+        self.agent.giveReward(reward)
+        return reward
+
+
+for ContinuousExperiment
+API needed:
+agent:
+    .integrateObservation()
+    .getAction()
+    .giveReward()
+    .learn()
+
+task:
+    .getObservation()
+    .getReward()
+    
+
+I can implement agent first.
+
+the agent should comply with the direct search learner module. 
+API that direct search learner provies:
+
+    .learn()
+    .explore()
+    .reset()
+    .calculateGradient()
+
+
+is linearfa.py learning agent. learn() will call the _updateweights function for learner. 
+This function looks very similar to the Actor-Critic part. 
+
+
+Direct Search Learner requires to 
+
+    LoglhDataSet and network
+    network is to tie modle and explorer together
+    network is a FeedForwardNetwork.  I need to revise this part. 
+
+    reuse this part as much as possible. 
+
+
+I guess i cannot reuse the direct search module directly. Insead I need to write my own version.
+
+The module we have, 
+Actor-Critic Module
+
+AC part needs:
+
+
+how to calculate the safety and progress degree.
+
+for each state. the AC module will calculate the safety and progress degree. 
+
+The most important feature. 
+
+
+CalculateGradient():
+     this part most like the actor part. 
+
+We don't need explorer at all. 
+
+
+the manipulation of dataset is implemented in the Logging agent ::
+
+    def giveReward(self, r):
+        """Step 3: store observation, action and reward in the history dataset. """
+        # step 3: assume that state and action have been set
+        assert self.lastobs != None
+        assert self.lastaction != None
+        assert self.lastreward == None
+
+        self.lastreward = r
+
+        # store state, action and reward in dataset if logging is enabled
+        if self.logging:
+            self.history.addSample(self.lastobs, self.lastaction, self.lastreward)
+
+
+dataset actually store all the 
+state, action, reware pair. 
+
+I need another dataset to store the basis funciton for the  so 
+all the observation will be
+(state, action, reward, basis_value)
+
+For each episod. I get a sequence of these pairs. 
+
+the agent should look like the aget for linearfa. 
+
+the most important function for  learn will be _updateWeights.
+
+there shoule be flag. batchMode to indicator whether this is batch model or not. 
+
+the Obs contains the featureLIst. which is the feature vector all possible future actions. 
+Then we need the value for basis function in 
+we need to value in learn, but since we don't want learner to interact directly with task. 
+We need calculate the value of basis function in agent. 
+
+
+
+[2012-04-03 15:17:41]
+BUG when robot reach goal state, the picture will become black

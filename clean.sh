@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+rm *.pyc
+rm ./res/*
+rm ./agents/*.pyc
+rm ./environments/*.pyc
+rm ./experiments/*.pyc
+rm ./policy/*.pyc
+rm ./task/*.pyc
+rm ./learner/*.pyc
