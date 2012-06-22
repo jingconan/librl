@@ -1,9 +1,4 @@
 #!/usr/bin/env sh
-rm *.pyc
 rm ./res/*
-rm ./agents/*.pyc
-rm ./environments/*.pyc
-rm ./experiments/*.pyc
-rm ./policy/*.pyc
-rm ./task/*.pyc
-rm ./learner/*.pyc
+find . -iname "*.pyc" -exec rm '{}' ';'
+find . -iname "tags" -exec rm '{}' ';'
