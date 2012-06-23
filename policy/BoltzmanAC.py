@@ -1,10 +1,9 @@
-from util import *
-from numpy import array, exp, zeros
-
-
-def CalW_EXP(score, theta, T):
-    perfer = sum( s * t for s, t in zip(score, theta) )
-    return exp(perfer/T)
+#!/usr/bin/env python
+# from util import *
+import sys
+sys.path.append("..")
+from util import GenRand, Expect
+from numpy import array, exp, zeros, arange
 
 class BoltzmanPolicy(object):
     """Policy is one type of controller that maps the observation
@@ -12,32 +11,53 @@ class BoltzmanPolicy(object):
     PolicyController has two functions:
     1. Generate Actions Based on Observations and Weights
     2. Calculate basis function value. which is nabla_theta psi_theta(x,u)
+
+    for bolzman distribution
+            mu(u_i | x) = a_i(theta) / sum(a_i(theta))
+            a_i(theta) = F_i(x) exp( theta_1 * E{safety( f(x,u_i) )} + theta_2 * E{progress( f(x,u_i) )} )
+
     """
     def __init__(self, T):
-        # self.CalW = CalW_EXP
         self.T = T
         self.PU = None # PU is cached to accelarate the program
         self.g = None
         self.bf = None
 
-    def CalW(self, score, theta):
-        return CalW_EXP(score, theta, self.T)
+    @staticmethod
+    def CalW_EXP(score, theta, T):
+        perfer = sum( s * t for s, t in zip(score, theta) )
+        return float(exp(perfer/T))
+
+    CalW = CalW_EXP
 
     def activate(self, feaList, theta):
+        """ The output of activate function is a list containing the
+        control sequence in the following n steps current parameter
+        settings of policy. now n=1.
+        """
         self.PU = self.getActionProb(feaList, theta)
         return [GenRand(self.PU)]
 
     def calBasisFuncVal(self, feaList):
         """for an observation, calculate value of basis function
-        for all possible actions"""
+        for all possible actions
+            feaList is a list of tuple. each tuple represent the value of feature
+            take the robot motion control as an example, a possible value may be:
+                [
+                ( safety_1 , progress_1),
+                ( safety_2 , progress_2),
+                ( safety_3 , progress_3),
+                ( safety_4 , progress_4),
+                ]
+                1, 2, 3, 4 coressponds to each action ['E', 'N', 'W', 'S']
+            ]
+        """
         # FIXME be attention about usage of PU. use the cache value of PU
         fl = zip(*feaList)
-        # assert(self.PU)
+        assert(self.PU)
         g = [Expect(flv, self.PU) for flv in fl]
-        # self.PU = None
         # FIXME ATTENTION, when taking derivative,  be careful about minus sign before etg.
         basisValue = array(feaList) - array(g).reshape(1, -1)
-        # basisValue[:, 1] = -1 * basisValue[:, 1]
         self.g, self.bf = g, basisValue
         return basisValue
 
@@ -70,20 +90,49 @@ class BoltzmanPolicy(object):
         return varsigma
 
     def getActionProb(self, feaList, theta):
-        PU = [ self.CalW([s, p], theta) for s, p in feaList ]
+        PU = [ self.CalW([s, p], theta, self.T) for s, p in feaList ]
         s0 = sum(PU)
         PU = [p*1.0/s0 for p in PU]
         return PU
 
+import unittest
+class BoltzmanPolicyTestCase(unittest.TestCase):
+    def setUp(self):
+        print "In method", self._testMethodName
+        self.policy = BoltzmanPolicy(100)
+
+    def test_calBasisFuncValA(self):
+        feaList = [
+                (0.8114285714285716, 0.0),
+                (0.8457142857142858, 0.6000000000000001),
+                (0.8114285714285716, 0.0),
+                (0.8457142857142858, -0.5999999999999996)
+                ]
+        self.policy.PU = [0.2, 0.2, 0.3, 0.3]
+
+        basisValue = self.policy.calBasisFuncVal(feaList)
+        # print 'basisValue, ', basisValue
+
+    def test_calSecondBasisFuncVal(self):
+        pass
+
+    def test_getActionProb(self):
+        last_ap = None
+        for v in arange(-10, 10, 2):
+            feaList = [
+                    (v, 0.0),
+                    (v, 0.3),
+                    (v, 0.0),
+                    (v, -0.3)
+                    ]
+            theta = array([10, 10]).reshape(-1, 1)
+            ap = self.policy.getActionProb(feaList, theta)
+            self.assertTrue(ap[1] > ap[3])
+            self.assertEqual(ap[0], ap[2])
+            self.assertNotEqual(ap, last_ap)
+            last_ap = ap
 
 
-
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+    unittest.main()
 

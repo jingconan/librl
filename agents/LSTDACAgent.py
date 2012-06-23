@@ -1,8 +1,7 @@
 __author__ = 'Jing Conan Wang, wangjing@bu.edu'
 
 from pybrain.rl.agents.logging import LoggingAgent
-from util import *
-from numpy import ravel
+from util import debug
 
 class LSTDACAgent(LoggingAgent):
     '''Agent for LSTD AC algorithm
@@ -44,8 +43,6 @@ class LSTDACAgent(LoggingAgent):
         LoggingAgent.getAction(self)
         self.lastaction = self.policy.activate(self.feaList, self.learner.theta)
         self.lastBasisFuncValue = self.policy.calBasisFuncVal(self.feaList)
-        # print 'lastaction ', self.lastaction
-        # print 'basisFuncValue ', self.lastBasisFuncValue
         return self.lastaction
 
     @debug
@@ -53,8 +50,6 @@ class LSTDACAgent(LoggingAgent):
         LoggingAgent.giveReward(self, r)
 
         if self.logging:
-            # print 'the loglh input is: ', self.lastBasisFuncValue[self.lastaction[0]]
-            # print 'lastaction, ', self.lastaction
             self.learner.loglh.appendLinked(self.lastBasisFuncValue[self.lastaction[0]])
 
     @debug

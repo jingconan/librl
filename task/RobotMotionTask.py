@@ -1,7 +1,9 @@
-from pybrain.rl.environments.mazes import Maze, MDPMazeTask
-
-from util import *
-from scipy import array
+from pybrain.rl.environments.mazes import MDPMazeTask
+import sys
+sys.path.append("..")
+# from util import *
+from util import debug, Expect
+# from scipy import array
 
 def TPNormalize(allowns, allowTP, state, uSize):
     '''if sum of tran prob is not 1, the rest tran prob will point to state itself'''
@@ -36,14 +38,13 @@ class RobotMotionTask(MDPMazeTask):
     def getObservation(self):
         """the agent receive its
         1. position in the maze
-        2. featureList for the state and for each possible action is the future.
+        2. featureList for the state and for each possible action in the future.
            now featureList is [safety, process]
         so a typical observation will be a list with two elements. obs[0] is the position
         obs[1] is again a list with 4 elements, each element is the feature list for each
         possible actions.
         """
         obs = [self.env.perseus, self._getFeatureListC()]
-        # print obs
         return obs
 
     @debug
@@ -65,8 +66,15 @@ class RobotMotionTask(MDPMazeTask):
 
     def _getFeatureListC(self):
         """Get Feature List for Current State"""
-        # print 'self.env.perseus, ', self.env.perseus
         return self._getFeatureList(self.env.perseus)
+
+
+    @staticmethod
+    def scale(x):
+        """scale list x to [0, 1]"""
+        min_x = min(x)
+        rg = max(x) - min_x
+        return [ ( v - min_x ) / rg for v in x]
 
     def _getFeatureList(self, x):
         """We can get features for each state. it may be
@@ -78,7 +86,8 @@ class RobotMotionTask(MDPMazeTask):
         # Calcualate Safety Degree
         nss = self._GetNSS(allowns, self.senRange) #FIXME
         es  = [ Expect(nss, pv) for pv in allowTP ]
-        safety = es
+        # safety = es
+        safety = self.scale(es)
         # cnss = float( self._GetNSS([x], self.senRange)[0] )
         # safety = [esv - cnss for esv in es]
 
@@ -87,7 +96,8 @@ class RobotMotionTask(MDPMazeTask):
         dtg = CalDTG(x)
         nsdtg = [ CalDTG(s) for s in allowns ] # next state dist to goal
         etg = [ Expect(nsdtg, pv) for pv in allowTP  ]
-        progress = [dtg - etgv for etgv in etg]
+        # progress = [dtg - etgv for etgv in etg]
+        progress = self.scale([dtg - etgv for etgv in etg])
 
         return zip(safety, progress)
 
@@ -144,3 +154,39 @@ class RobotMotionTask(MDPMazeTask):
         else:
             return False
 
+import unittest
+from scipy import zeros
+class RobotMotionTaskTestCase(unittest.TestCase):
+    def setUp(self):
+        print "In method", self._testMethodName
+        from TrapMaze import TrapMaze
+        iniState = (0, 0)
+        gridSize = (5, 5)
+        goalStates = [ (4, 4) ]
+        unsafeStates = [ [2, 0], [3, 2], [2, 3] ]
+
+# TP is transition probability
+# The order is ENWS
+        TP = [[0.7, 0.1, 0.1, 0.1],
+                [0.1, 0.7, 0.1, 0.1],
+                [0.1, 0.1, 0.7, 0.1],
+                [0.1, 0.1, 0.1, 0.7]]
+
+        DF = lambda x, y: abs(x[0] - y[0]) + abs(x[1] - y[1])
+        envMatrix = zeros(gridSize)
+        envMatrix[zip(*unsafeStates)] = -1
+        env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)
+        self.task = RobotMotionTask(env,
+                senrange = 2)
+
+    def test_GetAllowNSTP(self):
+        pass
+
+    def test_GetNSS(self):
+        pass
+
+    def test_getFeatureList(self):
+        pass
+
+    def test_getObservation(self):
+        pass

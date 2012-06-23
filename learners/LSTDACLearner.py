@@ -130,6 +130,7 @@ class LSTDACLearner(ActorCriticLearner):
                 loglh = self.loglh['loglh'][seqidx[n], :]
             else:
                 loglh = self.loglh['loglh'][seqidx[n]:seqidx[n + 1], :]
+            # print 'loglh, ', loglh
 
             if self.lastobs is not None:
                 # print 'lobs, ', self.lastobs, 'laction, ', self.lastaction, 'reward, ', self.lastreward
@@ -152,6 +153,7 @@ class LSTDACLearnerTestCase(unittest.TestCase):
                 lamb=0.9,
                 c=1,
                 D=1)
+
     def test_Critic(self):
         n = self.learner.feadim
         self.learner.z = array( [[1],[1]] )
@@ -168,14 +170,24 @@ class LSTDACLearnerTestCase(unittest.TestCase):
                 xkp1=array([1, 1]),
                 ukp1=array([2]),
                 xkPsi=array([0.1, 0.1]),
-                xkp1Psi=array([0.1, 0.1])
+                xkp1Psi=array([0.2, 0.1])
                 )
 
         # self.z, self.b, self.r, self.AE, self.alpha = z, b, r, AE, alpha
         print 'z:%s, b:%s, r:%s, AE:%s, alpha:%s'%(self.learner.z, self.learner.b, self.learner.r, self.learner.AE, self.learner.alpha)
 
     def test_Actor(self):
-        pass
+        n = self.learner.feadim
+        self.learner.r = zeros( (n, 1) )
+        self.learner.c = 1
+        self.learner.D = 1
+        iniTheta = [10, 10]
+        self.learner.theta = array(iniTheta).reshape(-1, 1)
+        xkp1 = None
+        ukp1 = None
+        xkp1Psi=array([0.2, 0.1])
+        self.learner.Actor(xkp1, ukp1, xkp1Psi)
+        print 'self.learner.theta, ', self.learner.theta
 
 if __name__ == "__main__":
     unittest.main()
