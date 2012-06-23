@@ -1,4 +1,8 @@
 # Gloabal Parameters
+
+#############################
+###      Scene Setting    ###
+#############################
 SCENE_SELECT = 'small'
 # SCENE_SELECT = 'large'
 
@@ -8,11 +12,11 @@ if SCENE_SELECT == 'small':
     gridSize = (5, 5)
     goalStates = [ (4, 4) ]
     # unsafeStates = [ ]
-    unsafeStates = [ (2, 0), (2, 1), (2, 3), (2, 4) ]
+    # unsafeStates = [ (2, 0), (2, 1), (2, 3), (2, 4) ]
     # unsafeStates = [ [2, 0], [2, 1], [2, 3], [2, 4] ]
     # unsafeStates = [ [2, 0], [2, 1], [2, 3] ]
     # unsafeStates = [ [2, 1], [2, 3] ]
-    # unsafeStates = [ [2, 0], [3, 2], [2, 3] ]
+    unsafeStates = [ [2, 0], [3, 2], [2, 3] ]
 
     def IsSafe(st):
         return 0 if (st in unsafeStates) else 1
@@ -54,7 +58,9 @@ elif SCENE_SELECT == 'large':
             if not IsSafe([x, y]):
                 unsafeStates.append([x, y])
 
-# initial value for theta
+#############################
+## initial value for theta ##
+#############################
 # iniTheta = [0, 0.5]
 # iniTheta = [-0.5, 0.5]
 # iniTheta = [-1, 1]
@@ -74,22 +80,21 @@ elif SCENE_SELECT == 'large':
 # iniTheta = [67, 36]
 # iniTheta = [100, 100]
 iniTheta = (10, 10)
-n = len(iniTheta)
 
-# Control Size
-uSize = 4
-stateSize = gridSize[0] * gridSize[1]
+n = len(iniTheta) # dimension of the theta
+uSize = 4  # Control Size
+stateSize = gridSize[0] * gridSize[1] # state size
 
 # Threshold For Algorithm Convergence
-th = 1e-4
+# th = 1e-4
 # minimial iteration number
-minIter = 3e4
+# minIter = 3e4
+# minIter = 4e4
 
 
 # for test
-# th = 1e-2
-# minIter = 8e2
-
+th = 1e-2
+minIter = 8e2
 
 # TP is transition probability
 # The order is ENWS
@@ -99,7 +104,7 @@ TP = [[0.7, 0.1, 0.1, 0.1],
         [0.1, 0.1, 0.1, 0.7]]
 
 # showInterval = 100
-showInterval = 100
+showInterval = 100 # interval between two consequent show of theta value
 # showInterval = 1
 
 # Calculate L1 Distance
@@ -134,19 +139,18 @@ yRange = np.arange(-300, 200, 20)
 ProgressShowInterval = 100
 
 
-
 #####################################################
-#------ Setting For ReachProbCalculator.py -------- #
+#------ Setting For Hesssian AC     -------- #
 #####################################################
 # hessianThetaTh = 2
 # hessianThetaTh = 0.01
-hessianThetaTh = 0.1
+hessianThetaTh = 0.1 # threshold to detemin whether to accept this hessian based update
 
 
 
 ######## Step size parameter #########
-# lamb=0.9
-lamb = 0.9
+lamb=0.9
+# lamb = 0.95
 # c=0.05
 # c = 0.5
 # c = 0.05
@@ -167,9 +171,6 @@ VISUAL = False
 ratioTh = 4
 
 
-
-
-
 ##########################
 ####          MISC      ##
 ##########################
@@ -179,6 +180,7 @@ ratioTh = 4
 
 T = 20
 # T = 7
+# T = 100
 # REACH_PROB_FIG_PATH = './res/TempChange/reachProb.eps'
 REACH_PROB_FIG_PATH = './res/reachProb.eps'
 
@@ -189,15 +191,16 @@ ACTION_OPTION = 'ALWAYS'
 # CALW_OPTION = 'TANH'
 
 
+from numpy import exp
 def CalW_EXP(score, theta):
     perfer = sum( s * t for s, t in zip(score, theta) )
-    return np.exp(perfer/T)
+    return exp(perfer/T)
     # return min([ np.exp(perfer/T), 1e4])
 
-import numpy as np
+from numpy import tanh
 def CalW_TANH(score, theta):
     perfer = sum( s * t for s, t in zip(score, theta) )
-    return 1/8.0 * ( np.tanh(perfer / T) + 1 )
+    return 1/8.0 * ( tanh(perfer / T) + 1 )
 CalWDict = {'EXP':CalW_EXP, 'TANH':CalW_TANH}
 CalW = CalWDict[CALW_OPTION]
 
@@ -205,6 +208,6 @@ CalW = CalWDict[CALW_OPTION]
 ROOT = '.'
 THETA_FILE = ROOT + '/res/theta.txt'
 RP_FILE = ROOT + '/res/rp.txt'
-AC_TYPE = 'hessian'
-# AC_TYPE = 'normal'
+# AC_TYPE = 'hessian'
+AC_TYPE = 'normal'
 

@@ -1,5 +1,8 @@
+#!/usr/bin/env python
 __author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'
 
+import sys
+sys.path.append("..")
 # from pybrain.rl.learners.directsearch.policygradient import PolicyGradientLearner
 from pybrain.rl.learners.directsearch.policygradient import *
 from pybrain.utilities import *
@@ -131,6 +134,8 @@ class LSTDACLearner(ActorCriticLearner):
             if self.lastobs is not None:
                 # print 'lobs, ', self.lastobs, 'laction, ', self.lastaction, 'reward, ', self.lastreward
                 # print 'obs, ', obs, 'action, ', action, 'reward, ', reward
+                # print 'type obs, ', type(obs), 'type(action), ', type(action), 'type reward, ', type(reward)
+                # print 'shape obs, ', obs.shape, 'shape(action), ', action.shape, 'shape reward, ', reward.shape
                 self._updateWeights(self.lastobs, self.lastaction, self.lastreward, obs, action[0], self.lastloglh, loglh)
             self.lastobs = obs
             self.lastaction = action[0]
@@ -138,4 +143,40 @@ class LSTDACLearner(ActorCriticLearner):
             self.lastloglh = loglh
             # self.learner.newEpisode()
 
+
+
+import unittest
+class LSTDACLearnerTestCase(unittest.TestCase):
+    def setUp(self):
+        self.learner = LSTDACLearner(actiondim=1, iniTheta=[0, 0],
+                lamb=0.9,
+                c=1,
+                D=1)
+    def test_Critic(self):
+        n = self.learner.feadim
+        self.learner.z = array( [[1],[1]] )
+        self.learner.b = array( [[0],[0]] )
+        self.learner.r = zeros( (n, 1) )
+        self.learner.AE = zeros( (n, n) )
+        self.learner.alpha = 0
+        self.learner.k = 0
+        self.learner.Critic(
+                # xk=array([1, 0]),
+                xk=None,
+                uk=array([1]),
+                gk=array([0]),
+                xkp1=array([1, 1]),
+                ukp1=array([2]),
+                xkPsi=array([0.1, 0.1]),
+                xkp1Psi=array([0.1, 0.1])
+                )
+
+        # self.z, self.b, self.r, self.AE, self.alpha = z, b, r, AE, alpha
+        print 'z:%s, b:%s, r:%s, AE:%s, alpha:%s'%(self.learner.z, self.learner.b, self.learner.r, self.learner.AE, self.learner.alpha)
+
+    def test_Actor(self):
+        pass
+
+if __name__ == "__main__":
+    unittest.main()
 
