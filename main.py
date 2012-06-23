@@ -69,27 +69,28 @@ lastPos = None
 reachProb = ReachProbCalculator(env, task, agent)
 
 # for i in range(10000):
-i = -1
-while True:
-    i += 1
-    experiment.doInteractions(1)
-    if task.reachGoalFlag:
-        agent.reset()
-        task.reset()
-        continue
-    agent.learn()
+if __name__ == "__main__":
+    i = -1
+    while True:
+        i += 1
+        experiment.doInteractions(1)
+        if task.reachGoalFlag:
+            agent.reset()
+            task.reset()
+            continue
+        agent.learn()
 
-    if i % settings.showInterval == 0: print 'theta value, [%f, %f]'%tuple(agent.learner.theta)
-    if settings.CAL_EXACT_PROB and i % settings.reachProbInterval == 0:
-        rp, t = reachProb.GetReachProb(agent.learner.theta)
-        print 'iter: [%d] reachProb: %f,  aveCost: %f it takes, %f seconds' %(i, rp, 1.0 / rp - 1, t)
+        if i % settings.showInterval == 0: print 'theta value, [%f, %f]'%tuple(agent.learner.theta)
+        if settings.CAL_EXACT_PROB and i % settings.reachProbInterval == 0:
+            rp, t = reachProb.GetReachProb(agent.learner.theta)
+            print 'iter: [%d] reachProb: %f,  aveCost: %f it takes, %f seconds' %(i, rp, 1.0 / rp - 1, t)
 
-    if lastPos is not None: visEnvMat[lastPos] = cFlag['normal']
-    visEnvMat[env.perseus] = cFlag['robot']; lastPos = env.perseus
+        if lastPos is not None: visEnvMat[lastPos] = cFlag['normal']
+        visEnvMat[env.perseus] = cFlag['robot']; lastPos = env.perseus
 
-    if VISUAL:
-        pylab.pcolor(visEnvMat)
-        pylab.draw()
-        # pause(0.1)
-        # pylab.pause(0.1)
-        time.sleep(0.1)
+        if VISUAL:
+            pylab.pcolor(visEnvMat)
+            pylab.draw()
+            # pause(0.1)
+            # pylab.pause(0.1)
+            time.sleep(0.1)

@@ -16,7 +16,8 @@ if SCENE_SELECT == 'small':
     # unsafeStates = [ [2, 0], [2, 1], [2, 3], [2, 4] ]
     # unsafeStates = [ [2, 0], [2, 1], [2, 3] ]
     # unsafeStates = [ [2, 1], [2, 3] ]
-    unsafeStates = [ [2, 0], [3, 2], [2, 3] ]
+    # unsafeStates = [ [2, 0], [3, 2], [2, 3] ]
+    unsafeStates = [ [3, 2], [2, 3] ]
 
     def IsSafe(st):
         return 0 if (st in unsafeStates) else 1

@@ -74,7 +74,9 @@ class RobotMotionTask(MDPMazeTask):
         """scale list x to [0, 1]"""
         min_x = min(x)
         rg = max(x) - min_x
-        return [ ( v - min_x ) / rg for v in x]
+        if rg == 0 :
+            return [v*1.0/min_x for v in x]
+        return [ ( v - min_x )*1.0/rg for v in x]
 
     def _getFeatureList(self, x):
         """We can get features for each state. it may be
