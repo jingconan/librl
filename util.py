@@ -48,5 +48,12 @@ if __name__ == "__main__":
 
 Expect = lambda X, P: sum( x * p for x, p in zip(X, P) )
 
+def WriteTrace(trace, fname):
+    fid = open(fname, 'w')
+    fid.write('#' + ' '.join(trace.keys()) + '\n')
+    res = zip(*trace.values())
+    for r in res:
+        fid.write(' '.join([str(val) for val in r]) + '\n')
+
 
 

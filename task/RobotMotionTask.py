@@ -3,7 +3,7 @@ import sys
 sys.path.append("..")
 # from util import *
 from util import debug, Expect
-# from scipy import array
+from scipy import array
 
 def TPNormalize(allowns, allowTP, state, uSize):
     '''if sum of tran prob is not 1, the rest tran prob will point to state itself'''
@@ -44,8 +44,9 @@ class RobotMotionTask(MDPMazeTask):
         obs[1] is again a list with 4 elements, each element is the feature list for each
         possible actions.
         """
-        obs = [self.env.perseus, self._getFeatureListC()]
-        return obs
+        # obs = [self.env.perseus, self._getFeatureListC()]
+        feaList = self._getFeatureListC()
+        return array(feaList).reshape(-1)
 
     @debug
     def performAction(self, action):
@@ -56,18 +57,20 @@ class RobotMotionTask(MDPMazeTask):
         ''' compute and return the current reward (i.e.
         corresponding to the last action performed) '''
         # print 'RobotMotionTask::getReward'
-        reward = 1 if self.env.bang else 0
+        # reward = 1 if self.env.bang else 0
+        reward = -1 if self.env.bang else 0
+        if self.env.bang: self.env.reset()
         if self.env.perseus in self.env.goalStates: # FIXME be careful about type
             # print 'reach goal!!'
             self.env.reset()
             self.reachGoalFlag = True
-            reward = 0
+            # reward = 0
+            reward = 10
         return reward
 
     def _getFeatureListC(self):
         """Get Feature List for Current State"""
         return self._getFeatureList(self.env.perseus)
-
 
     @staticmethod
     def scale(x):

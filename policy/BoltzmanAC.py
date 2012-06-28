@@ -5,23 +5,56 @@ sys.path.append("..")
 from util import GenRand, Expect
 from numpy import array, exp, zeros, arange
 
-class BoltzmanPolicy(object):
-    """Policy is one type of controller that maps the observation
+from pybrain.structure.modules.module import Module
+from pybrain.structure.parametercontainer import ParameterContainer
+
+class PolicyInterface(object):
+    """Interface for policy
+    Policy is one type of controller that maps the observation
     to action probability
     PolicyController has two functions:
     1. Generate Actions Based on Observations and Weights
     2. Calculate basis function value. which is nabla_theta psi_theta(x,u)
 
+    """
+    def calBasisFuncVal(self, feaList):
+        pass
+
+    def calSecondBasisFuncVal(self, feaList):
+        pass
+
+class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
+    """
     for bolzman distribution
             mu(u_i | x) = a_i(theta) / sum(a_i(theta))
             a_i(theta) = F_i(x) exp( theta_1 * E{safety( f(x,u_i) )} + theta_2 * E{progress( f(x,u_i) )} )
-
     """
-    def __init__(self, T):
+
+    def __init__(self, feaDim, numActions, T, **args):
+        Module.__init__(self, feaDim * numActions, 1, **args)
+        ParameterContainer.__init__(self, feaDim)
         self.T = T
         self.PU = None # PU is cached to accelarate the program
         self.g = None
         self.bf = None
+
+        self.numActions = numActions
+
+        # this two indicators help to make sure the call of first order
+        # and second order is syncized.
+        self.firstCallNum = 0
+        self.secondCallNum = 0
+
+    def get_theta(self): return self._params
+    def set_theta(self, val): self._setParameters(val)
+    theta = property(fget = get_theta, fset = set_theta)
+
+    def _forwardImplementation(self, inbuf, outbuf):
+        """ take observation as input, the output is the action
+        """
+        n = len(self.theta)
+        self.PU = self._getActionProb(list(inbuf.reshape(-1, n)), self.theta)
+        outbuf = GenRand(self.PU)
 
     @staticmethod
     def CalW_EXP(score, theta, T):
@@ -30,13 +63,15 @@ class BoltzmanPolicy(object):
 
     CalW = CalW_EXP
 
-    def activate(self, feaList, theta):
-        """ The output of activate function is a list containing the
-        control sequence in the following n steps current parameter
-        settings of policy. now n=1.
-        """
-        self.PU = self.getActionProb(feaList, theta)
-        return [GenRand(self.PU)]
+    def _getActionProb(self, feaList, theta):
+        PU = [ self.CalW([s, p], theta, self.T) for s, p in feaList ]
+        s0 = sum(PU)
+        PU = [p*1.0/s0 for p in PU]
+        return PU
+
+    def getActionValues(self, feaList):
+        n = len(self.theta)
+        return array(self._getActionProb(list(feaList.reshape(-1, n)), self.theta))
 
     def calBasisFuncVal(self, feaList):
         """for an observation, calculate value of basis function
@@ -51,7 +86,10 @@ class BoltzmanPolicy(object):
                 ]
                 1, 2, 3, 4 coressponds to each action ['E', 'N', 'W', 'S']
             ]
+
+            Basis Function Value: is the first order derivative of the log of the policy.
         """
+        self.firstCallNum += 1
         # FIXME be attention about usage of PU. use the cache value of PU
         fl = zip(*feaList)
         assert(self.PU)
@@ -66,6 +104,8 @@ class BoltzmanPolicy(object):
         assert( self.g is not None )
         assert( self.bf is not None )
         g, grad, PU = self.g, self.bf, self.PU
+        self.secondCallNum += 1
+        assert( self.secondCalNum == self.firstCallNum )
 
         uSize = len(feaList)
         n = len(feaList[0])
@@ -88,12 +128,6 @@ class BoltzmanPolicy(object):
 
         self.PU = None; self.g = None; self.bf = None
         return varsigma
-
-    def getActionProb(self, feaList, theta):
-        PU = [ self.CalW([s, p], theta, self.T) for s, p in feaList ]
-        s0 = sum(PU)
-        PU = [p*1.0/s0 for p in PU]
-        return PU
 
 import unittest
 class BoltzmanPolicyTestCase(unittest.TestCase):

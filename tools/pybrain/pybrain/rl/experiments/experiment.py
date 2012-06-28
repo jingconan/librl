@@ -24,6 +24,7 @@ class Experiment(object):
         """
         self.stepid += 1
         self.agent.integrateObservation(self.task.getObservation())
+        import pdb;pdb.set_trace()
         self.task.performAction(self.agent.getAction())
         reward = self.task.getReward()
         self.agent.giveReward(reward)

@@ -53,6 +53,8 @@ experiment = Experiment(task, agent)
 pylab.gray()
 pylab.ion()
 
+from time import sleep
+
 for i in range(1000):
 
     # interact with the environment (here in batch mode)
@@ -61,5 +63,8 @@ for i in range(1000):
     agent.reset()
 
     # and draw the table
-    pylab.pcolor(table.params.reshape(81,4).max(1).reshape(9,9))
-    pylab.draw()
+    print table.params.reshape(81, 4).max(1).reshape(9, 9)
+    # pylab.pcolor(table.params.reshape(81,4).max(1).reshape(9,9))
+    # pylab.draw()
+    # sleep(0.1)
+

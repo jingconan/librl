@@ -38,6 +38,7 @@ class TrapMaze(Maze):
         goto the east direction, instead there is some transition probability to W, N, S, too.
         if the next position is out of the scene, the robot will not move. If the next position
         is a trap, the robot to go back to starting position and the self.bang flag is set."""
+        assert(action >=0)
         realAction = GenRand(self.TP[action], self.allActions)
         tmp = self._moveInDir(self.perseus, realAction)
         if self._isOutBound(tmp) or self._isWall(tmp): # Short-Cricuit Effect

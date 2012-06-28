@@ -1,7 +1,6 @@
 from LSTDACLearner import *
 import copy
-
-
+from pybrain.datasets.dataset import DataSet
 
 class SecondBasisDataSet(DataSet):
     def __init__(self, dim):

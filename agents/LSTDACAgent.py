@@ -34,8 +34,11 @@ class LSTDACAgent(LoggingAgent):
         """Observation includes the robotion's place and also the feature list.
         e.g. obs = [(xPos, yPos), [(s1, p1), (s2, p2), ..., ]]"""
         # print 'obs2,', obs
+        # LoggingAgent.integrateObservation(self, obs[0])
+        # _, self.feaList = obs
+
         LoggingAgent.integrateObservation(self, obs[0])
-        _, self.feaList = obs
+        # self.feaList = obs.reshape()
 
     @debug
     def getAction(self):

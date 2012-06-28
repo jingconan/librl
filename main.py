@@ -34,8 +34,11 @@ sDim = 2
 aDim = 1
 # Create learner
 # learner = LSTDQLambda(4, 1)
-learner = LSTDACLearner(aDim, iniTheta,
+# learner = LSTDACLearner(aDim, iniTheta,
+        # lamb=lamb, c=c, D=D)
+learner = TDLearner(aDim, iniTheta,
         lamb=lamb, c=c, D=D)
+#
 # learner = HessianACLearner(aDim, iniTheta,
         # uSize=uSize, gridSize=gridSize, lamb=lamb,
         # c=c, D=D, hessianThetaTh=hessianThetaTh)
@@ -69,21 +72,29 @@ lastPos = None
 reachProb = ReachProbCalculator(env, task, agent)
 
 # for i in range(10000):
+# TRACE = False
+trace = dict(i=[], rp=[])
+from util import WriteTrace
 if __name__ == "__main__":
     i = -1
+    # try:
     while True:
         i += 1
+        if i == 1e4:
+            break
         experiment.doInteractions(1)
+        agent.learn()
         if task.reachGoalFlag:
-            agent.reset()
+            print 'reach goal'
             task.reset()
             continue
-        agent.learn()
 
-        if i % settings.showInterval == 0: print 'theta value, [%f, %f]'%tuple(agent.learner.theta)
-        if settings.CAL_EXACT_PROB and i % settings.reachProbInterval == 0:
-            rp, t = reachProb.GetReachProb(agent.learner.theta)
-            print 'iter: [%d] reachProb: %f,  aveCost: %f it takes, %f seconds' %(i, rp, 1.0 / rp - 1, t)
+        if i % showInterval == 0: print 'theta value, [%f, %f]'%tuple(agent.learner.theta)
+        # if settings.CAL_EXACT_PROB and i % settings.reachProbInterval == 0:
+            # rp, t = reachProb.GetReachProb(agent.learner.theta)
+            # print 'iter: [%d] reachProb: %f,  aveCost: %f it takes, %f seconds' %(i, rp, 1.0 / rp - 1, t)
+            # trace['i'].append(i)
+            # trace['rp'].append(rp)
 
         if lastPos is not None: visEnvMat[lastPos] = cFlag['normal']
         visEnvMat[env.perseus] = cFlag['robot']; lastPos = env.perseus
@@ -94,3 +105,14 @@ if __name__ == "__main__":
             # pause(0.1)
             # pylab.pause(0.1)
             time.sleep(0.1)
+    # except KeyboardInterrupt as e:
+        # print e
+        # import traceback
+        # traceback.print_stack()
+        # pass
+    # except Exception as e:
+        # print e
+        # pass
+
+    # WriteTrace(trace, 'rp_rec.txt')
+
