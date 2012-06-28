@@ -48,6 +48,7 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
     def get_theta(self): return self._params
     def set_theta(self, val): self._setParameters(val)
     theta = property(fget = get_theta, fset = set_theta)
+    params = theta
 
     def _forwardImplementation(self, inbuf, outbuf):
         """ take observation as input, the output is the action

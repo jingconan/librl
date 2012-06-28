@@ -14,23 +14,24 @@ from scipy.linalg import norm
 
 class TDLearner(ActorCriticLearner):
     """User TD Learner to learn the projection coefficient r of Q on the basis surface"""
-    def __init__(self, actiondim, iniTheta, **kwargs):
-        # PolicyGradientLearner.__init__(self)
+    def __init__(self, **kwargs):
         ActorCriticLearner.__init__(self)
-        self.feadim = len(iniTheta)
-        self.loglh = LoglhDataSet(self.feadim)
-        self.theta = array(iniTheta).reshape(-1, 1)
-
-        self.k = 0
-        self.z = zeros( (self.feadim, 1) )
-        self.r = zeros( (self.feadim, 1) )
-        self.alpha = 0;
-        self.lastobs = None
-
+        self.module = None
         # parameter
         self.lamb = kwargs['lamb']
         self.c = kwargs['c']
         self.D = kwargs['D']
+
+    def _init(self, policy, dataset):
+        self.module = policy
+        self.dataset = dataset
+        self.feadim = len(self.theta)
+        self.loglh = LoglhDataSet(self.feadim)
+        self.newEpisode()
+
+    def get_theta(self): return self.module.theta.reshape(-1, 1)
+    def set_theta(self, val): self.module._setParameters(val.reshape(-1))
+    theta = property(fget = get_theta, fset = set_theta)
 
     def newEpisode(self):
         self.k = 0
@@ -43,7 +44,7 @@ class TDLearner(ActorCriticLearner):
     def setReachProbCal(self, reachProbCal):
         self.reachProbCal = reachProbCal
 
-    def Critic(self, xk, uk, gk, xkPsi, xkp1, ukp1, gkp1, xkp1Psi):
+    def Critic(self, gk, xkPsi, gkp1, xkp1Psi):
         # ----- Critic --------
         gam = 1.0 / (self.k+1)
         d = gk - self.alpha + dot(self.r.T, xkp1Psi - xkPsi)
@@ -52,7 +53,7 @@ class TDLearner(ActorCriticLearner):
 
         self.z = self.lamb * self.z + xkp1Psi
 
-    def Actor(self, xkp1, ukp1, xkp1Psi):
+    def Actor(self, xkp1Psi):
         # ------ Actor -------
         r, D, theta, c, k = self.r, self.D, self.theta, self.c, self.k
 
@@ -60,31 +61,29 @@ class TDLearner(ActorCriticLearner):
         tao = ( D / (normR + 0.0) ) if (normR > D) else 1
         beta = 1 if (k <= 1) else ( (c + 0.0 ) / ( k * log(k) ) )
 
-        theta = theta - beta * tao * dot(r.T, xkp1Psi) * xkp1Psi
-        # theta = theta + beta * tao * np.dot(r.T, xkp1Psi) * xkp1Psi
+        # theta = theta - beta * tao * dot(r.T, xkp1Psi) * xkp1Psi
+        theta = theta + beta * tao * dot(r.T, xkp1Psi) * xkp1Psi
         self.theta = theta
 
-    def _updateWeights(self, xk, uk, gk, xkPsi, xkp1, ukp1, gkp1, xkp1Psi):
-        self.Critic(xk, uk, gk, xkPsi, xkp1, ukp1, gkp1, xkp1Psi)
-        self.Actor(xkp1, ukp1, xkp1Psi)
+    def to_list(self, x):
+        return x.reshape(-1, self.feadim).tolist()
+
+    # def _updateWeights(self, xk, uk, gk, xkPsi, xkp1, ukp1, gkp1, xkp1Psi):
+    def _updateWeights(self, xk, uk, gk, xkp1, ukp1, gkp1):
+        xkPsi = self.module.calBasisFuncVal( self.to_list(xk) )
+        xkp1Psi = self.module.calBasisFuncVal( self.to_list(xk) )
+        self.Critic(gk, xkPsi[uk].reshape(-1, 1), gkp1, xkp1Psi[ukp1].reshape(-1, 1))
+        self.Actor(xkp1Psi[ukp1].reshape(-1, 1))
         self.k += 1
 
     def learnOnDataSet(self, dataset):
         self.dataset = dataset
         for n in range(self.dataset.getLength()):
             obs, action, reward = self.dataset.getLinked(n)
-            seqidx = ravel(self.dataset['sequence_index'])
-            # print 'self.dataset.getLength', self.dataset.getLength()
-            if n == self.dataset.getLength() - 1:
-                loglh = self.loglh['loglh'][seqidx[n], :]
-            else:
-                loglh = self.loglh['loglh'][seqidx[n]:seqidx[n + 1], :]
-
             if self.lastobs is not None:
-                self._updateWeights(self.lastobs, self.lastaction[0], self.lastreward, self.lastloglh.reshape(-1, 1),
-                        obs, action[0], reward, loglh.reshape(-1, 1))
+                self._updateWeights(self.lastobs, self.lastaction[0], self.lastreward,
+                        obs, action[0], reward)
 
             self.lastobs = obs
             self.lastaction = action
             self.lastreward = reward
-            self.lastloglh = loglh

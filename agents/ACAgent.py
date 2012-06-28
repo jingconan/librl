@@ -3,8 +3,8 @@ __author__ = 'Jing Conan Wang, wangjing@bu.edu'
 from pybrain.rl.agents.logging import LoggingAgent
 from util import debug
 
-class LSTDACAgent(LoggingAgent):
-    '''Agent for LSTD AC algorithm
+class ACAgent(LoggingAgent):
+    '''Agent for Actor Crictic algorithm
 
     .integrateObservation()
     .getAction()

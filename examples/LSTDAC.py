@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-""" Use SARSA method to solve Temporal Logic Problem
-"""
 __author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'
 
 import sys
@@ -12,8 +10,8 @@ from pybrain.rl.experiments import Experiment
 from policy import BoltzmanPolicy
 from environments import TrapMaze
 from task import RobotMotionTask, SimpleTemporalLogic
-from learners import LSTDACLearner
-from agents import LSTDACAgent
+from learners import LSTDACLearner, TDLearner
+from agents import ACAgent
 
 # import global parameters
 from problem_settings import gridSize, unsafeStates, iniState, goalStates, TP, DF, senRange
@@ -29,15 +27,10 @@ task = RobotMotionTask(env, senRange=senRange)
 # task = SimpleTemporalLogic(env, senRange=senRange)
 
 policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 100)
-para = dict(
-        iniTheta = [0,0],
-        lamb = 1,
-        c = 0.8,
-        D=2,
-        )
-learner = LSTDACLearner(actiondim=4, **para)
+learner = LSTDACLearner(lamb = 1, c = 0.8, D=2)
+# learner = TDLearner(lamb = 1, c = 0.8, D=2)
 # agent = ExplorerLearningAgent(policy, learner)
-agent = LSTDACAgent(policy, learner, sdim=2, adim=1)
+agent = ACAgent(policy, learner, sdim=8, adim=1)
 experiment = Experiment(task, agent)
 
 i = -1
