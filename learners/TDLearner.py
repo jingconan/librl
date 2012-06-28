@@ -33,6 +33,9 @@ class TDLearner(ActorCriticLearner):
     def set_theta(self, val): self.module._setParameters(val.reshape(-1))
     theta = property(fget = get_theta, fset = set_theta)
 
+    def resetStepSize(self):
+        self.k = 0
+
     def newEpisode(self):
         self.k = 0
         n = self.feadim
@@ -71,7 +74,7 @@ class TDLearner(ActorCriticLearner):
     # def _updateWeights(self, xk, uk, gk, xkPsi, xkp1, ukp1, gkp1, xkp1Psi):
     def _updateWeights(self, xk, uk, gk, xkp1, ukp1, gkp1):
         xkPsi = self.module.calBasisFuncVal( self.to_list(xk) )
-        xkp1Psi = self.module.calBasisFuncVal( self.to_list(xk) )
+        xkp1Psi = self.module.calBasisFuncVal( self.to_list(xkp1) )
         self.Critic(gk, xkPsi[uk].reshape(-1, 1), gkp1, xkp1Psi[ukp1].reshape(-1, 1))
         self.Actor(xkp1Psi[ukp1].reshape(-1, 1))
         self.k += 1

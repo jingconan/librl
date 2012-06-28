@@ -27,8 +27,8 @@ task = RobotMotionTask(env, senRange=senRange)
 # task = SimpleTemporalLogic(env, senRange=senRange)
 
 policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 100, iniTheta=[10, 10])
-learner = LSTDACLearner(lamb = 1, c = 0.8, D=2)
-# learner = TDLearner(lamb = 1, c = 0.8, D=2)
+# learner = LSTDACLearner(lamb = 1, c = 0.8, D=2)
+learner = TDLearner(lamb = 0.9, c = 0.8, D=2)
 # agent = ExplorerLearningAgent(policy, learner)
 agent = ACAgent(policy, learner, sdim=8, adim=1)
 experiment = Experiment(task, agent)
@@ -66,7 +66,7 @@ except KeyboardInterrupt:
     # pass
 
 from util import WriteTrace
-WriteTrace(trace, 'lstdac.tr')
-WriteTrace(th_trace, 'lstdac_theta.tr')
+WriteTrace(trace, 'tdac.tr')
+WriteTrace(th_trace, 'tdac_theta.tr')
 
 

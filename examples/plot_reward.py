@@ -1,5 +1,6 @@
-from scipy import cumsum, divide, array
 #!/usr/bin/env python
+
+from scipy import cumsum, divide, array
 from matplotlib.pyplot import *
 # FILE = "./rec_Q_Lin_5000.tr"
 def plot_reward(FILE):
@@ -14,6 +15,8 @@ def plot_reward(FILE):
     grid()
 figure()
 # FILE = "./QLambda_LinFA_rec.tr"
-plot_reward("./rec_Q_Lin_5000.tr")
-plot_reward("./QLambda_LinFA_rec.tr")
+# plot_reward("./rec_Q_Lin_5000.tr")
+# plot_reward("./QLambda_LinFA_rec.tr")
+plot_reward("./lstdac.tr")
+# plot_reward("./SARSA_TL.py")
 legend(['Q_line', 'QLambda'])

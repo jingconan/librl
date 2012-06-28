@@ -48,11 +48,6 @@ class LSTDACLearner(TDLearner):
         gam = 1.0 / (k+1)
         b += gam * ( z * gk - b )
 
-        # Add by J.W
-        # recFid = open('./record.txt', 'a')
-        # recFid.write('%f %f %f\n'%(gk, b[0], b[1]))
-        # recFid.close()
-
         psiTmp = xkp1Psi - xkPsi
         AE += gam * ( dot( z , (psiTmp.T ) ) - AE  )
         r = -1 * np.dot( pinv(AE), b )

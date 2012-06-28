@@ -64,8 +64,8 @@ class RobotMotionTask(MDPMazeTask):
             # print 'reach goal!!'
             self.env.reset()
             self.reachGoalFlag = True
-            # reward = 0
-            reward = 10
+            reward = 0
+            # reward = 10
         return reward
 
     def _getFeatureListC(self):

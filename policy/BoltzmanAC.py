@@ -30,13 +30,14 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
             a_i(theta) = F_i(x) exp( theta_1 * E{safety( f(x,u_i) )} + theta_2 * E{progress( f(x,u_i) )} )
     """
 
-    def __init__(self, feaDim, numActions, T, **args):
+    def __init__(self, feaDim, numActions, T, iniTheta, **args):
         Module.__init__(self, feaDim * numActions, 1, **args)
         ParameterContainer.__init__(self, feaDim)
         self.T = T
         self.PU = None # PU is cached to accelarate the program
         self.g = None
         self.bf = None
+        self.theta = iniTheta
 
         self.numActions = numActions
 
