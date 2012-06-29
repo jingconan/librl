@@ -39,4 +39,3 @@ class ACAgent(LoggingAgent):
     def learn(self):
         self.learner.learnOnDataSet(self.history)
         self.history.clear()
-        self.learner.loglh.clear()

@@ -26,8 +26,6 @@ class ENAC(ActorCriticLearner):
         self.feadim = len(iniTheta)
         self.loglh = LoglhDataSet(self.feadim)
 
-
-
     def calculateGradient(self):
         print 'calculateGradient'
         # normalize rewards

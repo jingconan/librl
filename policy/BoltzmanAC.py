@@ -71,9 +71,17 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         PU = [p*1.0/s0 for p in PU]
         return PU
 
-    def getActionValues(self, feaList):
+    def getActionValues(self, obs):
+        # n = len(self.theta)
+        # return array(self._getActionProb(list(obs.reshape(-1, n)), self.theta))
+        return array(self._getActionProb(self.obs2fea(obs), self.theta))
+
+
+    def obs2fea(self, obs):
         n = len(self.theta)
-        return array(self._getActionProb(list(feaList.reshape(-1, n)), self.theta))
+        return list(obs.reshape(-1, n))
+    def fea2obs(self, fea):
+        return fea.reshape(-1)
 
     def calBasisFuncVal(self, feaList):
         """for an observation, calculate value of basis function
@@ -92,10 +100,10 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
             Basis Function Value: is the first order derivative of the log of the policy.
         """
         self.firstCallNum += 1
-        # FIXME be attention about usage of PU. use the cache value of PU
         fl = zip(*feaList)
-        assert(self.PU)
-        g = [Expect(flv, self.PU) for flv in fl]
+        self.cache_PU = self._getActionProb(feaList, self.theta)
+        g = [Expect(flv, self.cache_PU) for flv in fl]
+
         # FIXME ATTENTION, when taking derivative,  be careful about minus sign before etg.
         basisValue = array(feaList) - array(g).reshape(1, -1)
         self.g, self.bf = g, basisValue
@@ -105,9 +113,11 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
     def calSecondBasisFuncVal(self, feaList):
         assert( self.g is not None )
         assert( self.bf is not None )
-        g, grad, PU = self.g, self.bf, self.PU
+        assert( self.cache_PU is not None)
+        g, grad, PU = self.g, self.bf, self.cache_PU
+
         self.secondCallNum += 1
-        assert( self.secondCalNum == self.firstCallNum )
+        assert( self.secondCallNum == self.firstCallNum )
 
         uSize = len(feaList)
         n = len(feaList[0])
@@ -128,7 +138,7 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
                     1.0 / PU[u] * grad[u][1] * ( ep[u] + float(g[0]) ) + \
                     sum( grad[j][1] * es[j] for j in xrange(uSize))
 
-        self.PU = None; self.g = None; self.bf = None
+        self.cache_PU = None; self.g = None; self.bf = None
         return varsigma
 
 import unittest

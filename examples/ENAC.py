@@ -7,11 +7,14 @@ import sys
 sys.path.insert(0, "..")
 from scipy import zeros
 
+from pybrain.tools.example_tools import ExTools
+
 from pybrain.rl.learners.valuebased.sarsa import SARSA
 from pybrain.rl.agents.learning import LearningAgent
 from pybrain.rl.learners.valuebased import ActionValueTable
-from pybrain.rl.experiments import Experiment
-from pybrain.rl.learners.directsearch import ENAC
+from pybrain.rl.experiments import Experiment, EpisodicExperiment
+# from pybrain.rl.learners.directsearch import ENAC
+from learners.CENACLearner import CENAC
 
 from agents import ExplorerLearningAgent
 from policy import BoltzmanPolicy
@@ -35,68 +38,61 @@ env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)
 task = RobotMotionTask(env, senRange=senRange)
 # task = SimpleTemporalLogic(env, senRange=senRange)
 
-policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 100)
+# policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 100)
+policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 10, iniTheta=[0, 0])
 explorer = BoltzmannExplorer()
 
-learner = ENAC()
-
+# learner = ENAC()
+learner = CENAC()
 
 # create agent
 agent = ExplorerLearningAgent(policy, learner, explorer)
 
 # create experiment
-experiment = Experiment(task, agent)
+# experiment = Experiment(task, agent)
+experiment = EpisodicExperiment(task, agent)
 
-# prepare plotting
-# import pylab
-# pylab.gray()
-# pylab.ion()
-# from time import sleep
-
-cFlag = dict(gs=-2, robot=2, trap=-1, normal=0)
-visEnvMat = envMatrix
-for gs in goalStates:
-    visEnvMat[tuple(gs)] = cFlag['gs']
-lastPos = None
 
 i = -1
-trace = dict(epsiode=[], rp=[])
+trace = dict(ep=[], reward=[], it=[],
+        theta0=[], theta1=[])
+th_trace = dict(theta0=[], theta1=[], it=[])
+
 r = 0
-# try:
-while True:
-    reward = experiment._oneInteraction()
-    r += reward
-    agent.learn()
+j = 0
+try:
+    while True:
+        j += 1
+        # reward = experiment._oneInteraction()
+        rewards = experiment.doEpisodes(1)
+        r = sum(rewards[0])
+        j += len(rewards[0])
+        agent.learn()
 
-    # pylab.pcolor(table.params.reshape(gridSize[0]*gridSize[1],4).max(1).reshape(gridSize))
-    # pylab.draw()
-    # pylab.show()
-    # sleep(0.1)
+        if j >= 1e6: break
 
-    # if lastPos is not None: visEnvMat[lastPos] = cFlag['normal']
-    # visEnvMat[env.perseus] = cFlag['robot']; lastPos = env.perseus
-    # lastPos = env.perseus
+        print 'theta, [%f, %f]'%tuple(learner.theta)
+        th_trace['theta0'].append(policy.theta[0])
+        th_trace['theta1'].append(policy.theta[1])
+        th_trace['it'].append(j)
 
-    # pylab.pcolor(visEnvMat)
-    # pylab.draw()
-    # pylab.show()
-    # sleep(0.1)
-
-
-    if task.reachGoalFlag:
-        i += 1
-        if i == 5e3: break
-        trace['epsiode'].append(i)
-        trace['rp'].append(r)
-        print '[%i]reach goal, reward'%(i), r
-        r = 0
-        task.reset()
-        continue
-# except KeyboardInterrupt:
+        if task.reachGoalFlag:
+            i += 1
+            if i == 5e3: break
+            trace['ep'].append(i)
+            trace['reward'].append(r)
+            trace['it'].append(j)
+            trace['theta0'].append(policy.theta[0])
+            trace['theta1'].append(policy.theta[1])
+            print '[%i]reach goal, reward'%(i), r
+            continue
+except KeyboardInterrupt:
+    pass
 # except Exception as e:
     # pass
 
 from util import WriteTrace
-WriteTrace(trace, 'enac_rec.tr')
+WriteTrace(trace, 'enac.tr')
+WriteTrace(th_trace, 'enac_theta.tr')
 
 

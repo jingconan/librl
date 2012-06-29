@@ -45,7 +45,8 @@ class ReachProbCalculator:
     def GetActionProb(self, state, theta):
         feaList = self.task._getFeatureList(state)
         # print 'feaList, ', feaList
-        return self.agent.policy.getActionProb(feaList, theta)
+        # return self.agent.policy.getActionProb(feaList, theta)
+        return self.agent.policy._getActionProb(feaList, theta)
 
     def __GetCoeff(self, theta):
         A = np.zeros( (self.stateSize, self.stateSize) )

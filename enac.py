@@ -37,9 +37,12 @@ task = RobotMotionTask(env, senRange=senRange)
 sDim = 2
 aDim = 1
 
-policy = BoltzmanPolicy(T)
+# policy = BoltzmanPolicy(T)
+policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 10, iniTheta=[0, 0])
 # net = buildNetwork(4, 1, bias=False)
 learner = ENAC(iniTheta=iniTheta, learningRate=0.1)
+
+
 agent = LSTDACAgent(policy, learner,  sDim, aDim)
 
 reachProb = ReachProbCalculator(env, task, agent)

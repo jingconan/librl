@@ -26,7 +26,6 @@ class TDLearner(ActorCriticLearner):
         self.module = policy
         self.dataset = dataset
         self.feadim = len(self.theta)
-        self.loglh = LoglhDataSet(self.feadim)
         self.newEpisode()
 
     def get_theta(self): return self.module.theta.reshape(-1, 1)
