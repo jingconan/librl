@@ -48,6 +48,7 @@ if __name__ == "__main__":
 
 Expect = lambda X, P: sum( x * p for x, p in zip(X, P) )
 
+import math
 def WriteTrace(trace, fname):
     fid = open(fname, 'w')
     fid.write('#' + ' '.join(trace.keys()) + '\n')
@@ -55,5 +56,14 @@ def WriteTrace(trace, fname):
     for r in res:
         fid.write(' '.join([str(val) for val in r]) + '\n')
 
+
+def dotproduct(v1, v2):
+    return sum((a*b) for a, b in zip(v1, v2))
+
+def length(v):
+    return math.sqrt(dotproduct(v, v))
+
+def angle(v1, v2):
+    return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2)))
 
 

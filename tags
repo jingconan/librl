@@ -4,6 +4,7 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ACAgent	agents/ACAgent.py	/^class ACAgent(LoggingAgent):$/;"	c
 ACTION_OPTION	examples/problem_settings.py	/^ACTION_OPTION = 'ALWAYS'$/;"	v
 ACTION_OPTION	settings.py	/^ACTION_OPTION = 'ALWAYS'$/;"	v
 AC_TYPE	examples/problem_settings.py	/^AC_TYPE = 'normal'$/;"	v
@@ -21,8 +22,10 @@ ActionValueNetwork	pybrain/rl/learners/valuebased/interface.py	/^class ActionVal
 ActionValueNetwork	tools/pybrain/pybrain/rl/learners/valuebased/interface.py	/^class ActionValueNetwork(Module, ActionValueInterface):$/;"	c
 ActionValueTable	pybrain/rl/learners/valuebased/interface.py	/^class ActionValueTable(Table, ActionValueInterface):$/;"	c
 ActionValueTable	tools/pybrain/pybrain/rl/learners/valuebased/interface.py	/^class ActionValueTable(Table, ActionValueInterface):$/;"	c
+Actor	learners/HACLearner.py	/^    def Actor(self, xkp1Psi, xkp1Varsigma):$/;"	m	class:HACLearner
 Actor	learners/HessianACLearner.py	/^    def Actor(self, xkp1, ukp1, xkp1Psi, xkp1Varsigma):$/;"	m	class:HessianACLearner
-Actor	learners/TDLearner.py	/^    def Actor(self, xkp1, ukp1, xkp1Psi):$/;"	m	class:TDLearner
+Actor	learners/NAC.py	/^    def Actor(self, xkp1Psi):$/;"	m	class:NAC
+Actor	learners/TDLearner.py	/^    def Actor(self, xkp1Psi):$/;"	m	class:TDLearner
 ActorCriticLearner	learners/ActorCriticLearner.py	/^class ActorCriticLearner(object):$/;"	c
 Actuator	pybrain/rl/environments/ode/actuators.py	/^class Actuator(Named):$/;"	c
 Actuator	tools/pybrain/pybrain/rl/environments/ode/actuators.py	/^class Actuator(Named):$/;"	c
@@ -113,6 +116,7 @@ CCRLPointVarTask	pybrain/rl/environments/ode/tasks/ccrl.py	/^class CCRLPointVarT
 CCRLPointVarTask	tools/pybrain/pybrain/rl/environments/ode/tasks/ccrl.py	/^class CCRLPointVarTask(CCRLPointTask):$/;"	c
 CCRLTask	pybrain/rl/environments/ode/tasks/ccrl.py	/^class CCRLTask(EpisodicTask):$/;"	c
 CCRLTask	tools/pybrain/pybrain/rl/environments/ode/tasks/ccrl.py	/^class CCRLTask(EpisodicTask):$/;"	c
+CENAC	learners/CENACLearner.py	/^class CENAC(ENAC):$/;"	c
 CENTERS	pybrain/rl/environments/cartpole/balancetask.py	/^    CENTERS = array(crossproduct([[-pi\/4, 0, pi\/4], [1, 0, -1]]))$/;"	v	class:DiscreteBalanceTaskRBF
 CENTERS	pybrain/rl/environments/cartpole/balancetask.py	/^    CENTERS = array(crossproduct([[-pi\/4, 0, pi\/4], [1, 0, -1]]*2))  $/;"	v	class:DiscreteDoubleBalanceTaskRBF
 CENTERS	tools/pybrain/pybrain/rl/environments/cartpole/balancetask.py	/^    CENTERS = array(crossproduct([[-pi\/4, 0, pi\/4], [1, 0, -1]]))$/;"	v	class:DiscreteBalanceTaskRBF
@@ -185,12 +189,12 @@ ConvolutionalBoardNetwork	pybrain/structure/networks/custom/convboard.py	/^class
 ConvolutionalBoardNetwork	tools/pybrain/pybrain/structure/networks/custom/convboard.py	/^class ConvolutionalBoardNetwork(SimpleConvolutionalNetwork):$/;"	c
 CopyJointActuator	pybrain/rl/environments/ode/actuators.py	/^class CopyJointActuator(JointActuator):$/;"	c
 CopyJointActuator	tools/pybrain/pybrain/rl/environments/ode/actuators.py	/^class CopyJointActuator(JointActuator):$/;"	c
+Critic	learners/HACLearner.py	/^    def Critic(self, gk, xkPsi, xkVarsigma, gkp1, xkp1Psi, xkp1Varsigma):$/;"	m	class:HACLearner
 Critic	learners/HessianACLearner.py	/^    def Critic(self, xk, uk, gk, xkp1, ukp1, xkPsi, xkp1Psi, xkVarsigma, xkp1Varsigma):$/;"	m	class:HessianACLearner
-Critic	learners/LSTDACLearner.py	/^    def Critic(self, xk, uk, gk, xkp1, ukp1, xkPsi, xkp1Psi):$/;"	m	class:LSTDACLearner
-Critic	learners/TDLearner.py	/^    def Critic(self, xk, uk, gk, xkPsi, xkp1, ukp1, gkp1, xkp1Psi):$/;"	m	class:TDLearner
+Critic	learners/LSTDACLearner.py	/^    def Critic(self, gk, xkPsi, gkp1, xkp1Psi):$/;"	m	class:LSTDACLearner
+Critic	learners/TDLearner.py	/^    def Critic(self, gk, xkPsi, gkp1, xkp1Psi):$/;"	m	class:TDLearner
 CrossValidator	pybrain/tools/validation.py	/^class CrossValidator(object):$/;"	c
 CrossValidator	tools/pybrain/pybrain/tools/validation.py	/^class CrossValidator(object):$/;"	c
-D	examples/LSTDAC.py	/^        D=2,$/;"	v
 D	examples/problem_settings.py	/^D = 10$/;"	v
 D	settings.py	/^D = 10$/;"	v
 DF	examples/problem_settings.py	/^DF = lambda x, y: abs(x[0] - y[0]) + abs(x[1] - y[1])$/;"	v
@@ -453,6 +457,8 @@ GriewankRosenbrockFunction	pybrain/rl/environments/functions/multimodal.py	/^cla
 GriewankRosenbrockFunction	tools/pybrain/pybrain/rl/environments/functions/multimodal.py	/^class GriewankRosenbrockFunction(MultiModalFunction):$/;"	c
 GrowTask	pybrain/rl/environments/flexcube/tasks.py	/^class GrowTask(NoRewardTask):$/;"	c
 GrowTask	tools/pybrain/pybrain/rl/environments/flexcube/tasks.py	/^class GrowTask(NoRewardTask):$/;"	c
+HACLearner	learners/HACLearner.py	/^class HACLearner(LSTDACLearner):$/;"	c
+HACLearnerTestCase	learners/testHACLearner.py	/^class HACLearnerTestCase(unittest.TestCase):$/;"	c
 HESSIANAC_TRACE_FILE	compare.py	/^HESSIANAC_TRACE_FILE = '.\/res\/hessian.p'$/;"	v
 HESSIANAC_TRACE_FILE	multirun.py	/^HESSIANAC_TRACE_FILE = '.\/res\/hessian.p'$/;"	v
 HandicapCaptureTask	pybrain/rl/environments/twoplayergames/tasks/handicaptask.py	/^class HandicapCaptureTask(CaptureGameTask):$/;"	c
@@ -535,7 +541,6 @@ LSPILambda	pybrain/rl/learners/valuebased/linearfa.py	/^class LSPILambda(LSTDQLa
 LSPILambda	tools/pybrain/pybrain/rl/learners/valuebased/linearfa.py	/^class LSPILambda(LSTDQLambda):$/;"	c
 LSTDACAgent	agents/LSTDACAgent.py	/^class LSTDACAgent(LoggingAgent):$/;"	c
 LSTDACLearner	learners/LSTDACLearner.py	/^class LSTDACLearner(TDLearner):$/;"	c
-LSTDACLearnerTestCase	learners/LSTDACLearner.py	/^class LSTDACLearnerTestCase(unittest.TestCase):$/;"	c
 LSTDAC_TEST	compare.py	/^def LSTDAC_TEST():$/;"	f
 LSTDAC_TRACE_FILE	compare.py	/^LSTDAC_TRACE_FILE = '.\/res\/lstdac.p'$/;"	v
 LSTDAC_TRACE_FILE	multirun.py	/^LSTDAC_TRACE_FILE = '.\/res\/lstdac.p'$/;"	v
@@ -580,6 +585,7 @@ MASSPOLE_1	pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^static c
 MASSPOLE_1	tools/pybrain/pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^static const double MASSPOLE_1  = 0.1;$/;"	v	file:
 MASSPOLE_2	pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^double MASSPOLE_2        = 0.01;$/;"	v
 MASSPOLE_2	tools/pybrain/pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^double MASSPOLE_2        = 0.01;$/;"	v
+MAX_VAL	examples/PlotComp.py	/^MAX_VAL = None$/;"	v
 MArray	pybrain/rl/environments/flexcube/masspoint.py	/^class MArray:$/;"	c
 MArray	tools/pybrain/pybrain/rl/environments/flexcube/masspoint.py	/^class MArray:$/;"	c
 MDLSTMLayer	pybrain/structure/modules/mdlstm.py	/^class MDLSTMLayer(NeuronLayer, ParameterContainer):$/;"	c
@@ -659,6 +665,7 @@ N	pybrain/structure/networks/convolutional.py	/^    N = ConvolutionalBoardNetwor
 N	tools/pybrain/examples/supervised/backprop/parityrnn.py	/^    N = buildParityNet()$/;"	v
 N	tools/pybrain/pybrain/rl/environments/mazes/maze.py	/^    N = (1, 0)$/;"	v	class:Maze
 N	tools/pybrain/pybrain/structure/networks/convolutional.py	/^    N = ConvolutionalBoardNetwork(4, 3, 5)$/;"	v	class:SimpleConvolutionalNetwork
+NAC	learners/NAC.py	/^class NAC(LSTDACLearner):$/;"	c
 NFQ	pybrain/rl/learners/valuebased/nfq.py	/^class NFQ(ValueBasedLearner):$/;"	c
 NFQ	tools/pybrain/pybrain/rl/learners/valuebased/nfq.py	/^class NFQ(ValueBasedLearner):$/;"	c
 NNclassifier	pybrain/tools/neuralnets.py	/^class NNclassifier(NNtools):$/;"	c
@@ -669,6 +676,7 @@ NNtools	pybrain/tools/neuralnets.py	/^class NNtools(object):$/;"	c
 NNtools	tools/pybrain/pybrain/tools/neuralnets.py	/^class NNtools(object):$/;"	c
 NOBASELINE	pybrain/optimization/distributionbased/nes.py	/^    NOBASELINE = 0$/;"	v	class:ExactNES
 NOBASELINE	tools/pybrain/pybrain/optimization/distributionbased/nes.py	/^    NOBASELINE = 0$/;"	v	class:ExactNES
+NULLExplorer	explorers/NULLExplorer.py	/^class NULLExplorer(BoltzmannExplorer):$/;"	c
 Named	pybrain/utilities.py	/^class Named(XMLBuildable):$/;"	c
 Named	tools/pybrain/pybrain/utilities.py	/^class Named(XMLBuildable):$/;"	c
 NaturalGradient	pybrain/auxiliary/gradientdescent.py	/^class NaturalGradient(object):$/;"	c
@@ -707,6 +715,7 @@ ODEEnvironment	pybrain/rl/environments/ode/environment.py	/^class ODEEnvironment
 ODEEnvironment	tools/pybrain/pybrain/rl/environments/ode/environment.py	/^class ODEEnvironment(Environment):$/;"	c
 ODEViewer	pybrain/rl/environments/ode/viewer.py	/^class ODEViewer(object):$/;"	c
 ODEViewer	tools/pybrain/pybrain/rl/environments/ode/viewer.py	/^class ODEViewer(object):$/;"	c
+OP	learners/HACLearner.py	/^def OP(A, B):$/;"	f
 Objects3D	pybrain/rl/environments/flexcube/objects3d.py	/^class Objects3D:$/;"	c
 Objects3D	tools/pybrain/pybrain/rl/environments/flexcube/objects3d.py	/^class Objects3D:$/;"	c
 OpenLeft	pybrain/rl/environments/mazes/tasks/tiger.py	/^    OpenLeft = 1$/;"	v	class:TigerTask
@@ -750,6 +759,7 @@ PenteTask	tools/pybrain/pybrain/rl/environments/twoplayergames/tasks/pentetask.p
 PermutationConnection	pybrain/structure/connections/permutation.py	/^class PermutationConnection(Connection):$/;"	c
 PermutationConnection	tools/pybrain/pybrain/structure/connections/permutation.py	/^class PermutationConnection(Connection):$/;"	c
 PlotCostSurface	PlotCostSurface.py	/^def PlotCostSurface():$/;"	f
+PlotCostSurface	examples/PlotCostSurface.py	/^def PlotCostSurface():$/;"	f
 PolBenchmark	pybrain/rl/environments/functions/multiobjective.py	/^class PolBenchmark(MultiObjectiveFunction):$/;"	c
 PolBenchmark	tools/pybrain/pybrain/rl/environments/functions/multiobjective.py	/^class PolBenchmark(MultiObjectiveFunction):$/;"	c
 PolarMaze	pybrain/rl/environments/mazes/polarmaze.py	/^class PolarMaze(Maze):$/;"	c
@@ -817,6 +827,7 @@ RLGlueError	pybrain/tools/rlgluebridge.py	/^class RLGlueError(Exception): pass$/
 RLGlueError	tools/pybrain/pybrain/tools/rlgluebridge.py	/^class RLGlueError(Exception): pass$/;"	c
 ROOT	examples/problem_settings.py	/^ROOT = '.'$/;"	v
 ROOT	settings.py	/^ROOT = '.'$/;"	v
+ROP	learners/HACLearner.py	/^def ROP(C, B):$/;"	f
 RP_FILE	examples/problem_settings.py	/^RP_FILE = ROOT + '\/res\/rp.txt'$/;"	v
 RP_FILE	settings.py	/^RP_FILE = ROOT + '\/res\/rp.txt'$/;"	v
 RPropMinusTrainer	pybrain/supervised/trainers/rprop.py	/^class RPropMinusTrainer(BackpropTrainer):$/;"	c
@@ -1023,7 +1034,7 @@ SwipingNetwork	pybrain/structure/networks/swiping.py	/^class SwipingNetwork(Feed
 SwipingNetwork	tools/pybrain/pybrain/structure/networks/swiping.py	/^class SwipingNetwork(FeedForwardNetwork):$/;"	c
 SwitchLayer	pybrain/structure/modules/gate.py	/^class SwitchLayer(NeuronLayer):$/;"	c
 SwitchLayer	tools/pybrain/pybrain/structure/modules/gate.py	/^class SwitchLayer(NeuronLayer):$/;"	c
-T	examples/problem_settings.py	/^T = 100$/;"	v
+T	examples/problem_settings.py	/^T = 10$/;"	v
 T	settings.py	/^T = 100$/;"	v
 TAU	pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^static const double TAU         = 0.01;	  \/\/seconds between state updates$/;"	v	file:
 TAU	tools/pybrain/pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^static const double TAU         = 0.01;	  \/\/seconds between state updates$/;"	v	file:
@@ -1186,16 +1197,22 @@ __add__	pybrain/datasets/classification.py	/^    def __add__(self, other):$/;"	m
 __add__	pybrain/datasets/classification.py	/^    def __add__(self, other):$/;"	m	class:SequenceClassificationDataSet	file:
 __add__	tools/pybrain/pybrain/datasets/classification.py	/^    def __add__(self, other):$/;"	m	class:ClassificationDataSet	file:
 __add__	tools/pybrain/pybrain/datasets/classification.py	/^    def __add__(self, other):$/;"	m	class:SequenceClassificationDataSet	file:
+__author__	agents/ACAgent.py	/^__author__ = 'Jing Conan Wang, wangjing@bu.edu'$/;"	v
 __author__	agents/ExplorerLearningAgent.py	/^__author__ = 'Jing Conan Wang, wangjing@bu.edu'$/;"	v
 __author__	agents/LSTDACAgent.py	/^__author__ = 'Jing Conan Wang, wangjing@bu.edu'$/;"	v
 __author__	examples/ENAC.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
 __author__	examples/ENAC_TL.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
+__author__	examples/HAC.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
 __author__	examples/LSTDAC.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
+__author__	examples/NAC.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
 __author__	examples/QLambda_LinFA.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
 __author__	examples/Q_LinFA.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
 __author__	examples/SARSA_TL.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
+__author__	examples/TDAC.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
+__author__	learners/CENACLearner.py	/^__author__ = 'Thomas Rueckstiess, ruecksti@in.tum.de'$/;"	v
 __author__	learners/ENACLearner.py	/^__author__ = 'Thomas Rueckstiess, ruecksti@in.tum.de'$/;"	v
 __author__	learners/LSTDACLearner.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
+__author__	learners/NAC.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
 __author__	learners/TDLearner.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
 __author__	main.py	/^__author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'$/;"	v
 __author__	pybrain/auxiliary/gaussprocess.py	/^__author__ = 'Thomas Rueckstiess, ruecksti@in.tum.de; Christian Osendorfer, osendorf@in.tum.de'$/;"	v
@@ -1880,15 +1897,15 @@ __getitem__	tools/pybrain/pybrain/structure/networks/network.py	/^    def __geti
 __getstate__	pybrain/tests/unittests/test_utilities.py	/^    def __getstate__(self):$/;"	m	class:P	file:
 __getstate__	tools/pybrain/pybrain/tests/unittests/test_utilities.py	/^    def __getstate__(self):$/;"	m	class:P	file:
 __init__	ReachProbCalculator.py	/^    def __init__(self, environment, task, agent):$/;"	m	class:ReachProbCalculator
-__init__	agents/ExplorerLearningAgent.py	/^    def __init__(self, module, learner, explorer):$/;"	m	class:ExplorerLearningAgent
-__init__	agents/LSTDACAgent.py	/^    def __init__(self, policy, learner, sdim, adim):$/;"	m	class:LSTDACAgent
+__init__	agents/ACAgent.py	/^    def __init__(self, policy, learner, sdim, adim=1):$/;"	m	class:ACAgent
+__init__	agents/ExplorerLearningAgent.py	/^    def __init__(self, module, learner):$/;"	m	class:ExplorerLearningAgent
+__init__	agents/LSTDACAgent.py	/^    def __init__(self, policy, learner, sdim, adim=1):$/;"	m	class:LSTDACAgent
 __init__	environments/TrapMaze.py	/^    def __init__(self, topology, startPos, goalStates, TP, DF, **args):$/;"	m	class:TrapMaze
 __init__	learners/ENACLearner.py	/^    def __init__(self, **kwargs):$/;"	m	class:ENAC
 __init__	learners/HessianACLearner.py	/^    def __init__(self,  actiondim, iniTheta, **argv):$/;"	m	class:HessianACLearner
 __init__	learners/HessianACLearner.py	/^    def __init__(self, dim):$/;"	m	class:SecondBasisDataSet
-__init__	learners/LSTDACLearner.py	/^    def __init__(self, actiondim, iniTheta, **kwargs):$/;"	m	class:LSTDACLearner
-__init__	learners/TDLearner.py	/^    def __init__(self, actiondim, iniTheta, **kwargs):$/;"	m	class:TDLearner
-__init__	policy/BoltzmanAC.py	/^    def __init__(self, feaDim, numActions, T, **args):$/;"	m	class:BoltzmanPolicy
+__init__	learners/TDLearner.py	/^    def __init__(self, **kwargs):$/;"	m	class:TDLearner
+__init__	policy/BoltzmanAC.py	/^    def __init__(self, feaDim, numActions, T, iniTheta, **args):$/;"	m	class:BoltzmanPolicy
 __init__	pybrain/auxiliary/gaussprocess.py	/^    def __init__(self, indim, start=0, stop=1, step=0.1):$/;"	m	class:GaussianProcess
 __init__	pybrain/auxiliary/gradientdescent.py	/^    def __init__(self):$/;"	m	class:GradientDescent
 __init__	pybrain/auxiliary/gradientdescent.py	/^    def __init__(self, samplesize):$/;"	m	class:NaturalGradient
@@ -3073,6 +3090,8 @@ _idlefunc	pybrain/rl/environments/ode/viewer.py	/^    def _idlefunc(self):$/;"	m
 _idlefunc	tools/pybrain/pybrain/rl/environments/ode/viewer.py	/^    def _idlefunc(self):$/;"	m	class:ODEViewer
 _import	pybrain/utilities.py	/^def _import(name):$/;"	f
 _import	tools/pybrain/pybrain/utilities.py	/^def _import(name):$/;"	f
+_init	learners/LSTDACLearner.py	/^    def _init(self, policy, dataset):$/;"	m	class:LSTDACLearner
+_init	learners/TDLearner.py	/^    def _init(self, policy, dataset):$/;"	m	class:TDLearner
 _initBatchSize	pybrain/optimization/distributionbased/rank1.py	/^    def _initBatchSize(self):$/;"	m	class:Rank1NES
 _initBatchSize	pybrain/optimization/distributionbased/snes.py	/^    def _initBatchSize(self):$/;"	m	class:SNES
 _initBatchSize	tools/pybrain/pybrain/optimization/distributionbased/rank1.py	/^    def _initBatchSize(self):$/;"	m	class:Rank1NES
@@ -3560,8 +3579,9 @@ _updateShaping	pybrain/optimization/distributionbased/fem.py	/^    def _updateSh
 _updateShaping	tools/pybrain/pybrain/optimization/distributionbased/fem.py	/^    def _updateShaping(self):$/;"	m	class:FEM
 _updateSigmas	pybrain/optimization/distributionbased/fem.py	/^    def _updateSigmas(self, updateSize, lastSample):$/;"	m	class:FEM
 _updateSigmas	tools/pybrain/pybrain/optimization/distributionbased/fem.py	/^    def _updateSigmas(self, updateSize, lastSample):$/;"	m	class:FEM
+_updateWeights	learners/HACLearner.py	/^    def _updateWeights(self, xk, uk, gk, xkp1, ukp1, gkp1):$/;"	m	class:HACLearner
 _updateWeights	learners/HessianACLearner.py	/^    def _updateWeights(self, xk, uk, gk, xkp1, ukp1, xkPsi, xkp1Psi, xkVarsigma, xkp1Varsigma):$/;"	m	class:HessianACLearner
-_updateWeights	learners/TDLearner.py	/^    def _updateWeights(self, xk, uk, gk, xkPsi, xkp1, ukp1, gkp1, xkp1Psi):$/;"	m	class:TDLearner
+_updateWeights	learners/TDLearner.py	/^    def _updateWeights(self, xk, uk, gk, xkp1, ukp1, gkp1):$/;"	m	class:TDLearner
 _updateWeights	pybrain/rl/learners/valuebased/linearfa.py	/^    def _updateWeights(self, state, action, reward, next_state):$/;"	m	class:QLambda_LinFA
 _updateWeights	pybrain/rl/learners/valuebased/linearfa.py	/^    def _updateWeights(self, state, action, reward, next_state):$/;"	m	class:Q_LinFA
 _updateWeights	pybrain/rl/learners/valuebased/linearfa.py	/^    def _updateWeights(self, state, action, reward, next_state, behavior_policy=None, learned_policy=None, outcome_reward=None):$/;"	m	class:GQLambda
@@ -3629,6 +3649,7 @@ actions	tools/pybrain/pybrain/rl/environments/mazes/polarmaze.py	/^    actions =
 actions	tools/pybrain/pybrain/rl/environments/mazes/tasks/pomdp.py	/^    actions = 4$/;"	v	class:POMDPTask
 actions	tools/pybrain/pybrain/rl/environments/mazes/tasks/shuttle.py	/^    actions = 3$/;"	v	class:ShuttleDocking
 actions	tools/pybrain/pybrain/rl/environments/mazes/tasks/tiger.py	/^    actions = 3$/;"	v	class:TigerTask
+activate	explorers/NULLExplorer.py	/^    def activate(self, state, action):$/;"	m	class:NULLExplorer
 activate	pybrain/rl/explorers/continuous/sde.py	/^    def activate(self, state, action):$/;"	m	class:StateDependentExplorer
 activate	pybrain/rl/explorers/discrete/boltzmann.py	/^    def activate(self, state, action):$/;"	m	class:BoltzmannExplorer
 activate	pybrain/rl/explorers/discrete/discretesde.py	/^    def activate(self, state, action):$/;"	m	class:DiscreteStateDependentExplorer
@@ -3740,12 +3761,15 @@ addVect	tools/pybrain/pybrain/rl/environments/flexcube/objects3d.py	/^    def ad
 affixToEnvironment	pybrain/rl/environments/ode/tools/xodetools.py	/^    def affixToEnvironment(self, name):$/;"	m	class:XODEfile
 affixToEnvironment	tools/pybrain/pybrain/rl/environments/ode/tools/xodetools.py	/^    def affixToEnvironment(self, name):$/;"	m	class:XODEfile
 agent	enac.py	/^agent = LSTDACAgent(policy, learner,  sDim, aDim)$/;"	v
-agent	examples/ENAC.py	/^agent = ExplorerLearningAgent(policy, learner, explorer)$/;"	v
+agent	examples/ENAC.py	/^agent = ExplorerLearningAgent(policy, learner)$/;"	v
 agent	examples/ENAC_TL.py	/^agent = LearningAgent(policy, learner)$/;"	v
-agent	examples/LSTDAC.py	/^agent = LSTDACAgent(policy, learner)$/;"	v
+agent	examples/HAC.py	/^agent = ACAgent(policy, learner, sdim=8, adim=1)$/;"	v
+agent	examples/LSTDAC.py	/^agent = ACAgent(policy, learner, sdim=8, adim=1)$/;"	v
+agent	examples/NAC.py	/^agent = ACAgent(policy, learner, sdim=8, adim=1)$/;"	v
 agent	examples/QLambda_LinFA.py	/^agent = LinearFA_Agent(learner)$/;"	v
 agent	examples/Q_LinFA.py	/^agent = LinearFA_Agent(learner)$/;"	v
 agent	examples/SARSA_TL.py	/^agent = LearningAgent(table, learner)$/;"	v
+agent	examples/TDAC.py	/^agent = ACAgent(policy, learner, sdim=8, adim=1)$/;"	v
 agent	main.py	/^agent = LSTDACAgent(policy, learner, sDim, aDim)$/;"	v
 agent	pybrain/tools/example_tools.py	/^    agent = None$/;"	v	class:ExTools
 agent	tools/pybrain/docs/tutorials/rl.py	/^agent = LearningAgent(controller, learner)$/;"	v
@@ -4141,7 +4165,6 @@ buildSwipingNetwork	pybrain/tests/unittests/structure/networks/test_swiping_netw
 buildSwipingNetwork	tools/pybrain/pybrain/tests/unittests/structure/networks/test_swiping_network.py	/^def buildSwipingNetwork(dimensions = 3):$/;"	f
 burstMutate	pybrain/supervised/trainers/evolino.py	/^    def burstMutate(self):$/;"	m	class:EvolinoTrainer
 burstMutate	tools/pybrain/pybrain/supervised/trainers/evolino.py	/^    def burstMutate(self):$/;"	m	class:EvolinoTrainer
-c	examples/LSTDAC.py	/^        c = 0.8,$/;"	v
 c	examples/problem_settings.py	/^c = 5$/;"	v
 c	pybrain/rl/environments/functions/unimodal.py	/^    c = .1$/;"	v	class:GlasmachersFunction
 c	settings.py	/^c = 5$/;"	v
@@ -4152,7 +4175,6 @@ c2	pybrain/tools/kwargsprocessor.py	/^    c2 = C(m=1, a=1, b=2)$/;"	v	class:KWAr
 c2	tools/pybrain/pybrain/tools/kwargsprocessor.py	/^    c2 = C(m=1, a=1, b=2)$/;"	v	class:KWArgsProcessor
 c3	pybrain/tools/kwargsprocessor.py	/^    c3 = C(m=1, simple="hallo", a=11, b=22, c=55)$/;"	v	class:KWArgsProcessor
 c3	tools/pybrain/pybrain/tools/kwargsprocessor.py	/^    c3 = C(m=1, simple="hallo", a=11, b=22, c=55)$/;"	v	class:KWArgsProcessor
-cFlag	examples/ENAC.py	/^cFlag = dict(gs=-2, robot=2, trap=-1, normal=0)$/;"	v
 cFlag	examples/QLambda_LinFA.py	/^cFlag = dict(gs=-2, robot=2, trap=-1, normal=0)$/;"	v
 cFlag	examples/Q_LinFA.py	/^cFlag = dict(gs=-2, robot=2, trap=-1, normal=0)$/;"	v
 cFlag	examples/SARSA_TL.py	/^cFlag = dict(gs=-2, robot=2, trap=-1, normal=0)$/;"	v
@@ -4513,6 +4535,7 @@ elitism	tools/pybrain/pybrain/optimization/populationbased/ga.py	/^    elitism =
 elitism	tools/pybrain/pybrain/optimization/populationbased/multiobjective/nsga2.py	/^    elitism = True$/;"	v	class:MultiObjectiveGA
 eloScore	pybrain/rl/experiments/tournament.py	/^    def eloScore(self, startingscore=1500, k=32):$/;"	m	class:Tournament
 eloScore	tools/pybrain/pybrain/rl/experiments/tournament.py	/^    def eloScore(self, startingscore=1500, k=32):$/;"	m	class:Tournament
+end	examples/HAC.py	/^    end = clock()$/;"	v
 end	pybrain/rl/environments/ode/xode_changes/body.py	/^        def end(name):$/;"	f	function:Mass._parseMassShape
 end	pybrain/rl/environments/ode/xode_changes/geom.py	/^        def end(name):$/;"	f	function:Geom._parseGeomBox
 end	pybrain/rl/environments/ode/xode_changes/geom.py	/^        def end(name):$/;"	f	function:Geom._parseGeomCCylinder
@@ -4536,10 +4559,13 @@ endOfSequence	tools/pybrain/pybrain/datasets/sequential.py	/^    def endOfSequen
 env	enac.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
 env	examples/ENAC.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
 env	examples/ENAC_TL.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
+env	examples/HAC.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
 env	examples/LSTDAC.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
+env	examples/NAC.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
 env	examples/QLambda_LinFA.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
 env	examples/Q_LinFA.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
 env	examples/SARSA_TL.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
+env	examples/TDAC.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
 env	main.py	/^env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)$/;"	v
 env	tools/pybrain/examples/rl/environments/cartpole/cart_all.py	/^        env = CartPoleEnvironment()    $/;"	v
 env	tools/pybrain/examples/rl/environments/cartpole/cart_cma.py	/^    env = CartPoleEnvironment()    $/;"	v
@@ -4572,10 +4598,13 @@ envMatrix	compare.py	/^envMatrix = zeros(gridSize)$/;"	v
 envMatrix	enac.py	/^envMatrix = zeros(gridSize)$/;"	v
 envMatrix	examples/ENAC.py	/^envMatrix = zeros(gridSize)$/;"	v
 envMatrix	examples/ENAC_TL.py	/^envMatrix = zeros(gridSize)$/;"	v
+envMatrix	examples/HAC.py	/^envMatrix = zeros(gridSize)$/;"	v
 envMatrix	examples/LSTDAC.py	/^envMatrix = zeros(gridSize)$/;"	v
+envMatrix	examples/NAC.py	/^envMatrix = zeros(gridSize)$/;"	v
 envMatrix	examples/QLambda_LinFA.py	/^envMatrix = zeros(gridSize)$/;"	v
 envMatrix	examples/Q_LinFA.py	/^envMatrix = zeros(gridSize)$/;"	v
 envMatrix	examples/SARSA_TL.py	/^envMatrix = zeros(gridSize)$/;"	v
+envMatrix	examples/TDAC.py	/^envMatrix = zeros(gridSize)$/;"	v
 envMatrix	main.py	/^envMatrix = zeros(gridSize)$/;"	v
 environment	tools/pybrain/docs/tutorials/rl.py	/^environment = Maze(structure, (7, 7))$/;"	v
 envmatrix	tools/pybrain/examples/rl/environments/maze/td.py	/^envmatrix = array([[1, 1, 1, 1, 1, 1, 1, 1, 1],$/;"	v
@@ -4664,12 +4693,15 @@ excluded	tools/pybrain/docs/html/_static/searchtools.js	/^    var excluded = [];
 exp	tools/pybrain/examples/optimization/optimizers_for_rl.py	/^exp = EpisodicExperiment(task, agent)$/;"	v
 expList	tools/pybrain/examples/rl/environments/cartpole/cart_all.py	/^expList = ["PGPE(storeAllEvaluations = True)", "ExactNES(storeAllEvaluations = True)", "FEM(storeAllEvaluations = True)", "CMAES(storeAllEvaluations = True)"]$/;"	v
 experiment	enac.py	/^        experiment = EpisodicExperiment(task, agent)$/;"	v
-experiment	examples/ENAC.py	/^experiment = Experiment(task, agent)$/;"	v
+experiment	examples/ENAC.py	/^experiment = EpisodicExperiment(task, agent)$/;"	v
 experiment	examples/ENAC_TL.py	/^experiment = Experiment(task, agent)$/;"	v
+experiment	examples/HAC.py	/^experiment = Experiment(task, agent)$/;"	v
 experiment	examples/LSTDAC.py	/^experiment = Experiment(task, agent)$/;"	v
+experiment	examples/NAC.py	/^experiment = Experiment(task, agent)$/;"	v
 experiment	examples/QLambda_LinFA.py	/^experiment = Experiment(task, agent)$/;"	v
 experiment	examples/Q_LinFA.py	/^experiment = Experiment(task, agent)$/;"	v
 experiment	examples/SARSA_TL.py	/^experiment = Experiment(task, agent)$/;"	v
+experiment	examples/TDAC.py	/^experiment = Experiment(task, agent)$/;"	v
 experiment	main.py	/^experiment = Experiment(task, agent)$/;"	v
 experiment	tools/pybrain/docs/tutorials/rl.py	/^experiment = Experiment(task, agent)$/;"	v
 experiment	tools/pybrain/examples/rl/environments/cartpole/cart_all.py	/^        experiment = EpisodicExperiment(task, agent)$/;"	v
@@ -4707,7 +4739,6 @@ explore	pybrain/rl/learners/directsearch/policygradient.py	/^    def explore(sel
 explore	pybrain/rl/learners/learner.py	/^    def explore(self, state, action):$/;"	m	class:ExploringLearner
 explore	tools/pybrain/pybrain/rl/learners/directsearch/policygradient.py	/^    def explore(self, state, action):$/;"	m	class:PolicyGradientLearner
 explore	tools/pybrain/pybrain/rl/learners/learner.py	/^    def explore(self, state, action):$/;"	m	class:ExploringLearner
-explorer	examples/ENAC.py	/^explorer = BoltzmannExplorer()$/;"	v
 explorer	pybrain/rl/learners/directsearch/policygradient.py	/^    explorer = property(_getExplorer, _setExplorer)$/;"	v	class:PolicyGradientLearner
 explorer	pybrain/rl/learners/learner.py	/^    explorer = None$/;"	v	class:ExploringLearner
 explorer	pybrain/rl/learners/valuebased/valuebased.py	/^    explorer = property(_getExplorer, _setExplorer)$/;"	v	class:ValueBasedLearner
@@ -4827,6 +4858,7 @@ f_in	tools/pybrain/docs/code2tut.py	/^f_in = file(os.path.join("tutorials",sys.a
 f_out	tools/pybrain/docs/code2tut.py	/^f_out = file(os.path.join("sphinx",sys.argv[1])+".txt", "w+")$/;"	v
 fe	pybrain/tests/optimizationtest.py	/^fe = SphereFunction$/;"	v
 fe	tools/pybrain/pybrain/tests/optimizationtest.py	/^fe = SphereFunction$/;"	v
+fea2obs	policy/BoltzmanAC.py	/^    def fea2obs(self, fea):$/;"	m	class:BoltzmanPolicy
 fifteen_degrees	pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	45;"	d	file:
 fifteen_degrees	tools/pybrain/pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	45;"	d	file:
 fifty_degrees	pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	48;"	d	file:
@@ -4934,6 +4966,8 @@ get	pybrain/rl/environments/flexcube/masspoint.py	/^    def get(self, i):$/;"	m	
 get	tools/pybrain/pybrain/rl/environments/flexcube/masspoint.py	/^    def get(self, i):$/;"	m	class:MArray
 getAcceptable	pybrain/rl/environments/twoplayergames/capturegame.py	/^    def getAcceptable(self, c):$/;"	m	class:CaptureGame
 getAcceptable	tools/pybrain/pybrain/rl/environments/twoplayergames/capturegame.py	/^    def getAcceptable(self, c):$/;"	m	class:CaptureGame
+getAction	agents/ACAgent.py	/^    def getAction(self):$/;"	m	class:ACAgent
+getAction	agents/ExplorerLearningAgent.py	/^    def getAction(self):$/;"	m	class:ExplorerLearningAgent
 getAction	agents/HessianACAgent.py	/^    def getAction(self):$/;"	m	class:HessianACAgent
 getAction	agents/LSTDACAgent.py	/^    def getAction(self):$/;"	m	class:LSTDACAgent
 getAction	pybrain/rl/agents/agent.py	/^    def getAction(self):$/;"	m	class:Agent
@@ -4967,7 +5001,7 @@ getAction	tools/pybrain/pybrain/rl/environments/twoplayergames/gomokuplayers/ran
 getAction	tools/pybrain/pybrain/tests/unittests/tools/test_rlgluebridge.py	/^    def getAction(self):$/;"	m	class:PseudoPybrainAgent
 getActionLength	pybrain/rl/environments/ode/environment.py	/^    def getActionLength(self):$/;"	m	class:ODEEnvironment
 getActionLength	tools/pybrain/pybrain/rl/environments/ode/environment.py	/^    def getActionLength(self):$/;"	m	class:ODEEnvironment
-getActionValues	policy/BoltzmanAC.py	/^    def getActionValues(self, feaList):$/;"	m	class:BoltzmanPolicy
+getActionValues	policy/BoltzmanAC.py	/^    def getActionValues(self, obs):$/;"	m	class:BoltzmanPolicy
 getActionValues	pybrain/rl/learners/valuebased/interface.py	/^    def getActionValues(self, state):$/;"	m	class:ActionValueInterface
 getActionValues	pybrain/rl/learners/valuebased/interface.py	/^    def getActionValues(self, state):$/;"	m	class:ActionValueNetwork
 getActionValues	pybrain/rl/learners/valuebased/interface.py	/^    def getActionValues(self, state):$/;"	m	class:ActionValueTable
@@ -5418,13 +5452,13 @@ getWorstIndividuals	pybrain/supervised/evolino/gpopulation.py	/^    def getWorst
 getWorstIndividuals	tools/pybrain/pybrain/supervised/evolino/gpopulation.py	/^    def getWorstIndividuals(self, n):$/;"	m	class:SimplePopulation
 getXODERoot	pybrain/rl/environments/ode/environment.py	/^    def getXODERoot(self):$/;"	m	class:ODEEnvironment
 getXODERoot	tools/pybrain/pybrain/rl/environments/ode/environment.py	/^    def getXODERoot(self):$/;"	m	class:ODEEnvironment
+get_theta	learners/TDLearner.py	/^    def get_theta(self): return self.module.theta.reshape(-1, 1)$/;"	m	class:TDLearner
 get_theta	policy/BoltzmanAC.py	/^    def get_theta(self): return self._params$/;"	m	class:BoltzmanPolicy
 gini	pybrain/tools/rankingfunctions.py	/^    gini = 0.1$/;"	v	class:SmoothGiniRanking
 gini	tools/pybrain/pybrain/tools/rankingfunctions.py	/^    gini = 0.1$/;"	v	class:SmoothGiniRanking
 giveHandicap	pybrain/rl/environments/twoplayergames/capturegame.py	/^    def giveHandicap(self, h, color=BLACK):$/;"	m	class:CaptureGame
 giveHandicap	tools/pybrain/pybrain/rl/environments/twoplayergames/capturegame.py	/^    def giveHandicap(self, h, color=BLACK):$/;"	m	class:CaptureGame
 giveReward	agents/HessianACAgent.py	/^    def giveReward(self, r):$/;"	m	class:HessianACAgent
-giveReward	agents/LSTDACAgent.py	/^    def giveReward(self, r):$/;"	m	class:LSTDACAgent
 giveReward	pybrain/rl/agents/agent.py	/^    def giveReward(self, r):$/;"	m	class:Agent
 giveReward	pybrain/rl/agents/logging.py	/^    def giveReward(self, r):$/;"	m	class:LoggingAgent
 giveReward	pybrain/tests/unittests/tools/test_rlgluebridge.py	/^    def giveReward(self, r):$/;"	m	class:PseudoPybrainAgent
@@ -5550,9 +5584,11 @@ htmlhelp_basename	tools/pybrain/docs/sphinx/conf.py	/^htmlhelp_basename = 'PyBra
 i	examples/ENAC.py	/^i = -1$/;"	v
 i	examples/ENAC_TL.py	/^i = -1$/;"	v
 i	examples/LSTDAC.py	/^i = -1$/;"	v
+i	examples/NAC.py	/^i = -1$/;"	v
 i	examples/QLambda_LinFA.py	/^i = -1$/;"	v
 i	examples/Q_LinFA.py	/^i = -1$/;"	v
 i	examples/SARSA_TL.py	/^i = -1$/;"	v
+i	examples/TDAC.py	/^i = -1$/;"	v
 i	main.py	/^    i = -1$/;"	v
 ife1	pybrain/tests/optimizationtest.py	/^ife1 = fe(1)$/;"	v
 ife1	tools/pybrain/pybrain/tests/optimizationtest.py	/^ife1 = fe(1)$/;"	v
@@ -5605,11 +5641,9 @@ indim	tools/pybrain/pybrain/rl/environments/twoplayergames/gomoku.py	/^    def i
 inertia	pybrain/optimization/populationbased/pso.py	/^    inertia = 0.9$/;"	v	class:ParticleSwarmOptimizer
 inertia	tools/pybrain/pybrain/optimization/populationbased/pso.py	/^    inertia = 0.9$/;"	v	class:ParticleSwarmOptimizer
 iniState	examples/problem_settings.py	/^    iniState = (0, 0)$/;"	v
-iniState	examples/problem_settings.py	/^    iniState = [0, 0]$/;"	v
 iniState	settings.py	/^    iniState = (0, 0)$/;"	v
 iniState	settings.py	/^    iniState = [0, 0]$/;"	v
-iniTheta	examples/LSTDAC.py	/^        iniTheta = [0,0],$/;"	v
-iniTheta	examples/problem_settings.py	/^iniTheta = [5, 5]$/;"	v
+iniTheta	examples/problem_settings.py	/^iniTheta = [3, 3]$/;"	v
 iniTheta	settings.py	/^iniTheta = [5, 5]$/;"	v
 init	pybrain/auxiliary/gradientdescent.py	/^    def init(self, values):$/;"	m	class:GradientDescent
 init	pybrain/auxiliary/gradientdescent.py	/^    def init(self, values):$/;"	m	class:IRpropPlus
@@ -5736,7 +5770,6 @@ insize	tools/pybrain/pybrain/structure/networks/multidimensional.py	/^    insize
 install_requires	tools/pybrain/setup.py	/^    install_requires = ["scipy"],$/;"	v
 int2gray	pybrain/utilities.py	/^def int2gray(i):$/;"	f
 int2gray	tools/pybrain/pybrain/utilities.py	/^def int2gray(i):$/;"	f
-integrateObservation	agents/LSTDACAgent.py	/^    def integrateObservation(self, obs):$/;"	m	class:LSTDACAgent
 integrateObservation	pybrain/rl/agents/agent.py	/^    def integrateObservation(self, obs):$/;"	m	class:Agent
 integrateObservation	pybrain/rl/agents/linearfa.py	/^    def integrateObservation(self, obs):$/;"	m	class:LinearFA_Agent
 integrateObservation	pybrain/rl/agents/logging.py	/^    def integrateObservation(self, obs):$/;"	m	class:LoggingAgent
@@ -5830,6 +5863,10 @@ iterCombinations	pybrain/utilities.py	/^def iterCombinations(tup):$/;"	f
 iterCombinations	tools/pybrain/pybrain/utilities.py	/^def iterCombinations(tup):$/;"	f
 iterRbms	pybrain/unsupervised/trainers/deepbelief.py	/^    def iterRbms(self):$/;"	m	class:DeepBeliefTrainer
 iterRbms	tools/pybrain/pybrain/unsupervised/trainers/deepbelief.py	/^    def iterRbms(self):$/;"	m	class:DeepBeliefTrainer
+j	examples/ENAC.py	/^j = 0$/;"	v
+j	examples/LSTDAC.py	/^j = -1$/;"	v
+j	examples/NAC.py	/^j = -1$/;"	v
+j	examples/TDAC.py	/^j = -1$/;"	v
 jQuery.browser.version	tools/pybrain/docs/html/_static/jquery.js	/^while(elem=second[i++])first[pos++]=elem;return first;},unique:function(array){var ret=[],done={};try{for(var i=0,length=array.length;i<length;i++){var id=jQuery.data(array[i]);if(!done[id]){done[id]=true;ret.push(array[i]);}}}catch(e){ret=array;}return ret;},grep:function(elems,callback,inv){var ret=[];for(var i=0,length=elems.length;i<length;i++)if(!inv!=!callback(elems[i],i))ret.push(elems[i]);return ret;},map:function(elems,callback){var ret=[];for(var i=0,length=elems.length;i<length;i++){var value=callback(elems[i],i);if(value!=null)ret[ret.length]=value;}return ret.concat.apply([],ret);}});var userAgent=navigator.userAgent.toLowerCase();jQuery.browser={version:(userAgent.match(\/.+(?:rv|it|ra|ie)[\\\/: ]([\\d.]+)\/)||[])[1],safari:\/webkit\/.test(userAgent),opera:\/opera\/.test(userAgent),msie:\/msie\/.test(userAgent)&&!\/opera\/.test(userAgent),mozilla:\/mozilla\/.test(userAgent)&&!\/(compatible|webkit)\/.test(userAgent)};var styleFloat=jQuery.browser.msie?"styleFloat":"cssFloat";jQuery.extend({boxModel:!jQuery.browser.msie||document.compatMode=="CSS1Compat",props:{"for":"htmlFor","class":"className","float":styleFloat,cssFloat:styleFloat,styleFloat:styleFloat,readonly:"readOnly",maxlength:"maxLength",cellspacing:"cellSpacing"}});jQuery.each({parent:function(elem){return elem.parentNode;},parents:function(elem){return jQuery.dir(elem,"parentNode");},next:function(elem){return jQuery.nth(elem,2,"nextSibling");},prev:function(elem){return jQuery.nth(elem,2,"previousSibling");},nextAll:function(elem){return jQuery.dir(elem,"nextSibling");},prevAll:function(elem){return jQuery.dir(elem,"previousSibling");},siblings:function(elem){return jQuery.sibling(elem.parentNode.firstChild,elem);},children:function(elem){return jQuery.sibling(elem.firstChild);},contents:function(elem){return jQuery.nodeName(elem,"iframe")?elem.contentDocument||elem.contentWindow.document:jQuery.makeArray(elem.childNodes);}},function(name,fn){jQuery.fn[name]=function(selector){var ret=jQuery.map(this,fn);if(selector&&typeof selector=="string")ret=jQuery.multiFilter(selector,ret);return this.pushStack(jQuery.unique(ret));};});jQuery.each({appendTo:"append",prependTo:"prepend",insertBefore:"before",insertAfter:"after",replaceAll:"replaceWith"},function(name,original){jQuery.fn[name]=function(){var args=arguments;return this.each(function(){for(var i=0,length=args.length;i<length;i++)jQuery(args[i])[original](this);});};});jQuery.each({removeAttr:function(name){jQuery.attr(this,name,"");if(this.nodeType==1)this.removeAttribute(name);},addClass:function(classNames){jQuery.className.add(this,classNames);},removeClass:function(classNames){jQuery.className.remove(this,classNames);},toggleClass:function(classNames){jQuery.className[jQuery.className.has(this,classNames)?"remove":"add"](this,classNames);},remove:function(selector){if(!selector||jQuery.filter(selector,[this]).r.length){jQuery("*",this).add(this).each(function(){jQuery.event.remove(this);jQuery.removeData(this);});if(this.parentNode)this.parentNode.removeChild(this);}},empty:function(){jQuery(">*",this).remove();while(this.firstChild)this.removeChild(this.firstChild);}},function(name,fn){jQuery.fn[name]=function(){return this.each(fn,arguments);};});jQuery.each(["Height","Width"],function(i,name){var type=name.toLowerCase();jQuery.fn[type]=function(size){return this[0]==window?jQuery.browser.opera&&document.body["client"+name]||jQuery.browser.safari&&window["inner"+name]||document.compatMode=="CSS1Compat"&&document.documentElement["client"+name]||document.body["client"+name]:this[0]==document?Math.max(Math.max(document.body["scroll"+name],document.documentElement["scroll"+name]),Math.max(document.body["offset"+name],document.documentElement["offset"+name])):size==undefined?(this.length?jQuery.css(this[0],type):null):this.css(type,size.constructor==String?size:size+"px");};});function num(elem,prop){return elem[0]&&parseInt(jQuery.curCSS(elem[0],prop,true),10)||0;}var chars=jQuery.browser.safari&&parseInt(jQuery.browser.version)<417?"(?:[\\\\w*_-]|\\\\\\\\.)":"(?:[\\\\w\\u0128-\\uFFFF*_-]|\\\\\\\\.)",quickChild=new RegExp("^>\\\\s*("+chars+"+)"),quickID=new RegExp("^("+chars+"+)(#)("+chars+"+)"),quickClass=new RegExp("^([#.]?)("+chars+"*)");jQuery.extend({expr:{"":function(a,i,m){return m[2]=="*"||jQuery.nodeName(a,m[2]);},"#":function(a,i,m){return a.getAttribute("id")==m[2];},":":{lt:function(a,i,m){return i<m[3]-0;},gt:function(a,i,m){return i>m[3]-0;},nth:function(a,i,m){return m[3]-0==i;},eq:function(a,i,m){return m[3]-0==i;},first:function(a,i){return i==0;},last:function(a,i,m,r){return i==r.length-1;},even:function(a,i){return i%2==0;},odd:function(a,i){return i%2;},"first-child":function(a){return a.parentNode.getElementsByTagName("*")[0]==a;},"last-child":function(a){return jQuery.nth(a.parentNode.lastChild,1,"previousSibling")==a;},"only-child":function(a){return!jQuery.nth(a.parentNode.lastChild,2,"previousSibling");},parent:function(a){return a.firstChild;},empty:function(a){return!a.firstChild;},contains:function(a,i,m){return(a.textContent||a.innerText||jQuery(a).text()||"").indexOf(m[3])>=0;},visible:function(a){return"hidden"!=a.type&&jQuery.css(a,"display")!="none"&&jQuery.css(a,"visibility")!="hidden";},hidden:function(a){return"hidden"==a.type||jQuery.css(a,"display")=="none"||jQuery.css(a,"visibility")=="hidden";},enabled:function(a){return!a.disabled;},disabled:function(a){return a.disabled;},checked:function(a){return a.checked;},selected:function(a){return a.selected||jQuery.attr(a,"selected");},text:function(a){return"text"==a.type;},radio:function(a){return"radio"==a.type;},checkbox:function(a){return"checkbox"==a.type;},file:function(a){return"file"==a.type;},password:function(a){return"password"==a.type;},submit:function(a){return"submit"==a.type;},image:function(a){return"image"==a.type;},reset:function(a){return"reset"==a.type;},button:function(a){return"button"==a.type||jQuery.nodeName(a,"button");},input:function(a){return\/input|select|textarea|button\/i.test(a.nodeName);},has:function(a,i,m){return jQuery.find(m[3],a).length;},header:function(a){return\/h\\d\/i.test(a.nodeName);},animated:function(a){return jQuery.grep(jQuery.timers,function(fn){return a==fn.elem;}).length;}}},parse:[\/^(\\[) *@?([\\w-]+) *([!*$^~=]*) *('?"?)(.*?)\\4 *\\]\/,\/^(:)([\\w-]+)\\("?'?(.*?(\\(.*?\\))?[^(]*?)"?'?\\)\/,new RegExp("^([:.#]*)("+chars+"+)")],multiFilter:function(expr,elems,not){var old,cur=[];while(expr&&expr!=old){old=expr;var f=jQuery.filter(expr,elems,not);expr=f.t.replace(\/^\\s*,\\s*\/,"");cur=not?elems=f.r:jQuery.merge(cur,f.r);}return cur;},find:function(t,context){if(typeof t!="string")return[t];if(context&&context.nodeType!=1&&context.nodeType!=9)return[];context=context||document;var ret=[context],done=[],last,nodeName;while(t&&last!=t){var r=[];last=t;t=jQuery.trim(t);var foundToken=false,re=quickChild,m=re.exec(t);if(m){nodeName=m[1].toUpperCase();for(var i=0;ret[i];i++)for(var c=ret[i].firstChild;c;c=c.nextSibling)if(c.nodeType==1&&(nodeName=="*"||c.nodeName.toUpperCase()==nodeName))r.push(c);ret=r;t=t.replace(re,"");if(t.indexOf(" ")==0)continue;foundToken=true;}else{re=\/^([>+~])\\s*(\\w*)\/i;if((m=re.exec(t))!=null){r=[];var merge={};nodeName=m[2].toUpperCase();m=m[1];for(var j=0,rl=ret.length;j<rl;j++){var n=m=="~"||m=="+"?ret[j].nextSibling:ret[j].firstChild;for(;n;n=n.nextSibling)if(n.nodeType==1){var id=jQuery.data(n);if(m=="~"&&merge[id])break;if(!nodeName||n.nodeName.toUpperCase()==nodeName){if(m=="~")merge[id]=true;r.push(n);}if(m=="+")break;}}ret=r;t=jQuery.trim(t.replace(re,""));foundToken=true;}}if(t&&!foundToken){if(!t.indexOf(",")){if(context==ret[0])ret.shift();done=jQuery.merge(done,ret);r=ret=[context];t=" "+t.substr(1,t.length);}else{var re2=quickID;var m=re2.exec(t);if(m){m=[0,m[2],m[3],m[1]];}else{re2=quickClass;m=re2.exec(t);}m[2]=m[2].replace(\/\\\\\/g,"");var elem=ret[ret.length-1];if(m[1]=="#"&&elem&&elem.getElementById&&!jQuery.isXMLDoc(elem)){var oid=elem.getElementById(m[2]);if((jQuery.browser.msie||jQuery.browser.opera)&&oid&&typeof oid.id=="string"&&oid.id!=m[2])oid=jQuery('[@id="'+m[2]+'"]',elem)[0];ret=r=oid&&(!m[3]||jQuery.nodeName(oid,m[3]))?[oid]:[];}else{for(var i=0;ret[i];i++){var tag=m[1]=="#"&&m[3]?m[3]:m[1]!=""||m[0]==""?"*":m[2];if(tag=="*"&&ret[i].nodeName.toLowerCase()=="object")tag="param";r=jQuery.merge(r,ret[i].getElementsByTagName(tag));}if(m[1]==".")r=jQuery.classFilter(r,m[2]);if(m[1]=="#"){var tmp=[];for(var i=0;r[i];i++)if(r[i].getAttribute("id")==m[2]){tmp=[r[i]];break;}r=tmp;}ret=r;}t=t.replace(re2,"");}}if(t){var val=jQuery.filter(t,r);ret=r=val.r;t=jQuery.trim(val.t);}}if(t)ret=[];if(ret&&context==ret[0])ret.shift();done=jQuery.merge(done,ret);return done;},classFilter:function(r,m,not){m=" "+m+" ";var tmp=[];for(var i=0;r[i];i++){var pass=(" "+r[i].className+" ").indexOf(m)>=0;if(!not&&pass||not&&!pass)tmp.push(r[i]);}return tmp;},filter:function(t,r,not){var last;while(t&&t!=last){last=t;var p=jQuery.parse,m;for(var i=0;p[i];i++){m=p[i].exec(t);if(m){t=t.substring(m[0].length);m[2]=m[2].replace(\/\\\\\/g,"");break;}}if(!m)break;if(m[1]==":"&&m[2]=="not")r=isSimple.test(m[3])?jQuery.filter(m[3],r,true).r:jQuery(r).not(m[3]);else if(m[1]==".")r=jQuery.classFilter(r,m[2],not);else if(m[1]=="["){var tmp=[],type=m[3];for(var i=0,rl=r.length;i<rl;i++){var a=r[i],z=a[jQuery.props[m[2]]||m[2]];if(z==null||\/href|src|selected\/.test(m[2]))z=jQuery.attr(a,m[2])||'';if((type==""&&!!z||type=="="&&z==m[5]||type=="!="&&z!=m[5]||type=="^="&&z&&!z.indexOf(m[5])||type=="$="&&z.substr(z.length-m[5].length)==m[5]||(type=="*="||type=="~=")&&z.indexOf(m[5])>=0)^not)tmp.push(a);}r=tmp;}else if(m[1]==":"&&m[2]=="nth-child"){var merge={},tmp=[],test=\/(-?)(\\d*)n((?:\\+|-)?\\d*)\/.exec(m[3]=="even"&&"2n"||m[3]=="odd"&&"2n+1"||!\/\\D\/.test(m[3])&&"0n+"+m[3]||m[3]),first=(test[1]+(test[2]||1))-0,last=test[3]-0;for(var i=0,rl=r.length;i<rl;i++){var node=r[i],parentNode=node.parentNode,id=jQuery.data(parentNode);if(!merge[id]){var c=1;for(var n=parentNode.firstChild;n;n=n.nextSibling)if(n.nodeType==1)n.nodeIndex=c++;merge[id]=true;}var add=false;if(first==0){if(node.nodeIndex==last)add=true;}else if((node.nodeIndex-last)%first==0&&(node.nodeIndex-last)\/first>=0)add=true;if(add^not)tmp.push(node);}r=tmp;}else{var fn=jQuery.expr[m[1]];if(typeof fn=="object")fn=fn[m[2]];if(typeof fn=="string")fn=eval("false||function(a,i){return "+fn+";}");r=jQuery.grep(r,function(elem,i){return fn(elem,i,m,r);},not);}}return{r:r,t:t};},dir:function(elem,dir){var matched=[],cur=elem[dir];while(cur&&cur!=document){if(cur.nodeType==1)matched.push(cur);cur=cur[dir];}return matched;},nth:function(cur,result,dir,elem){result=result||1;var num=0;for(;cur;cur=cur[dir])if(cur.nodeType==1&&++num==result)break;return cur;},sibling:function(n,elem){var r=[];for(;n;n=n.nextSibling){if(n.nodeType==1&&n!=elem)r.push(n);}return r;}});jQuery.event={add:function(elem,types,handler,data){if(elem.nodeType==3||elem.nodeType==8)return;if(jQuery.browser.msie&&elem.setInterval)elem=window;if(!handler.guid)handler.guid=this.guid++;if(data!=undefined){var fn=handler;handler=this.proxy(fn,function(){return fn.apply(this,arguments);});handler.data=data;}var events=jQuery.data(elem,"events")||jQuery.data(elem,"events",{}),handle=jQuery.data(elem,"handle")||jQuery.data(elem,"handle",function(){if(typeof jQuery!="undefined"&&!jQuery.event.triggered)return jQuery.event.handle.apply(arguments.callee.elem,arguments);});handle.elem=elem;jQuery.each(types.split(\/\\s+\/),function(index,type){var parts=type.split(".");type=parts[0];handler.type=parts[1];var handlers=events[type];if(!handlers){handlers=events[type]={};if(!jQuery.event.special[type]||jQuery.event.special[type].setup.call(elem)===false){if(elem.addEventListener)elem.addEventListener(type,handle,false);else if(elem.attachEvent)elem.attachEvent("on"+type,handle);}}handlers[handler.guid]=handler;jQuery.event.global[type]=true;});elem=null;},guid:1,global:{},remove:function(elem,types,handler){if(elem.nodeType==3||elem.nodeType==8)return;var events=jQuery.data(elem,"events"),ret,index;if(events){if(types==undefined||(typeof types=="string"&&types.charAt(0)=="."))for(var type in events)this.remove(elem,type+(types||""));else{if(types.type){handler=types.handler;types=types.type;}jQuery.each(types.split(\/\\s+\/),function(index,type){var parts=type.split(".");type=parts[0];if(events[type]){if(handler)delete events[type][handler.guid];else$/;"	p
 jQuery.contains	tools/pybrain/docs/html/_static/doctools.js	/^}$/;"	f
 jQuery.fn.highlightText	tools/pybrain/docs/html/_static/doctools.js	/^}$/;"	f
@@ -5885,14 +5922,12 @@ l2Square	pybrain/rl/environments/classic/acrobot.py	/^    l2Square = l2 * l2$/;"
 l2Square	tools/pybrain/pybrain/rl/environments/classic/acrobot.py	/^    l2Square = l2 * l2$/;"	v	class:AcrobotTask
 labels	pybrain/tools/datasets/mnist.py	/^def labels(filename):$/;"	f
 labels	tools/pybrain/pybrain/tools/datasets/mnist.py	/^def labels(filename):$/;"	f
-lamb	examples/LSTDAC.py	/^        lamb = 1,$/;"	v
 lamb	examples/problem_settings.py	/^lamb=0.9$/;"	v
 lamb	settings.py	/^lamb=0.9$/;"	v
 lambada	pybrain/optimization/memetic/innermemetic.py	/^    lambada = 5$/;"	v	class:InnerMemeticSearch
 lambada	pybrain/optimization/populationbased/es.py	/^    lambada = 50$/;"	v	class:ES
 lambada	tools/pybrain/pybrain/optimization/memetic/innermemetic.py	/^    lambada = 5$/;"	v	class:InnerMemeticSearch
 lambada	tools/pybrain/pybrain/optimization/populationbased/es.py	/^    lambada = 50$/;"	v	class:ES
-lastPos	examples/ENAC.py	/^lastPos = None$/;"	v
 lastPos	examples/QLambda_LinFA.py	/^lastPos = None$/;"	v
 lastPos	examples/Q_LinFA.py	/^lastPos = None$/;"	v
 lastPos	examples/SARSA_TL.py	/^lastPos = None$/;"	v
@@ -5919,6 +5954,8 @@ lc2	pybrain/rl/environments/classic/acrobot.py	/^    lc2 = 0.5$/;"	v	class:Acrob
 lc2	tools/pybrain/pybrain/rl/environments/classic/acrobot.py	/^    lc2 = 0.5$/;"	v	class:AcrobotTask
 lc2Square	pybrain/rl/environments/classic/acrobot.py	/^    lc2Square = lc2 * lc2$/;"	v	class:AcrobotTask
 lc2Square	tools/pybrain/pybrain/rl/environments/classic/acrobot.py	/^    lc2Square = lc2 * lc2$/;"	v	class:AcrobotTask
+learn	agents/ACAgent.py	/^    def learn(self):$/;"	m	class:ACAgent
+learn	agents/ExplorerLearningAgent.py	/^    def learn(self, episodes=1):$/;"	m	class:ExplorerLearningAgent
 learn	agents/LSTDACAgent.py	/^    def learn(self):$/;"	m	class:LSTDACAgent
 learn	pybrain/optimization/optimizer.py	/^    def learn(self, additionalLearningSteps = None):$/;"	m	class:BlackBoxOptimizer
 learn	pybrain/optimization/populationbased/coevolution/coevolution.py	/^    def learn(self, maxSteps=None):$/;"	m	class:Coevolution
@@ -5957,12 +5994,15 @@ learnOnDataset	tools/pybrain/pybrain/rl/learners/learner.py	/^    def learnOnDat
 learnOneBatch	pybrain/rl/learners/directsearch/rwr.py	/^    def learnOneBatch(self):$/;"	m	class:RWR
 learnOneBatch	tools/pybrain/pybrain/rl/learners/directsearch/rwr.py	/^    def learnOneBatch(self):$/;"	m	class:RWR
 learner	enac.py	/^learner = ENAC(iniTheta=iniTheta, learningRate=0.1)$/;"	v
-learner	examples/ENAC.py	/^learner = ENAC()$/;"	v
+learner	examples/ENAC.py	/^learner = CENAC()$/;"	v
 learner	examples/ENAC_TL.py	/^learner = SARSA()$/;"	v
-learner	examples/LSTDAC.py	/^learner = LSTDACLearner(actiondim=4, **para)$/;"	v
+learner	examples/HAC.py	/^learner = HACLearner(lamb = 0.9, c = 0.8, D=2)$/;"	v
+learner	examples/LSTDAC.py	/^learner = LSTDACLearner(lamb = 0.9, c = 0.8, D=2)$/;"	v
+learner	examples/NAC.py	/^learner = NAC(lamb = 0.99, c = 0.8, D=2)$/;"	v
 learner	examples/QLambda_LinFA.py	/^learner = QLambda_LinFA(4, 1)$/;"	v
 learner	examples/Q_LinFA.py	/^learner = Q_LinFA(4, 1)$/;"	v
 learner	examples/SARSA_TL.py	/^learner = SARSA()$/;"	v
+learner	examples/TDAC.py	/^learner = TDLearner(lamb = 0.9, c = 0.8, D=2)$/;"	v
 learner	main.py	/^learner = TDLearner(aDim, iniTheta,$/;"	v
 learner	pybrain/tests/unittests/tools/test_rlgluebridge.py	/^    learner = None$/;"	v	class:PseudoPybrainAgent
 learner	tools/pybrain/docs/tutorials/rl.py	/^learner = Q()$/;"	v
@@ -6050,6 +6090,7 @@ loadRawData	pybrain/tools/svmdata.py	/^    def loadRawData(self, fname):$/;"	m	c
 loadRawData	tools/pybrain/pybrain/tools/svmdata.py	/^    def loadRawData(self, fname):$/;"	m	class:SVMData
 loadSVMdata	pybrain/tools/svmdata.py	/^    def loadSVMdata(self, fname):$/;"	m	class:SVMData
 loadSVMdata	tools/pybrain/pybrain/tools/svmdata.py	/^    def loadSVMdata(self, fname):$/;"	m	class:SVMData
+loadTheta	examples/PlotComp.py	/^def loadTheta(fname):$/;"	f
 loadWeights	pybrain/tools/example_tools.py	/^    def loadWeights(self, filename):$/;"	m	class:ExTools
 loadWeights	tools/pybrain/pybrain/tools/example_tools.py	/^    def loadWeights(self, filename):$/;"	m	class:ExTools
 loadXODE	pybrain/rl/environments/ode/environment.py	/^    def loadXODE(self, filename, reload=False):$/;"	m	class:ODEEnvironment
@@ -6062,6 +6103,7 @@ load_matlab	pybrain/datasets/classification.py	/^    def load_matlab(cls, fname)
 load_matlab	tools/pybrain/pybrain/datasets/classification.py	/^    def load_matlab(cls, fname):$/;"	m	class:ClassificationDataSet
 load_pickle	pybrain/utilities.py	/^    def load_pickle(cls, flo):$/;"	m	class:Serializable
 load_pickle	tools/pybrain/pybrain/utilities.py	/^    def load_pickle(cls, flo):$/;"	m	class:Serializable
+loadtxt	examples/PlotComp.py	/^def loadtxt(fname):$/;"	f
 localSearch	pybrain/optimization/memetic/memetic.py	/^    localSearch = HillClimber$/;"	v	class:MemeticSearch
 localSearch	tools/pybrain/docs/tutorials/blackboxoptimization.py	/^                                              localSearch=CMAES).learn()$/;"	v
 localSearch	tools/pybrain/docs/tutorials/blackboxoptimization.py	/^                                      localSearch=ES,$/;"	v
@@ -6091,6 +6133,7 @@ m1	tools/pybrain/pybrain/rl/environments/classic/acrobot.py	/^    m1 = 1.0$/;"	v
 m2	pybrain/rl/environments/classic/acrobot.py	/^    m2 = 1.0$/;"	v	class:AcrobotTask
 m2	tools/pybrain/pybrain/rl/environments/classic/acrobot.py	/^    m2 = 1.0$/;"	v	class:AcrobotTask
 main	compare.py	/^def main():$/;"	f
+main	examples/HAC.py	/^def main():$/;"	f
 makeCentered	pybrain/auxiliary/pca.py	/^def makeCentered(data):$/;"	f
 makeCentered	tools/pybrain/pybrain/auxiliary/pca.py	/^def makeCentered(data):$/;"	f
 makeData	tools/pybrain/examples/unsupervised/lsh.py	/^def makeData(amount = 10000):$/;"	f
@@ -6378,8 +6421,8 @@ netweights	pybrain/rl/learners/directsearch/rwr.py	/^    netweights = 0.01$/;"	v
 netweights	tools/pybrain/pybrain/rl/learners/directsearch/rwr.py	/^    netweights = 0.01$/;"	v	class:RWR
 newChild	pybrain/tools/customxml/handling.py	/^    def newChild(self, node, name):$/;"	m	class:XMLHandling
 newChild	tools/pybrain/pybrain/tools/customxml/handling.py	/^    def newChild(self, node, name):$/;"	m	class:XMLHandling
-newEpisode	agents/LSTDACAgent.py	/^    def newEpisode(self):$/;"	m	class:LSTDACAgent
 newEpisode	learners/ENACLearner.py	/^    def newEpisode(self):$/;"	m	class:ENAC
+newEpisode	learners/HACLearner.py	/^    def newEpisode(self):$/;"	m	class:HACLearner
 newEpisode	learners/LSTDACLearner.py	/^    def newEpisode(self):$/;"	m	class:LSTDACLearner
 newEpisode	learners/TDLearner.py	/^    def newEpisode(self):$/;"	m	class:TDLearner
 newEpisode	pybrain/rl/agents/agent.py	/^    def newEpisode(self):$/;"	m	class:Agent
@@ -6517,6 +6560,7 @@ numbExp	tools/pybrain/examples/rl/environments/shipsteer/shipbench_pgpe.py	/^num
 numberOfCenters	pybrain/optimization/distributionbased/fem.py	/^    numberOfCenters = 1$/;"	v	class:FEM
 numberOfCenters	tools/pybrain/pybrain/optimization/distributionbased/fem.py	/^    numberOfCenters = 1$/;"	v	class:FEM
 objectResults	tools/pybrain/docs/html/_static/searchtools.js	/^    var objectResults = [];$/;"	v
+obs2fea	policy/BoltzmanAC.py	/^    def obs2fea(self, obs):$/;"	m	class:BoltzmanPolicy
 observations	pybrain/rl/environments/mazes/tasks/cheesemaze.py	/^    observations = 7$/;"	v	class:CheeseMaze
 observations	pybrain/rl/environments/mazes/tasks/pomdp.py	/^    observations = 4$/;"	v	class:POMDPTask
 observations	pybrain/rl/environments/mazes/tasks/shuttle.py	/^    observations = 5$/;"	v	class:ShuttleDocking
@@ -6652,13 +6696,13 @@ package_data	tools/pybrain/setup.py	/^    package_data={'pybrain': ['rl\/environ
 packages	tools/pybrain/setup.py	/^    packages=find_packages(exclude=['examples', 'docs']),$/;"	v
 paddedClipped	pybrain/tools/plotting/fitnessprogression.py	/^    def paddedClipped(l, maxLen):$/;"	f	function:plotFitnessProgession
 paddedClipped	tools/pybrain/pybrain/tools/plotting/fitnessprogression.py	/^    def paddedClipped(l, maxLen):$/;"	f	function:plotFitnessProgession
-para	examples/LSTDAC.py	/^para = dict($/;"	v
 paramdim	pybrain/structure/connections/connection.py	/^    paramdim = 0$/;"	v	class:Connection
 paramdim	pybrain/structure/evolvables/maskedparameters.py	/^    def paramdim(self):$/;"	m	class:MaskedParameters
 paramdim	pybrain/structure/modules/module.py	/^    paramdim = 0$/;"	v	class:Module
 paramdim	tools/pybrain/pybrain/structure/connections/connection.py	/^    paramdim = 0$/;"	v	class:Connection
 paramdim	tools/pybrain/pybrain/structure/evolvables/maskedparameters.py	/^    def paramdim(self):$/;"	m	class:MaskedParameters
 paramdim	tools/pybrain/pybrain/structure/modules/module.py	/^    paramdim = 0$/;"	v	class:Module
+params	policy/BoltzmanAC.py	/^    params = theta$/;"	v	class:BoltzmanPolicy
 params	pybrain/structure/connections/shared.py	/^    def params(self): return self.mother.params$/;"	m	class:SharedConnection
 params	pybrain/structure/evolvables/maskedparameters.py	/^    def params(self):$/;"	m	class:MaskedParameters
 params	pybrain/structure/evolvables/topology.py	/^    def params(self):$/;"	m	class:TopologyEvolvable
@@ -6846,6 +6890,7 @@ plotFitnessProgession	tools/pybrain/pybrain/tools/plotting/fitnessprogression.py
 plotGaussian	pybrain/tools/mixtures/mixtureofgaussian.py	/^    def plotGaussian(self, col, dm):$/;"	m	class:MixtureOfGaussians
 plotGaussian	tools/pybrain/pybrain/tools/mixtures/mixtureofgaussian.py	/^    def plotGaussian(self, col, dm):$/;"	m	class:MixtureOfGaussians
 plotPerformance	tools/pybrain/examples/rl/valuebased/nfq.py	/^def plotPerformance(values, fig):$/;"	f
+plotRP	examples/PlotComp.py	/^def plotRP(fname, ptNum, showFlag=True):$/;"	f
 plotReward	pybrain/tools/mixtures/mixtureofgaussian.py	/^    def plotReward(self, col):$/;"	m	class:MixtureOfGaussians
 plotReward	tools/pybrain/pybrain/tools/mixtures/mixtureofgaussian.py	/^    def plotReward(self, col):$/;"	m	class:MixtureOfGaussians
 plotVariations	pybrain/tools/plotting/quickvariations.py	/^def plotVariations(datalist, titles, genFun, varyperplot=None, prePlotFun=None, postPlotFun=None,$/;"	f
@@ -6861,9 +6906,12 @@ poleangle	pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^double po
 poleangle	tools/pybrain/pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^double poleangle;$/;"	v
 polelength	pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^double polelength;$/;"	v
 polelength	tools/pybrain/pybrain/rl/environments/cartpole/fast_version/cartpole.cpp	/^double polelength;$/;"	v
-policy	enac.py	/^policy = BoltzmanPolicy(T)$/;"	v
-policy	examples/ENAC.py	/^policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 100)$/;"	v
-policy	examples/LSTDAC.py	/^policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 100)$/;"	v
+policy	enac.py	/^policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 10, iniTheta=[0, 0])$/;"	v
+policy	examples/ENAC.py	/^policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = T, iniTheta=iniTheta)$/;"	v
+policy	examples/HAC.py	/^policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = T, iniTheta=iniTheta)$/;"	v
+policy	examples/LSTDAC.py	/^policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = T, iniTheta=iniTheta)$/;"	v
+policy	examples/NAC.py	/^policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = T, iniTheta=iniTheta)$/;"	v
+policy	examples/TDAC.py	/^policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = T, iniTheta=iniTheta)$/;"	v
 policy	main.py	/^policy = BoltzmanPolicy(T)$/;"	v
 populationSize	pybrain/optimization/populationbased/coevolution/coevolution.py	/^    populationSize = 50$/;"	v	class:Coevolution
 populationSize	pybrain/optimization/populationbased/evolution.py	/^    populationSize = 10$/;"	v	class:Evolution
@@ -6916,16 +6964,20 @@ pygments_style	tools/pybrain/docs/sphinx/conf.py	/^pygments_style = 'sphinx'$/;"
 pyrex_cplus	pybrain/rl/environments/cartpole/fast_version/cartpolecompile.py	/^                                pyrex_cplus=[True],$/;"	v
 pyrex_cplus	tools/pybrain/pybrain/rl/environments/cartpole/fast_version/cartpolecompile.py	/^                                pyrex_cplus=[True],$/;"	v
 quickExpr	tools/pybrain/docs/html/_static/jquery.js	/^(function(){var _jQuery=window.jQuery,_$=window.$;var jQuery=window.jQuery=window.$=function(selector,context){return new jQuery.fn.init(selector,context);};var quickExpr=\/^[^<]*(<(.|\\s)+>)[^>]*$|^#(\\w+)$\/,isSimple=\/^.[^:#\\[\\.]*$\/,undefined;jQuery.fn=jQuery.prototype={init:function(selector,context){selector=selector||document;if(selector.nodeType){this[0]=selector;this.length=1;return this;}if(typeof selector=="string"){var match=quickExpr.exec(selector);if(match&&(match[1]||!context)){if(match[1])selector=jQuery.clean([match[1]],context);else{var elem=document.getElementById(match[3]);if(elem){if(elem.id!=match[3])return jQuery().find(selector);return jQuery(elem);}selector=[];}}else$/;"	v
-r	examples/ENAC.py	/^        r = 0$/;"	v
+r	examples/ENAC.py	/^        r = sum(rewards[0])$/;"	v
 r	examples/ENAC.py	/^r = 0$/;"	v
-r	examples/LSTDAC.py	/^        r = 0$/;"	v
+r	examples/LSTDAC.py	/^            r = 0$/;"	v
 r	examples/LSTDAC.py	/^r = 0$/;"	v
+r	examples/NAC.py	/^            r = 0$/;"	v
+r	examples/NAC.py	/^r = 0$/;"	v
 r	examples/QLambda_LinFA.py	/^            r = 0$/;"	v
 r	examples/QLambda_LinFA.py	/^r = 0$/;"	v
 r	examples/Q_LinFA.py	/^            r = 0$/;"	v
 r	examples/Q_LinFA.py	/^r = 0$/;"	v
 r	examples/SARSA_TL.py	/^        r = 0$/;"	v
 r	examples/SARSA_TL.py	/^r = 0$/;"	v
+r	examples/TDAC.py	/^            r = 0$/;"	v
+r	examples/TDAC.py	/^r = 0$/;"	v
 r	pybrain/rl/environments/flexcube/viewer.py	/^    r = FlexCubeRenderer(*s)$/;"	v
 r	pybrain/rl/environments/shipsteer/viewer.py	/^    r = FlexCubeRenderer(*s)$/;"	v
 r	pybrain/rl/environments/twoplayergames/tasks/relativegomokutask.py	/^    r = RelativeGomokuTask(7, maxGames = 10, useNetworks = True)$/;"	v	class:RelativeGomokuTask
@@ -6977,6 +7029,8 @@ ratioTh	examples/problem_settings.py	/^ratioTh = 4$/;"	v
 ratioTh	settings.py	/^ratioTh = 4$/;"	v
 rbm	tools/pybrain/examples/unsupervised/rbm.py	/^rbm = Rbm.fromDims(6, 1)$/;"	v
 reachProb	enac.py	/^reachProb = ReachProbCalculator(env, task, agent)$/;"	v
+reachProb	examples/PlotComp.py	/^reachProb = ReachProbCalculator(env, task, agent)$/;"	v
+reachProb	examples/PlotCostSurface.py	/^reachProb = ReachProbCalculator(env, task, agent)$/;"	v
 reachProb	main.py	/^reachProb = ReachProbCalculator(env, task, agent)$/;"	v
 reachProbInterval	examples/problem_settings.py	/^reachProbInterval = 100$/;"	v
 reachProbInterval	settings.py	/^reachProbInterval = 100$/;"	v
@@ -7047,8 +7101,8 @@ res	tools/pybrain/pybrain/rl/environments/ode/tasks/johnnie.py	/^    def res(sel
 res	tools/pybrain/pybrain/rl/environments/ode/tasks/johnnie.py	/^    def res(self):$/;"	m	class:JumpingTask
 res	tools/pybrain/pybrain/structure/networks/convolutional.py	/^    res = N.activate(ravel(array(input)))$/;"	v	class:SimpleConvolutionalNetwork
 res	tools/pybrain/pybrain/structure/networks/convolutional.py	/^    res = res.reshape(4, 4)$/;"	v	class:SimpleConvolutionalNetwork
-reset	agents/LSTDACAgent.py	/^    def reset(self):$/;"	m	class:LSTDACAgent
 reset	environments/TrapMaze.py	/^    def reset(self):$/;"	m	class:TrapMaze
+reset	policy/BoltzmanAC.py	/^    def reset(self):$/;"	m	class:BoltzmanPolicy
 reset	pybrain/auxiliary/gaussprocess.py	/^    def reset(self):$/;"	m	class:GaussianProcess
 reset	pybrain/datasets/dataset.py	/^    def reset(self):$/;"	m	class:DataSet
 reset	pybrain/rl/agents/learning.py	/^    def reset(self):$/;"	m	class:LearningAgent
@@ -7178,6 +7232,7 @@ resetOnSuccess	pybrain/rl/environments/classic/mountaincar.py	/^    resetOnSucce
 resetOnSuccess	tools/pybrain/pybrain/rl/environments/classic/acrobot.py	/^    resetOnSuccess = False$/;"	v	class:AcrobotTask
 resetOnSuccess	tools/pybrain/pybrain/rl/environments/classic/acrobot.py	/^    resetOnSuccess = False$/;"	v	class:SingleArmSwinger
 resetOnSuccess	tools/pybrain/pybrain/rl/environments/classic/mountaincar.py	/^    resetOnSuccess = False$/;"	v	class:MountainCar
+resetStepSize	learners/TDLearner.py	/^    def resetStepSize(self):$/;"	m	class:TDLearner
 resizeScene	pybrain/rl/environments/flexcube/viewer.py	/^    def resizeScene(self, width, height):$/;"	m	class:FlexCubeRenderer
 resizeScene	pybrain/rl/environments/shipsteer/viewer.py	/^    def resizeScene(self, width, height):$/;"	m	class:FlexCubeRenderer
 resizeScene	tools/pybrain/pybrain/rl/environments/flexcube/viewer.py	/^    def resizeScene(self, width, height):$/;"	m	class:FlexCubeRenderer
@@ -7193,11 +7248,12 @@ ret	tools/pybrain/examples/rl/environments/cartpole/play_cartpole.py	/^ret = []$
 returnZeros	pybrain/structure/evolvables/maskedparameters.py	/^    returnZeros = False$/;"	v	class:MaskedParameters
 returnZeros	tools/pybrain/pybrain/structure/evolvables/maskedparameters.py	/^    returnZeros = False$/;"	v	class:MaskedParameters
 returns	tools/pybrain/examples/rl/environments/cartpole/play_cartpole.py	/^    returns = agent.history.getSequence(n)$/;"	v
-reward	examples/ENAC.py	/^    reward = experiment._oneInteraction()$/;"	v
-reward	examples/LSTDAC.py	/^    reward = experiment._oneInteraction()$/;"	v
+reward	examples/LSTDAC.py	/^        reward = experiment._oneInteraction()$/;"	v
+reward	examples/NAC.py	/^        reward = experiment._oneInteraction()$/;"	v
 reward	examples/QLambda_LinFA.py	/^        reward = experiment._oneInteraction()$/;"	v
 reward	examples/Q_LinFA.py	/^        reward = experiment._oneInteraction()$/;"	v
 reward	examples/SARSA_TL.py	/^    reward = experiment._oneInteraction()$/;"	v
+reward	examples/TDAC.py	/^        reward = experiment._oneInteraction()$/;"	v
 reward	tools/pybrain/examples/rl/environments/cartpole/play_cartpole.py	/^    reward = returns[2]$/;"	v
 reward	tools/pybrain/examples/rl/environments/shipsteer/shipbench_sde.py	/^    reward = mean(agent.history.getSumOverSequences('reward'))*task.rewardscale$/;"	v
 rewardDiscount	pybrain/rl/learners/valuebased/linearfa.py	/^    rewardDiscount = 0.99 # aka gamma$/;"	v	class:LinearFALearner
@@ -7206,6 +7262,7 @@ reward_cutoff	pybrain/rl/environments/classic/xor.py	/^    reward_cutoff = 0$/;"
 reward_cutoff	tools/pybrain/pybrain/rl/environments/classic/xor.py	/^    reward_cutoff = 0$/;"	v	class:XORChainTask
 reward_ranges	pybrain/rl/environments/classic/acrobot.py	/^    reward_ranges = [[-1.0, 1000.0]]$/;"	v	class:AcrobotTask
 reward_ranges	tools/pybrain/pybrain/rl/environments/classic/acrobot.py	/^    reward_ranges = [[-1.0, 1000.0]]$/;"	v	class:AcrobotTask
+rewards	examples/ENAC.py	/^        rewards = experiment.doEpisodes(1)$/;"	v
 rewards	tools/pybrain/examples/rl/environments/shipsteer/shipbench_sde.py	/^rewards = []$/;"	v
 rf	pybrain/rl/environments/functions/transformations.py	/^        def rf(x):$/;"	f	function:RotateFunction.__init__
 rf	tools/pybrain/pybrain/rl/environments/functions/transformations.py	/^        def rf(x):$/;"	f	function:RotateFunction.__init__
@@ -7476,7 +7533,6 @@ setSigma	pybrain/structure/modules/gaussianlayer.py	/^    def setSigma(self, sig
 setSigma	tools/pybrain/pybrain/structure/modules/gaussianlayer.py	/^    def setSigma(self, sigma):$/;"	m	class:GaussianLayer
 setState	pybrain/structure/modules/statedependentlayer.py	/^    def setState(self, state):$/;"	m	class:StateDependentLayer
 setState	tools/pybrain/pybrain/structure/modules/statedependentlayer.py	/^    def setState(self, state):$/;"	m	class:StateDependentLayer
-setUp	learners/LSTDACLearner.py	/^    def setUp(self):$/;"	m	class:LSTDACLearnerTestCase
 setUp	policy/BoltzmanAC.py	/^    def setUp(self):$/;"	m	class:BoltzmanPolicyTestCase
 setUp	task/RobotMotionTask.py	/^    def setUp(self):$/;"	m	class:RobotMotionTaskTestCase
 setUpLogging	pybrain/tests/runtests.py	/^def setUpLogging():$/;"	f
@@ -7487,6 +7543,7 @@ setVectorFormat	pybrain/datasets/dataset.py	/^    def setVectorFormat(self, vf):
 setVectorFormat	tools/pybrain/pybrain/datasets/dataset.py	/^    def setVectorFormat(self, vf):$/;"	m	class:DataSet
 setVel	pybrain/rl/environments/flexcube/masspoint.py	/^    def setVel(self, vel):$/;"	m	class:MassPoint
 setVel	tools/pybrain/pybrain/rl/environments/flexcube/masspoint.py	/^    def setVel(self, vel):$/;"	m	class:MassPoint
+set_theta	learners/TDLearner.py	/^    def set_theta(self, val): self.module._setParameters(val.reshape(-1))$/;"	m	class:TDLearner
 set_theta	policy/BoltzmanAC.py	/^    def set_theta(self, val): self._setParameters(val)$/;"	m	class:BoltzmanPolicy
 setupNN	pybrain/tools/neuralnets.py	/^    def setupNN(self, trainer=RPropMinusTrainer, hidden=None, **trnargs):$/;"	m	class:NNclassifier
 setupNN	pybrain/tools/neuralnets.py	/^    def setupNN(self, trainer=RPropMinusTrainer, hidden=None, **trnargs):$/;"	m	class:NNregression
@@ -7591,6 +7648,7 @@ stND	tools/pybrain/pybrain/tools/mixtures/mixtureofgaussian.py	/^stND = zeros(10
 stND	tools/pybrain/pybrain/tools/mixtures/mogpuremax.py	/^stND = zeros(1000)$/;"	v
 stable	pybrain/rl/environments/twoplayergames/tasks/handicaptask.py	/^    def stable(self, h):$/;"	m	class:HandicapCaptureTask
 stable	tools/pybrain/pybrain/rl/environments/twoplayergames/tasks/handicaptask.py	/^    def stable(self, h):$/;"	m	class:HandicapCaptureTask
+start	examples/HAC.py	/^    start = clock()$/;"	v
 start	pybrain/rl/environments/cartpole/renderer.py	/^    def start(self):$/;"	m	class:CartPoleRenderer
 start	pybrain/rl/environments/ode/viewer.py	/^    def start(self):$/;"	m	class:ODEViewer
 start	pybrain/rl/environments/ode/xode_changes/body.py	/^        def start(name, attrs):$/;"	f	function:Mass._parseMassShape
@@ -7764,11 +7822,14 @@ targetline	tools/pybrain/examples/supervised/evolino/superimposed_sine.py	/^    
 task	enac.py	/^task = RobotMotionTask(env, senRange=senRange)$/;"	v
 task	examples/ENAC.py	/^task = RobotMotionTask(env, senRange=senRange)$/;"	v
 task	examples/ENAC_TL.py	/^task = RobotMotionTask(env, senRange=senRange)$/;"	v
+task	examples/HAC.py	/^task = RobotMotionTask(env, senRange=senRange)$/;"	v
 task	examples/LSTDAC.py	/^task = RobotMotionTask(env, senRange=senRange)$/;"	v
+task	examples/NAC.py	/^task = RobotMotionTask(env, senRange=senRange)$/;"	v
 task	examples/QLambda_LinFA.py	/^task = SimpleTemporalLogic(env, senRange=senRange)$/;"	v
 task	examples/Q_LinFA.py	/^task = SimpleTemporalLogic(env, senRange=senRange)$/;"	v
 task	examples/SARSA_TL.py	/^task = RobotMotionTask(env, senRange=senRange)$/;"	v
 task	examples/SARSA_TL.py	/^task = SimpleTemporalLogic(env, senRange=senRange)$/;"	v
+task	examples/TDAC.py	/^task = RobotMotionTask(env, senRange=senRange)$/;"	v
 task	main.py	/^task = RobotMotionTask(env, senRange=senRange)$/;"	v
 task	pybrain/tests/optimizationtest.py	/^task = BalanceTask()$/;"	v
 task	tools/pybrain/docs/tutorials/rl.py	/^task = MDPMazeTask(environment)$/;"	v
@@ -7832,6 +7893,7 @@ testInterface	pybrain/tests/optimizationtest.py	/^def testInterface(algo):$/;"	f
 testInterface	tools/pybrain/pybrain/tests/optimizationtest.py	/^def testInterface(algo):$/;"	f
 testMinMax	pybrain/tests/optimizationtest.py	/^def testMinMax(algo):$/;"	f
 testMinMax	tools/pybrain/pybrain/tests/optimizationtest.py	/^def testMinMax(algo):$/;"	f
+testOP	learners/testHACLearner.py	/^    def testOP(self):$/;"	m	class:HACLearnerTestCase
 testOnArray	pybrain/auxiliary/gaussprocess.py	/^    def testOnArray(self, arr):$/;"	m	class:GaussianProcess
 testOnArray	tools/pybrain/pybrain/auxiliary/gaussprocess.py	/^    def testOnArray(self, arr):$/;"	m	class:GaussianProcess
 testOnClassData	pybrain/supervised/trainers/backprop.py	/^    def testOnClassData(self, dataset=None, verbose=False,$/;"	m	class:BackpropTrainer
@@ -7844,6 +7906,7 @@ testOnModuleAndTask	pybrain/tests/optimizationtest.py	/^def testOnModuleAndTask(
 testOnModuleAndTask	tools/pybrain/pybrain/tests/optimizationtest.py	/^def testOnModuleAndTask(algo):$/;"	f
 testOnSequenceData	pybrain/tools/validation.py	/^def testOnSequenceData(module, dataset):$/;"	f
 testOnSequenceData	tools/pybrain/pybrain/tools/validation.py	/^def testOnSequenceData(module, dataset):$/;"	f
+testROP	learners/testHACLearner.py	/^    def testROP(self):$/;"	m	class:HACLearnerTestCase
 testRewardFunction	pybrain/tools/mixtures/mixtureofgaussian.py	/^    def testRewardFunction(self, x, typ, noise=0.000001):$/;"	m	class:MixtureOfGaussians
 testRewardFunction	tools/pybrain/pybrain/tools/mixtures/mixtureofgaussian.py	/^    def testRewardFunction(self, x, typ, noise=0.000001):$/;"	m	class:MixtureOfGaussians
 testSimple	pybrain/rl/learners/valuebased/linearfa.py	/^    def testSimple(self):        $/;"	m	class:LearningTester
@@ -7856,8 +7919,6 @@ testSingleStateFullDiscounted	pybrain/rl/learners/valuebased/linearfa.py	/^    d
 testSingleStateFullDiscounted	tools/pybrain/pybrain/rl/learners/valuebased/linearfa.py	/^    def testSingleStateFullDiscounted(self):$/;"	m	class:LearningTester
 testTraining	tools/pybrain/examples/supervised/backprop/backpropanbncn.py	/^def testTraining():$/;"	f
 testTraining	tools/pybrain/examples/supervised/backprop/backpropxor.py	/^def testTraining():$/;"	f
-test_Actor	learners/LSTDACLearner.py	/^    def test_Actor(self):$/;"	m	class:LSTDACLearnerTestCase
-test_Critic	learners/LSTDACLearner.py	/^    def test_Critic(self):$/;"	m	class:LSTDACLearnerTestCase
 test_GetAllowNSTP	task/RobotMotionTask.py	/^    def test_GetAllowNSTP(self):$/;"	m	class:RobotMotionTaskTestCase
 test_GetNSS	task/RobotMotionTask.py	/^    def test_GetNSS(self):$/;"	m	class:RobotMotionTaskTestCase
 test_calBasisFuncValA	policy/BoltzmanAC.py	/^    def test_calBasisFuncValA(self):$/;"	m	class:BoltzmanPolicyTestCase
@@ -7875,8 +7936,14 @@ tf	pybrain/rl/environments/functions/transformations.py	/^        def tf(x):$/;"
 tf	tools/pybrain/pybrain/rl/environments/functions/transformations.py	/^        def tf(x):$/;"	f	function:TranslateFunction.__init__
 th	examples/problem_settings.py	/^th = 1e-2$/;"	v
 th	settings.py	/^th = 1e-2$/;"	v
+th_trace	examples/ENAC.py	/^th_trace = dict(theta0=[], theta1=[], it=[])$/;"	v
+th_trace	examples/LSTDAC.py	/^th_trace = dict(theta0=[], theta1=[], it=[])$/;"	v
+th_trace	examples/NAC.py	/^th_trace = dict(theta0=[], theta1=[], it=[])$/;"	v
+th_trace	examples/TDAC.py	/^th_trace = dict(theta0=[], theta1=[], it=[])$/;"	v
 theparams	tools/pybrain/docs/tutorials/blackboxoptimization.py	/^    theparams = buildNetwork(thetask.outdim, thetask.indim, bias=False)    $/;"	v
 theparams	tools/pybrain/docs/tutorials/blackboxoptimization.py	/^    theparams = randn(3)$/;"	v
+theta	learners/CENACLearner.py	/^    def theta(self):$/;"	m	class:CENAC
+theta	learners/TDLearner.py	/^    theta = property(fget = get_theta, fset = set_theta)$/;"	v	class:TDLearner
 theta	policy/BoltzmanAC.py	/^    theta = property(fget = get_theta, fset = set_theta)$/;"	v	class:BoltzmanPolicy
 thetask	tools/pybrain/docs/tutorials/blackboxoptimization.py	/^    thetask = BalanceTask()$/;"	v
 thetask	tools/pybrain/docs/tutorials/blackboxoptimization.py	/^    thetask = SphereFunction(3)$/;"	v
@@ -7894,6 +7961,7 @@ toBeMinimized	pybrain/rl/environments/functions/unbounded.py	/^    toBeMinimized
 toBeMinimized	tools/pybrain/pybrain/rl/environments/fitnessevaluator.py	/^    toBeMinimized = False$/;"	v	class:FitnessEvaluator
 toBeMinimized	tools/pybrain/pybrain/rl/environments/functions/function.py	/^    toBeMinimized = True$/;"	v	class:FunctionEnvironment
 toBeMinimized	tools/pybrain/pybrain/rl/environments/functions/unbounded.py	/^    toBeMinimized = True$/;"	v	class:UnboundedFunctionEnvironment
+to_list	learners/TDLearner.py	/^    def to_list(self, x):$/;"	m	class:TDLearner
 today_fmt	tools/pybrain/docs/sphinx/conf.py	/^today_fmt = '%B %d, %Y'$/;"	v
 top	pybrain/rl/environments/ode/tools/xmltools.py	/^    def top(self):$/;"	m	class:XMLstruct
 top	tools/pybrain/pybrain/rl/environments/ode/tools/xmltools.py	/^    def top(self):$/;"	m	class:XMLstruct
@@ -7932,11 +8000,13 @@ tournamentSize	pybrain/tools/rankingfunctions.py	/^    tournamentSize = 2$/;"	v	
 tournamentSize	tools/pybrain/pybrain/optimization/populationbased/coevolution/coevolution.py	/^    tournamentSize = None$/;"	v	class:Coevolution
 tournamentSize	tools/pybrain/pybrain/optimization/populationbased/ga.py	/^    tournamentSize = 2$/;"	v	class:GA
 tournamentSize	tools/pybrain/pybrain/tools/rankingfunctions.py	/^    tournamentSize = 2$/;"	v	class:TournamentSelection
-trace	examples/ENAC.py	/^trace = dict(epsiode=[], rp=[])$/;"	v
-trace	examples/LSTDAC.py	/^trace = dict(epsiode=[], rp=[])$/;"	v
+trace	examples/ENAC.py	/^trace = dict(ep=[], reward=[], it=[],$/;"	v
+trace	examples/LSTDAC.py	/^trace = dict(ep=[], reward=[], it=[],$/;"	v
+trace	examples/NAC.py	/^trace = dict(ep=[], reward=[], it=[],$/;"	v
 trace	examples/QLambda_LinFA.py	/^trace = dict(epsiode=[], rp=[])$/;"	v
 trace	examples/Q_LinFA.py	/^trace = dict(epsiode=[], rp=[])$/;"	v
 trace	examples/SARSA_TL.py	/^trace = dict(epsiode=[], rp=[])$/;"	v
+trace	examples/TDAC.py	/^trace = dict(ep=[], reward=[], it=[],$/;"	v
 trace	main.py	/^trace = dict(i=[], rp=[])$/;"	v
 trace	pybrain/utilities.py	/^def trace(func):$/;"	f
 trace	tools/pybrain/pybrain/utilities.py	/^def trace(func):$/;"	f
@@ -8122,7 +8192,6 @@ version	tools/pybrain/pybrain/rl/environments/cartpole/fast_version/cartpolecomp
 version	tools/pybrain/setup.py	/^    version="0.3.1",$/;"	v
 viewOnFlatLayer	pybrain/structure/modulemesh.py	/^    def viewOnFlatLayer(layer, dimensions, name = None):$/;"	m	class:ModuleMesh
 viewOnFlatLayer	tools/pybrain/pybrain/structure/modulemesh.py	/^    def viewOnFlatLayer(layer, dimensions, name = None):$/;"	m	class:ModuleMesh
-visEnvMat	examples/ENAC.py	/^visEnvMat = envMatrix$/;"	v
 visEnvMat	examples/QLambda_LinFA.py	/^visEnvMat = envMatrix$/;"	v
 visEnvMat	examples/Q_LinFA.py	/^visEnvMat = envMatrix$/;"	v
 visEnvMat	examples/SARSA_TL.py	/^visEnvMat = envMatrix$/;"	v
@@ -8198,6 +8267,7 @@ wtRatio	pybrain/supervised/trainers/evolino.py	/^    wtRatio = property(lambda s
 wtRatio	tools/pybrain/examples/supervised/evolino/superimposed_sine.py	/^    wtRatio = wtRatio,$/;"	v
 wtRatio	tools/pybrain/examples/supervised/evolino/superimposed_sine.py	/^wtRatio = 1.\/3.$/;"	v
 wtRatio	tools/pybrain/pybrain/supervised/trainers/evolino.py	/^    wtRatio = property(lambda self: self._wtRatio)$/;"	v	class:EvolinoTrainer
+x	examples/plot_theta.py	/^x = loadtxt('lstdac_theta.tr')$/;"	v
 x	pybrain/auxiliary/gaussprocess.py	/^    x = mgrid[-3:3:0.2]$/;"	v	class:GaussianProcess
 x	pybrain/optimization/populationbased/coevolution/coevolution.py	/^    x = Coevolution(None, [None], populationSize=1)$/;"	v	class:Coevolution
 x	pybrain/tools/mixtures/mixtureofgaussian.py	/^    x = -4.0 + float(i) * 8.0 \/ 1000.0$/;"	v
@@ -8256,6 +8326,7 @@ xmlInvariance	pybrain/tests/helpers.py	/^def xmlInvariance(n, forwardpasses = 1)
 xmlInvariance	tools/pybrain/pybrain/tests/helpers.py	/^def xmlInvariance(n, forwardpasses = 1):$/;"	f
 xopt	pybrain/rl/environments/functions/function.py	/^    xopt = None$/;"	v	class:FunctionEnvironment
 xopt	tools/pybrain/pybrain/rl/environments/functions/function.py	/^    xopt = None$/;"	v	class:FunctionEnvironment
+y	examples/plot_theta.py	/^y = zip(*x)$/;"	v
 y	pybrain/auxiliary/gaussprocess.py	/^    y = 0.1 * x ** 2 + x + 1$/;"	v	class:GaussianProcess
 y	tools/pybrain/examples/unsupervised/gp.py	/^y = 0.1*x**2 + x + 1$/;"	v
 y	tools/pybrain/pybrain/auxiliary/gaussprocess.py	/^    y = 0.1 * x ** 2 + x + 1$/;"	v	class:GaussianProcess

@@ -23,7 +23,7 @@ if SCENE_SELECT == 'small':
         return 0 if (st in unsafeStates) else 1
 elif SCENE_SELECT == 'large':
 #### Scene for CDC Paper #####
-    iniState = [0, 0]
+    iniState = (0, 0)
     goalStates = [ [49, 0], [49, 49], [0, 49] ]
     gridSize = [50, 50]
 
@@ -77,11 +77,14 @@ elif SCENE_SELECT == 'large':
 # iniTheta = [0, 0]
 # iniTheta = [100, 100]
 # iniTheta = [10, 10]
-iniTheta = [5, 5]
+# iniTheta = [5, 5]
 # iniTheta = [67, 36]
 # iniTheta = [100, 100]
 # iniTheta = (10, 10)
-# iniTheta = (10, 10)
+# iniTheta = [10, 10]
+# iniTheta = [0, 0]
+iniTheta = [3, 3]
+
 
 n = len(iniTheta) # dimension of the theta
 uSize = 4  # Control Size
@@ -180,9 +183,6 @@ ratioTh = 4
 #     perfer = sum( s * t for s, t in zip(score, theta) )
 #     return np.exp(perfer)
 
-# T = 20
-# T = 7
-T = 100
 # REACH_PROB_FIG_PATH = './res/TempChange/reachProb.eps'
 REACH_PROB_FIG_PATH = './res/reachProb.eps'
 
@@ -213,3 +213,10 @@ RP_FILE = ROOT + '/res/rp.txt'
 # AC_TYPE = 'hessian'
 AC_TYPE = 'normal'
 
+
+
+
+# T = 20
+# T = 7
+# T = 10
+T = 5

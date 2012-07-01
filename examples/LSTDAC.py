@@ -15,6 +15,7 @@ from agents import ACAgent
 
 # import global parameters
 from problem_settings import gridSize, unsafeStates, iniState, goalStates, TP, DF, senRange
+from problem_settings import T, iniTheta
 
 # Create environment
 # Add unsafe states
@@ -27,8 +28,14 @@ task = RobotMotionTask(env, senRange=senRange)
 # task = SimpleTemporalLogic(env, senRange=senRange)
 
 # policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 10, iniTheta=[10, 10])
-policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 10, iniTheta=[0, 0])
-learner = LSTDACLearner(lamb = 0.99, c = 0.8, D=2)
+# policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 10, iniTheta=[0, 0])
+policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = T, iniTheta=iniTheta)
+# learner = LSTDACLearner(lamb = 0.9, c = 0.8, D=2)
+learner = LSTDACLearner(lamb = 0.9, c = 1, D=3)
+# learner = LSTDACLearner(lamb = 0.3, c = 3, D=8)
+# learner = LSTDACLearner(lamb = 0.3, c = 5, D=10)
+# learner = LSTDACLearner(lamb = 0.99, c = 5, D=10)
+# learner = LSTDACLearner(lamb = 0.99, c = 1, D=5)
 # learner = TDLearner(lamb = 1, c = 0.8, D=2)
 # agent = ExplorerLearningAgent(policy, learner)
 agent = ACAgent(policy, learner, sdim=8, adim=1)
@@ -48,7 +55,8 @@ try:
         reward = experiment._oneInteraction()
         r += reward
         agent.learn()
-        if j == 1e6: break
+        # if j == 1e6: break
+        if j == 1e5: break
         if j % 100 == 0:
         # if True:
             print 'theta value: [%f, %f]'%tuple(policy.theta)

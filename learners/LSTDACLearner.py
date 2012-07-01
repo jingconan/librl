@@ -8,7 +8,6 @@ sys.path.append("..")
 # from pybrain.utilities import *
 # from ActorCriticLearner import *
 # from util import *
-import numpy as np
 # from scipy import ones, dot, ravel, zeros, array
 from TDLearner import TDLearner
 from scipy import array, zeros, dot
@@ -41,16 +40,13 @@ class LSTDACLearner(TDLearner):
 
     def Critic(self, gk, xkPsi, gkp1, xkp1Psi):
         # ----- Critic --------
-        z, b, r, AE, lamb, alpha, k = self.z, self.b, self.r, self.AE, self.lamb, self.alpha, self.k
-        xkPsi = xkPsi.reshape(-1, 1)
-        xkp1Psi = xkp1Psi.reshape(-1, 1)
-        z = lamb * z + xkPsi
+        k = self.k;
         gam = 1.0 / (k+1)
-        b += gam * ( z * gk - b )
 
+        # self.alpha += gam * ( gk - self.alpha )
+        self.z = self.lamb * self.z + xkPsi
+        self.b += gam * ( (gk - self.alpha) * self.z  - self.b )
         psiTmp = xkp1Psi - xkPsi
-        AE += gam * ( dot( z , (psiTmp.T ) ) - AE  )
-        r = -1 * np.dot( pinv(AE), b )
+        self.AE = self.AE + gam * ( dot( self.z , psiTmp.T ) - self.AE  )
 
-        self.z, self.b, self.r, self.AE, self.alpha = z, b, r, AE, alpha
-
+        self.r = -1 * dot( pinv(self.AE), self.b )

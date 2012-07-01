@@ -58,14 +58,16 @@ class RobotMotionTask(MDPMazeTask):
         corresponding to the last action performed) '''
         # print 'RobotMotionTask::getReward'
         # reward = 1 if self.env.bang else 0
-        reward = -1 if self.env.bang else 0
+        # reward = -1 if self.env.bang else 0
+        reward = -10 if self.env.bang else -1
         if self.env.bang: self.env.reset()
         if self.env.perseus in self.env.goalStates: # FIXME be careful about type
             # print 'reach goal!!'
             self.env.reset()
             self.reachGoalFlag = True
             reward = 0
-            # reward = 10
+            # reward = 100
+            reward = 10
         return reward
 
     def _getFeatureListC(self):

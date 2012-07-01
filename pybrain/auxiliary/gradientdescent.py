@@ -14,6 +14,8 @@ class GradientDescent(object):
         # --- BackProp parameters ---
         # learning rate (0.1-0.001, down to 1e-7 for RNNs)
         self.alpha = 0.1
+        # self.alpha = 0.05
+        # self.alpha = 0.07
 
         # alpha decay (0.999; 1.0 = disabled)
         self.alphadecay = 1.0

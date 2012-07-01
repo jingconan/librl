@@ -10,12 +10,13 @@ from pybrain.rl.experiments import Experiment
 from policy import BoltzmanPolicy
 from environments import TrapMaze
 from task import RobotMotionTask, SimpleTemporalLogic
-# from learners import LSTDACLearner, TDLearner
+from learners import LSTDACLearner, TDLearner
 from learners import HACLearner
 from agents import ACAgent
 
 # import global parameters
 from problem_settings import gridSize, unsafeStates, iniState, goalStates, TP, DF, senRange
+from problem_settings import T, iniTheta
 
 # Create environment
 # Add unsafe states
@@ -27,9 +28,14 @@ env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)
 task = RobotMotionTask(env, senRange=senRange)
 # task = SimpleTemporalLogic(env, senRange=senRange)
 
-policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 2, iniTheta=[0, 0])
+# policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 2, iniTheta=[0, 0])
+policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = T, iniTheta=iniTheta)
 # learner = LSTDACLearner(lamb = 1, c = 0.8, D=2)
-learner = HACLearner(lamb = 0.99, c = 0.8, D=2)
+# learner = HACLearner(lamb = 0.9, c = 0.8, D=2)
+learner = HACLearner(lamb = 0.9, c = 5, D=10)
+# learner = HACLearner(lamb = 0.9, c = 1.2, D=4)
+# learner = LSTDACLearner(lamb = 0.9, c = 0.8, D=2)
+# learner = HACLearner(lamb = 0.9, c = 5, D=10)
 # learner = HACLearner(lamb = 0.9, c = 2, D=10)
 # learner = TDLearner(lamb = 1, c = 0.8, D=2)
 # agent = ExplorerLearningAgent(policy, learner)
@@ -50,7 +56,8 @@ def main():
             reward = experiment._oneInteraction()
             r += reward
             agent.learn()
-            if j == 1e6: break
+            # if j == 1e6: break
+            if j == 1e5: break
             if j % 100 == 0:
                 print 'theta value: [%f, %f]'%tuple(policy.theta)
                 th_trace['theta0'].append(policy.theta[0])
@@ -80,6 +87,12 @@ def main():
     WriteTrace(th_trace, 'hac_theta.tr')
 
 if __name__ == "__main__":
+    from time import clock
+    start = clock()
     main()
+    end = clock()
+    print 'total time is %i'%(end-start)
+
+
 
 

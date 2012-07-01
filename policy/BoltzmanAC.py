@@ -24,6 +24,7 @@ class PolicyInterface(object):
         pass
 
 class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
+# class BoltzmanPolicy(ParameterContainer, PolicyInterface):
     """
     for bolzman distribution
             mu(u_i | x) = a_i(theta) / sum(a_i(theta))
@@ -40,23 +41,41 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         self.theta = iniTheta
 
         self.numActions = numActions
+        self.feaDim = feaDim
 
         # this two indicators help to make sure the call of first order
         # and second order is syncized.
         self.firstCallNum = 0
         self.secondCallNum = 0
 
+    # @property
+    # def indim(self): return self.feaDim * self.numActions
+    # @property
+    # def outdim(self): return 1
+
     def get_theta(self): return self._params
     def set_theta(self, val): self._setParameters(val)
     theta = property(fget = get_theta, fset = set_theta)
     params = theta
+
+    # def reset(self):
+        # self.theta
+        # import pdb;pdb.set_trace()
 
     def _forwardImplementation(self, inbuf, outbuf):
         """ take observation as input, the output is the action
         """
         n = len(self.theta)
         self.PU = self._getActionProb(list(inbuf.reshape(-1, n)), self.theta)
-        outbuf = GenRand(self.PU)
+        outbuf[0] = array([GenRand(self.PU)])
+        # outbuf[0] = 0
+
+    # def activate(self, inpt):
+    #     n = len(self.theta)
+    #     self.PU = self._getActionProb(list(inpt.reshape(-1, n)), self.theta)
+    #     outbuf = array([GenRand(self.PU)])
+    #     return outbuf
+
 
     @staticmethod
     def CalW_EXP(score, theta, T):
@@ -103,8 +122,6 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         fl = zip(*feaList)
         self.cache_PU = self._getActionProb(feaList, self.theta)
         g = [Expect(flv, self.cache_PU) for flv in fl]
-
-        # FIXME ATTENTION, when taking derivative,  be careful about minus sign before etg.
         basisValue = array(feaList) - array(g).reshape(1, -1)
         self.g, self.bf = g, basisValue
         return basisValue
