@@ -57,13 +57,16 @@ def WriteTrace(trace, fname):
         fid.write(' '.join([str(val) for val in r]) + '\n')
 
 
-def dotproduct(v1, v2):
-    return sum((a*b) for a, b in zip(v1, v2))
+# def dotproduct(v1, v2):
+    # return sum((a*b) for a, b in zip(v1, v2))
 
 def length(v):
-    return math.sqrt(dotproduct(v, v))
+    # return math.sqrt(dotproduct(v, v))
+    return math.sqrt(dot(v.reshape(-1), v.reshape(-1)))
 
+from numpy import dot
 def angle(v1, v2):
-    return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2)))
+    # return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2))) if length(v1) * length(v2) != 0 else None
+    return math.acos(dot(v1.reshape(-1), v2.reshape(-1)) / (length(v1) * length(v2))) if length(v1) * length(v2) != 0 else None
 
 

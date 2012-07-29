@@ -35,8 +35,11 @@ class CENAC(ENAC):
         # if max(gradient) > 1000:
             # gradient = gradient / max(gradient) * 1000
 
-        if max(gradient) > 5:
-            gradient = gradient / max(gradient) * 5
+        # if max(gradient) > 5:
+            # gradient = gradient / max(gradient) * 5
+
+        if max(gradient) > 2.5:
+            gradient = gradient / max(gradient) * 2.5
 
         # if max(gradient) > 5:
             # gradient = gradient / max(gradient) * 5

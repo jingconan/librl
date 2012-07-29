@@ -30,6 +30,8 @@ class RobotMotionTask(MDPMazeTask):
         self.reachGoalFlag = False
         self.senRange = argv['senRange']
 
+        self.fea_memory = dict()
+
     def reset(self):
         self.reachGoalFlag = False
         self.env.reset()
@@ -58,16 +60,19 @@ class RobotMotionTask(MDPMazeTask):
         corresponding to the last action performed) '''
         # print 'RobotMotionTask::getReward'
         # reward = 1 if self.env.bang else 0
-        # reward = -1 if self.env.bang else 0
-        reward = -10 if self.env.bang else -1
+        reward = -1 if self.env.bang else 0
+        # reward = -1 if self.env.bang else -0.001
+        # reward = -100 if self.env.bang else -1
         if self.env.bang: self.env.reset()
+        # print 'current position, ', self.env.perseus
         if self.env.perseus in self.env.goalStates: # FIXME be careful about type
             # print 'reach goal!!'
             self.env.reset()
             self.reachGoalFlag = True
             reward = 0
+            # reward = 1000
+            # reward = 10
             # reward = 100
-            reward = 10
         return reward
 
     def _getFeatureListC(self):
@@ -86,6 +91,9 @@ class RobotMotionTask(MDPMazeTask):
     def _getFeatureList(self, x):
         """We can get features for each state. it may be
         distance to goal, safety degree. e.t.c"""
+        stored_fea = self.fea_memory.get(x, None)
+        if stored_fea:  return stored_fea
+
         allowns, allowTP, enable = self._GetAllowNSTP(x)
         DF = self.env.DF
         goalStates = self.env.goalStates
@@ -106,7 +114,10 @@ class RobotMotionTask(MDPMazeTask):
         # progress = [dtg - etgv for etgv in etg]
         progress = self.scale([dtg - etgv for etgv in etg])
 
-        return zip(safety, progress)
+        fea = zip(safety, progress)
+        self.fea_memory[x] = fea
+        return fea
+        # return zip(safety, progress)
 
     def _GetNSS(self, allowns, senRange):
         '''Get Next State Safety Degree '''

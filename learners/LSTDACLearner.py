@@ -12,27 +12,20 @@ sys.path.append("..")
 from TDLearner import TDLearner
 from scipy import array, zeros, dot
 from scipy.linalg import pinv2 as pinv
-# from scipy.linalg import pinv
 
-# bRec = []
-# gRec = []
-# class LSTDACLearner(PolicyGradientLearner):
 class LSTDACLearner(TDLearner):
     ''' LSTD-Actor Critic Method. See `Least Squares Temporal Difference Actor-Critic Methods with Applications to Robot Motion Control <http://arxiv.org/abs/1108.4698>`_ for more information.
     Learner will learn from a data set. When the experiment is continous.
     the data set will only contains one point, and there will be some
     eligibility trace. Now we only consider the episodic case.
     '''
-    # def __init__(self, **kwargs):
-        # super(LSTDACLearner, self).__init__(**kwargs)
-        # AE is the estimation of the difference of basis function
-
     def _init(self, policy, dataset):
         super(LSTDACLearner, self)._init(policy, dataset)
         self.AE = zeros( (self.feadim, self.feadim) )
         self.b = zeros( (self.feadim, 1) )
 
-    def newEpisode(self):
+    # def newEpisode(self):
+    def reset(self):
         super(LSTDACLearner, self).newEpisode()
         n = self.feadim
         self.AE = zeros( (n, n) )

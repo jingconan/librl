@@ -3,10 +3,11 @@
 import sys
 sys.path.append("..")
 from util import GenRand, Expect
-from numpy import array, exp, zeros, arange
+from numpy import array, exp, zeros, arange, dot, eye
 
 from pybrain.structure.modules.module import Module
 from pybrain.structure.parametercontainer import ParameterContainer
+
 
 class PolicyInterface(object):
     """Interface for policy
@@ -127,36 +128,77 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         return basisValue
 
 
-    def calSecondBasisFuncVal(self, feaList):
-        assert( self.g is not None )
-        assert( self.bf is not None )
-        assert( self.cache_PU is not None)
-        g, grad, PU = self.g, self.bf, self.cache_PU
+    # def calSecondBasisFuncVal_old(self, feaList):
+    #     assert( self.g is not None )
+    #     assert( self.bf is not None )
+    #     assert( self.cache_PU is not None)
+    #     g, grad, PU = self.g, self.bf, self.cache_PU
 
-        self.secondCallNum += 1
-        assert( self.secondCallNum == self.firstCallNum )
+    #     self.secondCallNum += 1
+    #     assert( self.secondCallNum == self.firstCallNum )
 
+    #     uSize = len(feaList)
+    #     n = len(feaList[0])
+    #     assert(n == 2)
+
+    #     es, ep = zip(*feaList)
+    #     varsigma = zeros((uSize, n, n))
+    #     for u in xrange(uSize):
+    #         varsigma[u, 0, 0] = 1.0 / PU[u] * grad[u][0] * ( es[u] + float(g[1]) ) + \
+    #                 sum( grad[j][0] * ( ep[j] ) for j in xrange(uSize))
+    #         varsigma[u, 0, 1] = \
+    #                 1.0 / PU[u] * grad[u][1] * ( es[u] + float(g[1]) ) + \
+    #                 sum( grad[j][1] * ( ep[j]) for j in xrange(uSize))
+    #         varsigma[u, 1, 0] = \
+    #                 1.0 / PU[u] * grad[u][0] * ( ep[u] + float(g[0]) ) + \
+    #                 sum( grad[j][0] * es[j] for j in xrange(uSize) )
+    #         varsigma[u, 1, 1] = \
+    #                 1.0 / PU[u] * grad[u][1] * ( ep[u] + float(g[0]) ) + \
+    #                 sum( grad[j][1] * es[j] for j in xrange(uSize))
+
+    #     self.cache_PU = None; self.g = None; self.bf = None
+    #     return varsigma
+
+    def calSecondBasisFuncVal_2(self, feaList):
+        hessian_ln_mu = self.calSecondBasisFuncVal_new(feaList)
+        nabla_ln_mu = self.calBasisFuncVal(feaList)
+        uSize = len(feaList)
+        n = len(feaList[0])
+        varsigma = zeros((uSize, n, n))
+        for u in xrange(uSize):
+            nm = nabla_ln_mu[u].reshape(-1, 1)
+            varsigma[u] = dot(nm, nm.T) + hessian_ln_mu[u]
+
+        return varsigma
+
+    def calSecondBasisFuncVal_new(self, feaList):
         uSize = len(feaList)
         n = len(feaList[0])
         assert(n == 2)
 
         es, ep = zip(*feaList)
+        a_sum = 0
+        nabla_a_sum = zeros((n, ))
+        hessian_a_sum= zeros((n, n))
+        hessian_tmp = []
+        for u in xrange(uSize):
+            a = self.CalW(feaList[u], self.theta, self.T)
+            nabla_a = a * self.theta
+            hessian_a = dot(self.theta, nabla_a.T) + eye(n) * a
+            hessian_tmp.append ( hessian_a / a - dot(nabla_a, nabla_a.T) / (a ** 2) )
+            a_sum += a
+            nabla_a_sum += nabla_a
+            hessian_a_sum = hessian_a
+        extra_term = hessian_a_sum / a_sum - dot(nabla_a_sum, nabla_a_sum.T) / (a_sum **2)
+
         varsigma = zeros((uSize, n, n))
         for u in xrange(uSize):
-            varsigma[u, 0, 0] = 1.0 / PU[u] * grad[u][0] * ( es[u] + float(g[1]) ) + \
-                    sum( grad[j][0] * ( ep[j] ) for j in xrange(uSize))
-            varsigma[u, 0, 1] = \
-                    1.0 / PU[u] * grad[u][1] * ( es[u] + float(g[1]) ) + \
-                    sum( grad[j][1] * ( ep[j]) for j in xrange(uSize))
-            varsigma[u, 1, 0] = \
-                    1.0 / PU[u] * grad[u][0] * ( ep[u] + float(g[0]) ) + \
-                    sum( grad[j][0] * es[j] for j in xrange(uSize) )
-            varsigma[u, 1, 1] = \
-                    1.0 / PU[u] * grad[u][1] * ( ep[u] + float(g[0]) ) + \
-                    sum( grad[j][1] * es[j] for j in xrange(uSize))
+            varsigma[u, :, :] = hessian_tmp[u] - extra_term
 
-        self.cache_PU = None; self.g = None; self.bf = None
         return varsigma
+
+    # calSecondBasisFuncVal = calSecondBasisFuncVal_new
+    calSecondBasisFuncVal = calSecondBasisFuncVal_2
 
 import unittest
 class BoltzmanPolicyTestCase(unittest.TestCase):

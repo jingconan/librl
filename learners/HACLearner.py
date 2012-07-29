@@ -50,6 +50,8 @@ class HACLearner(LSTDACLearner):
         delta = (xkp1Varsigma - xkVarsigma).T
         self.E += gam * ( OP(self.Y, delta) - self.E )
         self.S = -1 * ROP(self.E, self.F)
+        # print 'self.F', self.F
+        # print 'self.E', self.E
 
         h = dot(self.r.T, xkPsi) * xkPsi
         self.V += gam * ( dot(self.z.reshape(-1, 1), h.reshape(1, -1)) - self.V )
@@ -79,13 +81,25 @@ class HACLearner(LSTDACLearner):
         # print 'self.hessian, ', self.hessian
 
         # hDiff = dot( pinv(H), gradLambda )
+        # print 'xkp1Varsigma, ', xkp1Varsigma
+        # print 'xkp1Psi', xkp1Psi
+        # print 'self.hessian, ', self.hessian
+        # print 'H, ', H
+        # print 'self.S, ', self.S
+        # import pdb;pdb.set_trace()
         hDiff = dot( pinv(self.hessian), gradLambda )
+        assert( hDiff.shape[1] == 1)
+        # print 'hDiff, ', hDiff.T.tolist()
+        # print 'hDiff[0], ', hDiff.T.tolist()[0]
+        # print 'gradLambda, ', gradLambda.T.tolist()[0]
+        # print 'angle, ', angle(hDiff.T.tolist()[0], gradLambda.T.tolist()[0])
         ng = norm( gradLambda )
         nh = norm( hDiff )
         if nh < 10 and nh > 0:
             if self.last_hDiff is None:
                 self.last_hDiff = hDiff
-            if angle(self.last_hDiff, self.last_hDiff) > 1:
+            # print 'self.hDiff', hDiff
+            if angle(self.last_hDiff, hDiff) > 1:
                 return
             self.theta = self.theta + beta * tao * hDiff / nh
         else:

@@ -3,12 +3,8 @@ __author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'
 
 import sys
 sys.path.append("..")
-# from pybrain.rl.learners.directsearch.policygradient import PolicyGradientLearner
 from pybrain.rl.learners.directsearch.policygradient import LoglhDataSet
-# from pybrain.rl.learners.directsearch.policygradient import *
-# from pybrain.utilities import *
 from ActorCriticLearner import ActorCriticLearner
-# from util import *
 from scipy import dot, ravel, zeros, array, log
 from scipy.linalg import norm
 
@@ -35,12 +31,21 @@ class TDLearner(ActorCriticLearner):
     def resetStepSize(self):
         self.k = 0
 
-    def newEpisode(self):
+    def reset(self):
         self.k = 0
         n = self.feadim
         self.z = zeros( (n, 1) )
         self.r = zeros( (n, 1) )
         self.alpha = 0
+        self.lastobs = None
+
+    def newEpisode(self):
+        """new Episode only start """
+        self.k = 0
+        # n = self.feadim
+        # self.z = zeros( (n, 1) )
+        # self.r = zeros( (n, 1) )
+        # self.alpha = 0
         self.lastobs = None
 
     def setReachProbCal(self, reachProbCal):
@@ -68,10 +73,12 @@ class TDLearner(ActorCriticLearner):
         self.theta = theta
 
     def to_list(self, x):
+        """change feature to list"""
         return x.reshape(-1, self.feadim).tolist()
 
-    # def _updateWeights(self, xk, uk, gk, xkPsi, xkp1, ukp1, gkp1, xkp1Psi):
     def _updateWeights(self, xk, uk, gk, xkp1, ukp1, gkp1):
+        """Update weights of Critic and Actor based on the (state, action, reward) pair for
+        current time and last time"""
         xkPsi = self.module.calBasisFuncVal( self.to_list(xk) )
         xkp1Psi = self.module.calBasisFuncVal( self.to_list(xkp1) )
         self.Critic(gk, xkPsi[uk].reshape(-1, 1), gkp1, xkp1Psi[ukp1].reshape(-1, 1))

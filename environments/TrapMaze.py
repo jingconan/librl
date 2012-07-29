@@ -48,7 +48,6 @@ class TrapMaze(Maze):
             # print 'move to trap'
         else:
             self.perseus, self.bang = tmp, False
-            # print 'move to: ',self.perseus
 
     def _GetNS(self, x):
         # return [[x[0]+1, x[1]], [ x[0], x[1]+1 ], [ x[0]-1, x[1]  ], [ x[0], x[1]-1 ] ]
