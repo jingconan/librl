@@ -39,12 +39,9 @@ class RobotMotionTask(MDPMazeTask):
     @debug
     def getObservation(self):
         """the agent receive its
-        1. position in the maze
-        2. featureList for the state and for each possible action in the future.
+        1. featureList for the state and for each possible action in the future.
            now featureList is [safety, process]
-        so a typical observation will be a list with two elements. obs[0] is the position
-        obs[1] is again a list with 4 elements, each element is the feature list for each
-        possible actions.
+        if there are four possible controls. then agen will receive 8x1 array.
         """
         # obs = [self.env.perseus, self._getFeatureListC()]
         feaList = self._getFeatureListC()
@@ -91,8 +88,9 @@ class RobotMotionTask(MDPMazeTask):
     def _getFeatureList(self, x):
         """We can get features for each state. it may be
         distance to goal, safety degree. e.t.c"""
+        # cache the feature result, boost the speed.
         stored_fea = self.fea_memory.get(x, None)
-        if stored_fea:  return stored_fea
+        if stored_fea: return stored_fea
 
         allowns, allowTP, enable = self._GetAllowNSTP(x)
         DF = self.env.DF
@@ -101,17 +99,13 @@ class RobotMotionTask(MDPMazeTask):
         # Calcualate Safety Degree
         nss = self._GetNSS(allowns, self.senRange) #FIXME
         es  = [ Expect(nss, pv) for pv in allowTP ]
-        # safety = es
         safety = self.scale(es)
-        # cnss = float( self._GetNSS([x], self.senRange)[0] )
-        # safety = [esv - cnss for esv in es]
 
         # Calculate Expected Dist To Goal State
         CalDTG = lambda st: min([ DF(st, gs) for gs in goalStates])
         dtg = CalDTG(x)
         nsdtg = [ CalDTG(s) for s in allowns ] # next state dist to goal
         etg = [ Expect(nsdtg, pv) for pv in allowTP  ]
-        # progress = [dtg - etgv for etgv in etg]
         progress = self.scale([dtg - etgv for etgv in etg])
 
         fea = zip(safety, progress)

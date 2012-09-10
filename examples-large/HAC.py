@@ -1,19 +1,27 @@
 #!/usr/bin/env python
+"""
+This file is the simulation of Hessian Actor Critic algorithm.
+The output will be a trace file.
+"""
 __author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'
 
 import sys
 sys.path.insert(0, "..")
+
+##############################################
+##    Import Usefule Modules and Functins   ##
+##############################################
 from scipy import zeros
-
 from pybrain.rl.experiments import Experiment
-
 from policy import BoltzmanPolicy
 from environments import TrapMaze
 from task import RobotMotionTask, SimpleTemporalLogic
-from learners import LSTDACLearner, TDLearner
 from learners import HACLearner
 from agents import ACAgent
 
+###############################
+##       Parameters          ##
+###############################
 # import global parameters
 from problem_settings import gridSize, unsafeStates, iniState, goalStates, TP, DF, senRange
 from problem_settings import T, iniTheta
@@ -28,30 +36,36 @@ env = TrapMaze(envMatrix, iniState, goalStates, TP, DF)
 task = RobotMotionTask(env, senRange=senRange)
 # task = SimpleTemporalLogic(env, senRange=senRange)
 
-# policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = 2, iniTheta=[0, 0])
 policy = BoltzmanPolicy(feaDim = 2, numActions = 4, T = T, iniTheta=iniTheta)
-# learner = LSTDACLearner(lamb = 1, c = 0.8, D=2)
 # learner = HACLearner(lamb = 0.9, c = 0.8, D=2)
 # learner = HACLearner(lamb = 0.9, c = 5, D=10)
-learner = HACLearner(lamb = 0.9, c = 1.2, D=4)
-# learner = LSTDACLearner(lamb = 0.9, c = 0.8, D=2)
+# learner = HACLearner(lamb = 0.9, c = 1.2, D=4)
+learner = HACLearner(lamb = 0.9, c = 10, D=20)
 # learner = HACLearner(lamb = 0.9, c = 5, D=10)
 # learner = HACLearner(lamb = 0.9, c = 2, D=10)
-# learner = TDLearner(lamb = 1, c = 0.8, D=2)
-# agent = ExplorerLearningAgent(policy, learner)
 agent = ACAgent(policy, learner, sdim=8, adim=1)
 experiment = Experiment(task, agent)
 
 from ReachProbCalculator import *
 reachProb = ReachProbCalculator(env, task, agent)
 
-
 def main():
     i = -1
-    # trace = dict(epsiode=[], rp=[])
-    trace = dict(ep=[], reward=[], it=[],
-            theta0=[], theta1=[])
-    th_trace = dict(theta0=[], theta1=[], it=[])
+    # trace record reward of each episode
+    trace = dict(ep=[], # episode number
+            reward=[], # reward of this epsisode
+            it=[], # total iteration number
+            theta0=[], # first value of theta
+            theta1=[], # second value of theta
+            )
+
+    # more detailed record for theta value
+    th_trace = dict(
+            theta0=[],
+            theta1=[],
+            it=[],
+            )
+
     r = 0
     j = -1
     try:
@@ -63,7 +77,7 @@ def main():
             if j == 1e6: break
             # if j == 1e5: break
             if j % 100 == 0:
-                print 'theta value: [%f, %f]'%tuple(policy.theta)
+                print 'iter: [', j, '] theta value: [%f, %f]'%tuple(policy.theta)
                 th_trace['theta0'].append(policy.theta[0])
                 th_trace['theta1'].append(policy.theta[1])
                 th_trace['it'].append(j)
@@ -102,7 +116,3 @@ if __name__ == "__main__":
     main()
     end = clock()
     print 'total time is %i'%(end-start)
-
-
-
-

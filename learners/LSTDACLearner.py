@@ -26,7 +26,8 @@ class LSTDACLearner(TDLearner):
 
     # def newEpisode(self):
     def reset(self):
-        super(LSTDACLearner, self).newEpisode()
+        # super(LSTDACLearner, self).newEpisode()
+        super(LSTDACLearner, self).reset()
         n = self.feadim
         self.AE = zeros( (n, n) )
         self.b = zeros( (n, 1) )

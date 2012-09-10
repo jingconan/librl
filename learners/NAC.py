@@ -3,18 +3,11 @@ __author__ = 'Jing Conan Wang, Boston University, wangjing@bu.edu'
 
 import sys
 sys.path.append("..")
-# from pybrain.rl.learners.directsearch.policygradient import PolicyGradientLearner
-# from pybrain.rl.learners.directsearch.policygradient import *
-# from pybrain.utilities import *
-# from ActorCriticLearner import *
-# from util import *
 import numpy as np
-# from scipy import ones, dot, ravel, zeros, array
 from TDLearner import TDLearner
 from LSTDACLearner import LSTDACLearner
 from scipy import array, zeros, dot
 from scipy.linalg import pinv2 as pinv
-# from scipy.linalg import pinv
 from scipy.linalg import norm
 from scipy import log
 

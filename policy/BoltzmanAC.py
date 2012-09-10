@@ -25,7 +25,6 @@ class PolicyInterface(object):
         pass
 
 class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
-# class BoltzmanPolicy(ParameterContainer, PolicyInterface):
     """
     for bolzman distribution
             mu(u_i | x) = a_i(theta) / sum(a_i(theta))
@@ -49,19 +48,11 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         self.firstCallNum = 0
         self.secondCallNum = 0
 
-    # @property
-    # def indim(self): return self.feaDim * self.numActions
-    # @property
-    # def outdim(self): return 1
-
     def get_theta(self): return self._params
     def set_theta(self, val): self._setParameters(val)
     theta = property(fget = get_theta, fset = set_theta)
     params = theta
 
-    # def reset(self):
-        # self.theta
-        # import pdb;pdb.set_trace()
 
     def _forwardImplementation(self, inbuf, outbuf):
         """ take observation as input, the output is the action
@@ -80,27 +71,34 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
 
     @staticmethod
     def CalW_EXP(score, theta, T):
+        """Calculate the total score for a control. It is the exp
+        of the weighted sum of different features."""
         perfer = sum( s * t for s, t in zip(score, theta) )
         return float(exp(perfer/T))
 
     CalW = CalW_EXP
 
     def _getActionProb(self, feaList, theta):
+        """Calculate the Action Probability for each control.
+        *feaList* is a list container different feature
+        *theta* is the weight for each feature
+        """
         PU = [ self.CalW([s, p], theta, self.T) for s, p in feaList ]
         s0 = sum(PU)
         PU = [p*1.0/s0 for p in PU]
         return PU
 
     def getActionValues(self, obs):
-        # n = len(self.theta)
-        # return array(self._getActionProb(list(obs.reshape(-1, n)), self.theta))
+        """extract features from observation and call _getActionProb"""
         return array(self._getActionProb(self.obs2fea(obs), self.theta))
 
 
     def obs2fea(self, obs):
+        """observation to feature list"""
         n = len(self.theta)
         return list(obs.reshape(-1, n))
     def fea2obs(self, fea):
+        """feature list to observation"""
         return fea.reshape(-1)
 
     def calBasisFuncVal(self, feaList):
@@ -160,7 +158,9 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
     #     return varsigma
 
     def calSecondBasisFuncVal_2(self, feaList):
-        hessian_ln_mu = self.calSecondBasisFuncVal_new(feaList)
+        """ calculate nabla^2 mu / mu
+        """
+        hessian_ln_mu = self.calSecondBasisFuncVal_1(feaList)
         nabla_ln_mu = self.calBasisFuncVal(feaList)
         uSize = len(feaList)
         n = len(feaList[0])
@@ -171,24 +171,27 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
 
         return varsigma
 
-    def calSecondBasisFuncVal_new(self, feaList):
+    def calSecondBasisFuncVal_1(self, feaList):
+        """calculate nabla^2 ln(mu)
+        """
         uSize = len(feaList)
         n = len(feaList[0])
         assert(n == 2)
 
         es, ep = zip(*feaList)
         a_sum = 0
-        nabla_a_sum = zeros((n, ))
+        nabla_a_sum = zeros((n, 1))
         hessian_a_sum= zeros((n, n))
         hessian_tmp = []
+        theta = self.theta.reshape(-1, 1)
         for u in xrange(uSize):
-            a = self.CalW(feaList[u], self.theta, self.T)
-            nabla_a = a * self.theta
-            hessian_a = dot(self.theta, nabla_a.T) + eye(n) * a
+            a = self.CalW(feaList[u], theta, self.T)
+            nabla_a = a * theta
+            hessian_a = dot(theta, nabla_a.T) + eye(n) * a
             hessian_tmp.append ( hessian_a / a - dot(nabla_a, nabla_a.T) / (a ** 2) )
             a_sum += a
             nabla_a_sum += nabla_a
-            hessian_a_sum = hessian_a
+            hessian_a_sum += hessian_a
         extra_term = hessian_a_sum / a_sum - dot(nabla_a_sum, nabla_a_sum.T) / (a_sum **2)
 
         varsigma = zeros((uSize, n, n))
@@ -199,6 +202,7 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
 
     # calSecondBasisFuncVal = calSecondBasisFuncVal_new
     calSecondBasisFuncVal = calSecondBasisFuncVal_2
+    # calSecondBasisFuncVal = calSecondBasisFuncVal_1
 
 import unittest
 class BoltzmanPolicyTestCase(unittest.TestCase):

@@ -5,10 +5,17 @@ from pybrain.datasets.dataset import DataSet
 from scipy import zeros, array, dot, log, diag
 from scipy.linalg import pinv2 as pinv
 from scipy.linalg import norm
+from scipy.linalg import inv, LinAlgError
+from scipy.linalg import cholesky
+import numpy as np
+import scipy.linalg
 from util import *
 
 def OP(A, B):
-    """& operatator defined"""
+    """& operatator defined
+    for two nxn matrices A and B. the result will be
+        C[i, :, :] = A[:, i] * B[i, :]
+    """
     assert(A.shape[0] == A.shape[1] == B.shape[0] == B.shape[1])
     n = A.shape[0];
     C = zeros([n, n, n])
@@ -17,6 +24,9 @@ def OP(A, B):
     return C
 
 def ROP(C, B):
+    """
+        A[:, i] = C[i,:,:]^-1 * B[:, i]
+    """
     assert(C.shape[0] == C.shape[1] == C.shape[2] == B.shape[0] == B.shape[1])
     n = C.shape[0]
     A = zeros([n, n])
@@ -25,8 +35,13 @@ def ROP(C, B):
     return A
 
 class HACLearner(LSTDACLearner):
-    def newEpisode(self):
-        super(HACLearner, self).newEpisode()
+    # def __init__(self, **kwargs):
+        # super(HACLearner, self).__init__(**kwargs)
+        # self.reset()
+
+    def reset(self):
+    # def newEpisode(self):
+        super(HACLearner, self).reset()
         n = self.feadim
         self.Y = zeros([n, n])
         self.F = zeros([n, n])
@@ -40,8 +55,12 @@ class HACLearner(LSTDACLearner):
         self.last_hDiff = None
 
     def Critic(self, gk, xkPsi, xkVarsigma, gkp1, xkp1Psi, xkp1Varsigma):
+        """
+        The Critic of HAC is a supplyment of LSTD-AC. In addition to estimation
+        the r for Q, The critic of HAC also estimation **S** and **T** that helps
+        to estimate the hessian  matrix.
+        """
         super(HACLearner, self).Critic(gk, xkPsi, gkp1, xkp1Psi)
-        # return
         n = self.feadim
 
         gam = 1.0 / (self.k+1)
@@ -50,55 +69,77 @@ class HACLearner(LSTDACLearner):
         delta = (xkp1Varsigma - xkVarsigma).T
         self.E += gam * ( OP(self.Y, delta) - self.E )
         self.S = -1 * ROP(self.E, self.F)
-        # print 'self.F', self.F
-        # print 'self.E', self.E
 
         h = dot(self.r.T, xkPsi) * xkPsi
         self.V += gam * ( dot(self.z.reshape(-1, 1), h.reshape(1, -1)) - self.V )
         self.T = -1 * dot( pinv(self.AE), self.V )
 
     def Actor(self, xkp1Psi, xkp1Varsigma):
+        """
+        the Actor of HAC use Newton's Method to update the weight estimation.
+        """
         n = self.feadim; k = self.k; c = self.c; D = self.D
 
-        # normR = norm(self.r)
-        # tao = ( D / (normR + 0.0) ) if (normR > D) else 1
-        # beta = 0 if (k == 0) else (c + 0.0 ) / ( (k+1) * log(k+1) )
         normR = norm(self.r)
         tao = ( D / (normR + 0.0) ) if (normR > D) else 1
         beta = 1 if (k <= 1) else ( (c + 0.0 ) / ( k * log(k) ) )
 
+        ##### First Order information #######
         gradLambda = dot(self.r.T, xkp1Psi) * xkp1Psi
-        # H = dot( xkp1Varsigma, diag(diag(dot(self.S.T, xkp1Varsigma))) ) + \
-                # dot( xkp1Psi, dot(xkp1Psi.T, self.T) )
 
+        ##### Second Order information #######
+        H = dot( xkp1Varsigma, diag(diag(dot(self.S, xkp1Varsigma))) ) + \
+                dot( xkp1Psi, dot(xkp1Psi.T, self.T) )
+        self.hessian = 0.99 * self.hessian + H
+        # print 'self.hessian', self.hessian
+
+        # test #
+        # print 'H, ', H
+        # print 'self.S, ', self.S
+        # print 'self.T, ', self.T
+        # print 'xkp1Varsigma, ', xkp1Varsigma
+        # print 'xkp1Psi', xkp1Psi
         # self.theta = self.theta + beta * tao * gradLambda
         # return
 
-        H = dot( xkp1Varsigma, diag(diag(dot(self.S, xkp1Varsigma))) ) + \
-                dot( xkp1Psi, dot(xkp1Psi.T, self.T) )
-        # self.hessian = 0.8 * self.hessian + H
-        self.hessian = 0.1 * self.hessian + H
-        # print 'self.hessian, ', self.hessian
-
         # hDiff = dot( pinv(H), gradLambda )
-        # print 'xkp1Varsigma, ', xkp1Varsigma
-        # print 'xkp1Psi', xkp1Psi
-        # print 'self.hessian, ', self.hessian
-        # print 'H, ', H
-        # print 'self.S, ', self.S
-        # import pdb;pdb.set_trace()
-        hDiff = dot( pinv(self.hessian), gradLambda )
-        assert( hDiff.shape[1] == 1)
-        # print 'hDiff, ', hDiff.T.tolist()
-        # print 'hDiff[0], ', hDiff.T.tolist()[0]
-        # print 'gradLambda, ', gradLambda.T.tolist()[0]
-        # print 'angle, ', angle(hDiff.T.tolist()[0], gradLambda.T.tolist()[0])
+        # hDiff = dot( pinv(self.hessian), gradLambda )
+        try:
+            # cho = scipy.linalg.cho_factor(self.hessian)
+            #########################################
+            ###  ensure H is positive definite ######
+            #########################################
+            large_val = np.max(np.abs(H))
+            if large_val:
+                H = H / np.max(np.abs(H))
+            cho = scipy.linalg.cho_factor(H)
+            hDiff  = scipy.linalg.cho_solve(cho, gradLambda)
+            max_val = np.max(np.abs(hDiff))
+            # print 'max_val', max_val
+            if max_val > 50:
+                hDiff = hDiff / max_val
+            # print 'hDiff, ', hDiff
+            # if max(hDiff) > 1000 or min(hDiff) < 1000:
+                # self.theta = self.theta + beta * tao * gradLambda
+                # return
+            # hDiff = dot( inv(self.hessian), gradLambda )
+            self.theta = self.theta + beta * tao * hDiff
+            print 'update using hessian'
+        except LinAlgError as e:
+            # print 'LinAlgError'
+            self.theta = self.theta + beta * tao * gradLambda
+
+
+        # print hDiff
+        # assert( hDiff.shape[1] == 1)
+        # self.theta = self.theta + beta * tao * hDiff
+        return
+
         ng = norm( gradLambda )
         nh = norm( hDiff )
         if nh < 10 and nh > 0:
             if self.last_hDiff is None:
                 self.last_hDiff = hDiff
-            # print 'self.hDiff', hDiff
             if angle(self.last_hDiff, hDiff) > 1:
                 return
             self.theta = self.theta + beta * tao * hDiff / nh
@@ -110,8 +151,6 @@ class HACLearner(LSTDACLearner):
         xkVarsigma = self.module.calSecondBasisFuncVal( self.to_list(xk) )
         xkp1Psi = self.module.calBasisFuncVal( self.to_list(xkp1) )
         xkp1Varsigma = self.module.calSecondBasisFuncVal( self.to_list(xkp1) )
-        # xkVarsigma = array([None, None, None, None])
-        # xkp1Varsigma = array([None, None, None, None])
         self.Critic(gk, xkPsi[uk].reshape(-1, 1), xkVarsigma[uk],
                 gkp1, xkp1Psi[ukp1].reshape(-1, 1), xkp1Varsigma[ukp1])
         self.Actor(xkp1Psi[ukp1].reshape(-1, 1), xkp1Varsigma[ukp1])

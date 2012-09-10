@@ -22,6 +22,7 @@ class TDLearner(ActorCriticLearner):
         self.module = policy
         self.dataset = dataset
         self.feadim = len(self.theta)
+        self.reset()
         self.newEpisode()
 
     def get_theta(self): return self.module.theta.reshape(-1, 1)
@@ -32,6 +33,7 @@ class TDLearner(ActorCriticLearner):
         self.k = 0
 
     def reset(self):
+        """reset all parameters"""
         self.k = 0
         n = self.feadim
         self.z = zeros( (n, 1) )
@@ -40,12 +42,9 @@ class TDLearner(ActorCriticLearner):
         self.lastobs = None
 
     def newEpisode(self):
-        """new Episode only start """
+        """new Episode only restart the counter,
+        not the parameter that has been estimated"""
         self.k = 0
-        # n = self.feadim
-        # self.z = zeros( (n, 1) )
-        # self.r = zeros( (n, 1) )
-        # self.alpha = 0
         self.lastobs = None
 
     def setReachProbCal(self, reachProbCal):
@@ -86,6 +85,8 @@ class TDLearner(ActorCriticLearner):
         self.k += 1
 
     def learnOnDataSet(self, dataset):
+        """dataset is a sequence of (state, action, reward). update weights based on
+        dataset"""
         self.dataset = dataset
         for n in range(self.dataset.getLength()):
             obs, action, reward = self.dataset.getLinked(n)
