@@ -1,1 +1,0 @@
-from TrapMaze import TrapMaze
