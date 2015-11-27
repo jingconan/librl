@@ -1,14 +1,9 @@
-#!/usr/bin/env python
-# from util import *
-import sys
-sys.path.append("..")
-from librl.util import Expect
-from numpy import array, exp, zeros, arange, dot, eye
+import scipy
+from scipy import array, exp, zeros, arange, dot, eye
 
 from pybrain.structure.modules.module import Module
 from pybrain.structure.parametercontainer import ParameterContainer
-import scipy
-
+from pybrain.utilities import abstractMethod
 
 class PolicyInterface(object):
     """Interface for policy
@@ -20,10 +15,10 @@ class PolicyInterface(object):
 
     """
     def calBasisFuncVal(self, feaList):
-        pass
+        abstractMethod()
 
     def calSecondBasisFuncVal(self, feaList):
-        pass
+        abstractMethod()
 
 class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
     """
@@ -34,23 +29,17 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
                 theta_2 * E{progress( f(x,u_i) )} )
     """
 
-    def __init__(self, feaDim, numActions, T, iniTheta, **args):
-        Module.__init__(self, feaDim * numActions, 1, **args)
-        ParameterContainer.__init__(self, feaDim)
+    def __init__(self, numActions, T, iniTheta, **args):
+        self.feaDim = len(iniTheta)
+        Module.__init__(self, self.feaDim * numActions, 1, **args)
+        ParameterContainer.__init__(self, self.feaDim)
         self.T = T
-        self.PU = None # PU is cached to accelarate the program
         self.g = None
         self.bf = None
+
+        # feaDimx1 vector.
         self.theta = iniTheta
-
         self.numActions = numActions
-        self.feaDim = feaDim
-
-        # this two indicators help to make sure the call of first order
-        # and second order is synchronized.
-        # We make sure firstCallNum- 1 <= secondCallNum < firstCallNum
-        self.firstCallNum = 0
-        self.secondCallNum = 0
 
     def get_theta(self): return self._params
     def set_theta(self, val): self._setParameters(val)
@@ -60,13 +49,11 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
     def _forwardImplementation(self, inbuf, outbuf):
         """ take observation as input, the output is the action
         """
-        n = len(self.theta)
-        feature = list(inbuf.reshape(-1, n))
-        action_prob = self._getActionProb(feature, self.theta)
+        action_prob = self._getActionProb(self.obs2fea(inbuf), self.theta)
         assert self.numActions == len(action_prob), ('wrong number of ',
                                                      'action in policy')
-        action = scipy.random.choice(range(self.numActions), action_prob)
-        outbuf[0] = array([])
+        action = scipy.random.choice(range(self.numActions), p=action_prob)
+        outbuf[0] = action
 
     @staticmethod
     def getActionScore(score, theta, T):
@@ -93,11 +80,13 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
 
     def obs2fea(self, obs):
         """observation to feature list"""
-        n = len(self.theta)
-        return list(obs.reshape(-1, n))
+        return obs.reshape(self.numActions, self.feaDim)
+
     def fea2obs(self, fea):
         """feature list to observation"""
-        return fea.reshape(-1)
+        obs = fea.reshape(-1)
+        assert len(obs) == self.numActions * self.feaDim, 'invalid feature!'
+        return obs
 
     def calBasisFuncVal(self, feaList):
         """for an observation, calculate value of basis function
@@ -115,7 +104,6 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
 
             Basis Function Value: is the first order derivative of the log of the policy.
         """
-        self.firstCallNum += 1
         feaMat = scipy.array(feaList)
         action_prob = self._getActionProb(feaList, self.theta)
         self.g = scipy.dot(action_prob, feaMat)
