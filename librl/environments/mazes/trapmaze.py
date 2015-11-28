@@ -18,6 +18,7 @@ class TrapMaze(Maze):
 
     WALL_FLAG = 1
     TRAP_FLAG = -1
+    GOAL_FLAG = 2
     def __init__(self, topology, startPos, tranProb, **args):
         assert(type(startPos) == types.TupleType)
         self.perseus = self.startPos = startPos
@@ -32,11 +33,16 @@ class TrapMaze(Maze):
         self.allActions = [self.N, self.E, self.S, self.W]
         self.numActions = len(self.allActions)
 
-    def _isTrap(self, pos): return self.mazeTable[pos[0], pos[1]] == self.TRAP_FLAG
+    def isTrap(self, pos):
+        return self.mazeTable[pos[0], pos[1]] == self.TRAP_FLAG
 
-    def _isWall(self, pos): return self.mazeTable[pos[0], pos[1]] == self.WALL_FLAG
+    def isWall(self, pos):
+        return self.mazeTable[pos[0], pos[1]] == self.WALL_FLAG
 
-    def _isOutBound(self, pos):
+    def isGoal(self, pos):
+        return self.mazeTable[pos[0], pos[1]] == self.GOAL_FLAG
+
+    def isOutBound(self, pos):
         return True if ( pos[0] >= self.mazeSize[0] or pos[1] >= self.mazeSize[1] or pos[0] < 0 or pos[1] < 0) else False
 
     def performAction(self, action):
@@ -51,10 +57,10 @@ class TrapMaze(Maze):
         realAction = self.allActions[realActionIndex]
         nextPos = self._moveInDir(self.perseus, realAction)
 
-        if self._isOutBound(nextPos) or self._isWall(nextPos): # Short-Cricuit Effect
+        if self.isOutBound(nextPos) or self.isWall(nextPos): # Short-Cricuit Effect
             # position (perseus) is not changed.
             self.bang = True
-        elif self._isTrap(nextPos):
+        elif self.isTrap(nextPos):
             self.perseus = self.startPos
             self.bang = True
         else:
