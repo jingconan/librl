@@ -29,17 +29,17 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
                 theta_2 * E{progress( f(x,u_i) )} )
     """
 
-    def __init__(self, numActions, T, iniTheta, **args):
-        self.feaDim = len(iniTheta)
-        Module.__init__(self, self.feaDim * numActions, 1, **args)
-        ParameterContainer.__init__(self, self.feaDim)
+    def __init__(self, actionnum, T, iniTheta, **args):
+        self.feadim = len(iniTheta)
+        Module.__init__(self, self.feadim * actionnum, 1, **args)
+        ParameterContainer.__init__(self, self.feadim)
         self.T = T
         self.g = None
         self.bf = None
 
-        # feaDimx1 vector.
+        # feadimx1 vector.
         self.theta = iniTheta
-        self.numActions = numActions
+        self.actionnum = actionnum
 
     def get_theta(self): return self._params
     def set_theta(self, val): self._setParameters(val)
@@ -50,9 +50,9 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         """ take observation as input, the output is the action
         """
         action_prob = self._getActionProb(self.obs2fea(inbuf), self.theta)
-        assert self.numActions == len(action_prob), ('wrong number of ',
+        assert self.actionnum == len(action_prob), ('wrong number of ',
                                                      'action in policy')
-        action = scipy.random.choice(range(self.numActions), p=action_prob)
+        action = scipy.random.choice(range(self.actionnum), p=action_prob)
         outbuf[0] = action
 
     @staticmethod
@@ -80,12 +80,12 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
 
     def obs2fea(self, obs):
         """observation to feature list"""
-        return obs.reshape(self.numActions, self.feaDim)
+        return obs.reshape(self.actionnum, self.feadim)
 
     def fea2obs(self, fea):
         """feature list to observation"""
         obs = fea.reshape(-1)
-        assert len(obs) == self.numActions * self.feaDim, 'invalid feature!'
+        assert len(obs) == self.actionnum * self.feadim, 'invalid feature!'
         return obs
 
     def calBasisFuncVal(self, feaList):

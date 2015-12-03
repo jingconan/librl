@@ -14,11 +14,13 @@ from scipy import array, zeros, dot
 from scipy.linalg import pinv2 as pinv
 
 class LSTDACLearner(TDLearner):
-    ''' LSTD-Actor Critic Method. See `Least Squares Temporal Difference Actor-Critic Methods with Applications to Robot Motion Control <http://arxiv.org/abs/1108.4698>`_ for more information.
-    Learner will learn from a data set. When the experiment is continous.
-    the data set will only contains one point, and there will be some
-    eligibility trace. Now we only consider the episodic case.
-    '''
+    """ LSTD-Actor Critic Method. See `Least Squares Temporal Difference
+    Actor-Critic Methods with Applications to Robot Motion Control
+    <http://arxiv.org/abs/1108.4698>`_ for more information.  Learner will
+    learn from a data set. When the experiment is continous.  the data set
+    will only contains one point, and there will be some eligibility trace.
+    Now we only consider the episodic case.
+    """
     def _init(self, policy, dataset):
         super(LSTDACLearner, self)._init(policy, dataset)
         self.AE = zeros( (self.feadim, self.feadim) )
