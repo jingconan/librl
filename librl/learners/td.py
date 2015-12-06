@@ -10,7 +10,7 @@ from pybrain.structure.networks.network import Network
 from pybrain.structure.parametercontainer import ParameterContainer
 
 from .actorcritic import ActorCriticLearner
-from ..policy.boltzmann import PolicyFeatureModule
+from ..policies.boltzmann import PolicyFeatureModule
 
 class TDLearner(ActorCriticLearner):
     """User TD Learner to learn the projection coefficient r of Q on the basis surface"""

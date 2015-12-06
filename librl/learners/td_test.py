@@ -6,7 +6,7 @@ import scipy
 from numpy.testing import assert_array_almost_equal
 
 from pybrain.datasets import ReinforcementDataSet
-from librl.policy.boltzmann import BoltzmanPolicy
+from librl.policies.boltzmann import BoltzmanPolicy
 
 class TDLearnerTestCase(unittest.TestCase):
     def setUp(self):
