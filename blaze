@@ -45,8 +45,9 @@ elif args.cmd == 'coverage':
     NOSE_VIEW_CMD = '%s %s/index.html' % (BROSWER, COVERAGE_DIR)
     cmds.append(NOSE_VIEW_CMD)
 elif args.cmd == 'run':
-    BLAZE_TARGET = args.target.replace('/', '.').replace('.py', '')
-    cmds.append('python -m %s' % (BLAZE_TARGET))
+    #  BLAZE_TARGET = args.target.replace('/', '.').replace('.py', '')
+    #  cmds.append('python -m %s' % (BLAZE_TARGET))
+    cmds.append('python %s' % (args.target))
 else:
     raise Exception('unknown blaze command')
 
