@@ -120,3 +120,65 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         tmp = scipy.dot(feaMat.T, action_prob)
         log_likelihood_hessian = -1 * mat1 + scipy.outer(tmp, tmp.T)
         return log_likelihood_hessian
+
+
+class PolicyFeatureModule(Module):
+    """A Module to calculate features used for linear approximator.
+    Input: a vector whose the last element is the action, and the rest elements are
+           observation.
+    Output: a vector of features which is used for approximate state-action
+    value function.
+    """
+    def __init__(self, policy, name=None):
+        self.policy = policy
+        self.feadim = policy.feadim
+        self.actionnum = policy.actionnum
+        self.featuredescriptor = self.getFeatureDescritor()
+
+        outdim = 0
+        for feature in self.featuredescriptor:
+            outdim += feature['dimension']
+
+        super(PolicyFeatureModule, self).__init__(
+            indim = self.feadim * self.actionnum + 1,
+            outdim = outdim,
+            name = name
+        )
+
+    def getFeatureDescritor(self):
+        def _firstOrderFeature(policy, feature, action):
+            return self.getFeatureSlice(policy.calBasisFuncVal(feature).reshape(-1),
+                                        action)
+
+        def _secondOrderFeature(policy, feature, action):
+            return policy.calSecondBasisFuncVal(feature).reshape(-1)
+
+        return [
+            {
+                'dimension': self.feadim,
+                'constructor': _firstOrderFeature,
+            },
+            {
+                'dimension': self.feadim * self.feadim,
+                'constructor': _secondOrderFeature,
+            },
+        ]
+
+    def getFeatureSlice(self, feature, action):
+        featureslice = self.policy.obs2fea(feature[0:(self.feadim *
+                                                      self.actionnum)])
+        return featureslice[action, :]
+
+    def _forwardImplementation(self, inbuf, outbuf):
+        fea = self.policy.obs2fea(inbuf[:-1])
+        action = inbuf[-1]
+        offset = 0
+        for desc in self.featuredescriptor:
+            newoffset = offset + desc['dimension']
+            outbuf[offset:newoffset] = desc['constructor'](self.policy,
+                                                           fea, action)
+            offset = newoffset
+
+    def get_theta(self): return self.policy.theta.reshape(-1)
+    def set_theta(self, val): self.policy._setParameters(val.reshape(-1))
+    theta = property(fget = get_theta, fset = set_theta)

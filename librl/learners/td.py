@@ -10,65 +10,7 @@ from pybrain.structure.networks.network import Network
 from pybrain.structure.parametercontainer import ParameterContainer
 
 from .actorcritic import ActorCriticLearner
-
-
-class PolicyFeatureModule(Module):
-    def __init__(self, policy, name=None):
-        self.policy = policy
-        self.feadim = policy.feadim
-        self.actionnum = policy.actionnum
-        self.featuredescriptor = self.getFeatureDescritor()
-
-        outdim = 0
-        for feature in self.featuredescriptor:
-            outdim += feature['dimension']
-
-        super(PolicyFeatureModule, self).__init__(
-            indim = self.feadim * self.actionnum + 1,
-            outdim = outdim,
-            name = name
-        )
-
-    def getFeatureDescritor(self):
-        def _firstOrderFeature(policy, feature, action):
-            return self.getFeatureSlice(policy.calBasisFuncVal(feature).reshape(-1),
-                                        action)
-
-        def _secondOrderFeature(policy, feature, action):
-            return policy.calSecondBasisFuncVal(feature).reshape(-1)
-
-        return [
-            {
-                'dimension': self.feadim,
-                'constructor': _firstOrderFeature,
-            },
-            {
-                'dimension': self.feadim * self.feadim,
-                'constructor': _secondOrderFeature,
-            },
-        ]
-
-    def getFeatureSlice(self, feature, action):
-        featureslice = self.policy.obs2fea(feature[0:(self.feadim *
-                                                      self.actionnum)])
-        return featureslice[action, :]
-
-    def _forwardImplementation(self, inbuf, outbuf):
-        fea = self.policy.obs2fea(inbuf[:-1])
-        action = inbuf[-1]
-        offset = 0
-        for desc in self.featuredescriptor:
-            newoffset = offset + desc['dimension']
-            outbuf[offset:newoffset] = desc['constructor'](self.policy,
-                                                           fea, action)
-            offset = newoffset
-
-    def get_theta(self): return self.policy.theta.reshape(-1)
-    def set_theta(self, val): self.policy._setParameters(val.reshape(-1))
-    theta = property(fget = get_theta, fset = set_theta)
-
-
-
+from ..policy.boltzmann import PolicyFeatureModule
 
 class TDLearner(ActorCriticLearner):
     """User TD Learner to learn the projection coefficient r of Q on the basis surface"""
@@ -80,11 +22,7 @@ class TDLearner(ActorCriticLearner):
         self.actorstepsize = kwargs['actorstepsize']
         self.maxcriticnorm = kwargs['maxcriticnorm']
 
-        self._init(policy, dataset)
-
-    def _init(self, policy, dataset):
         self.module = PolicyFeatureModule(policy, 'policywrapper')
-        self.dataset = dataset
         self.feadim = len(self.module.theta)
         self.reset()
         self.newEpisode()
