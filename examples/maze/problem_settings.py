@@ -4,7 +4,7 @@
 ###      Scene Setting    ###
 #############################
 SCENE_SELECT = 'small'
-# SCENE_SELECT = 'large'
+#  SCENE_SELECT = 'large'
 
 if SCENE_SELECT == 'small':
 ####### small scene #########
@@ -83,7 +83,7 @@ elif SCENE_SELECT == 'large':
 # iniTheta = (10, 10)
 # iniTheta = [10, 10]
 # iniTheta = [0, 0]
-iniTheta = [3, 3]
+iniTheta = [-3, 30]
 
 
 n = len(iniTheta) # dimension of the theta
