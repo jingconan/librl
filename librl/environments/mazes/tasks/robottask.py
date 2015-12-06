@@ -45,7 +45,7 @@ class RobotMotionAvgRewardTask(MDPMazeTask):
         return self.getFeature(self.env.perseus).reshape(-1)
 
     def performAction(self, action):
-        super(RobotMotionTask, self).performAction(action)
+        super(RobotMotionAvgRewardTask, self).performAction(action)
 
     def getReward(self):
         ''' compute and return the current reward (i.e.

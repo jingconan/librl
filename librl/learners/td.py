@@ -14,13 +14,13 @@ from ..policies.boltzmann import PolicyFeatureModule
 
 class TDLearner(ActorCriticLearner):
     """User TD Learner to learn the projection coefficient r of Q on the basis surface"""
-    def __init__(self, policy, **kwargs):
+    def __init__(self, policy, tracestepsize, actorstepsize, maxcriticnorm):
         ActorCriticLearner.__init__(self)
         self.module = None
         # parameter
-        self.tracestepsize = kwargs['tracestepsize']
-        self.actorstepsize = kwargs['actorstepsize']
-        self.maxcriticnorm = kwargs['maxcriticnorm']
+        self.tracestepsize = tracestepsize
+        self.actorstepsize = actorstepsize
+        self.maxcriticnorm = maxcriticnorm
 
         self.module = PolicyFeatureModule(policy, 'policywrapper')
         self.feadim = len(self.module.theta)
@@ -65,7 +65,6 @@ class TDLearner(ActorCriticLearner):
         if self.k > 1:
             beta = (self.actorstepsize + 0.0 ) / ( self.k * log(self.k) )
 
-
         self.module.theta += beta * tao * inner(self.r, feature) * \
                              feature[:self.feadim]
 
@@ -78,11 +77,15 @@ class TDLearner(ActorCriticLearner):
         self.critic(lastreward, lastfeature, reward, feature)
         self.actor(obs, action, feature)
 
-    def learnOnDataSet(self, dataset):
+    def learnOnDataSet(self, dataset, startIndex=0, endIndex=None):
         """dataset is a sequence of (state, action, reward). update weights based on
         dataset"""
         self.dataset = dataset
-        for n in range(self.dataset.getLength()):
+        if endIndex is None:
+            endIndex = dataset.getLength()
+        assert endIndex <= dataset.getLength(), ('end index is larger '
+                                                 'than dataset length')
+        for n in range(startIndex, endIndex):
             obs, action, reward = self.dataset.getLinked(n)
             if self.lastobs is not None:
                 self._updateWeights(self.lastobs, self.lastaction, self.lastreward,
