@@ -14,7 +14,7 @@ from ..policies.boltzmann import PolicyFeatureModule
 
 class TDLearner(ActorCriticLearner):
     """User TD Learner to learn the projection coefficient r of Q on the basis surface"""
-    def __init__(self, policy, dataset, **kwargs):
+    def __init__(self, policy, **kwargs):
         ActorCriticLearner.__init__(self)
         self.module = None
         # parameter

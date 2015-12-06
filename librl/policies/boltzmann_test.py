@@ -13,7 +13,7 @@ class BoltzmanPolicyTestCase(unittest.TestCase):
         self.theta = [0.4, 1.1]
         self.policy = BoltzmanPolicy(actionnum=4,
                                      T=2,
-                                     iniTheta=self.theta)
+                                     theta=self.theta)
         self.features = scipy.array([
             (0.6, 0.2),
             (0.3, 0.6),

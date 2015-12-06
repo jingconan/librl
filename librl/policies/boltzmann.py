@@ -29,8 +29,8 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
                 theta_2 * E{progress( f(x,u_i) )} )
     """
 
-    def __init__(self, actionnum, T, iniTheta, **args):
-        self.feadim = len(iniTheta)
+    def __init__(self, actionnum, T, theta, **args):
+        self.feadim = len(theta)
         Module.__init__(self, self.feadim * actionnum, 1, **args)
         ParameterContainer.__init__(self, self.feadim)
         self.T = T
@@ -38,7 +38,7 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         self.bf = None
 
         # feadimx1 vector.
-        self.theta = iniTheta
+        self.theta = theta
         self.actionnum = actionnum
 
     def get_theta(self): return self._params

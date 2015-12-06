@@ -11,9 +11,7 @@ from librl.policies.boltzmann import BoltzmanPolicy
 class TDLearnerTestCase(unittest.TestCase):
     def setUp(self):
         self.theta = [0.4, 1.1]
-        self.policy = BoltzmanPolicy(actionnum=4,
-                                     T=2,
-                                     iniTheta=self.theta)
+        self.policy = BoltzmanPolicy(4, 2, self.theta)
 
         self.dataset = ReinforcementDataSet(8, 1)
         feature1 = scipy.array([
@@ -43,7 +41,6 @@ class TDLearnerTestCase(unittest.TestCase):
     # See https://goo.gl/7VMeDS for the spreadsheet that checks the math.
     def testLearnOnDataSet(self):
         learner = TDLearner(self.policy,
-                            self.dataset,
                             tracestepsize=0.9,
                             actorstepsize= 1,
                             maxcriticnorm=1)

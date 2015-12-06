@@ -19,7 +19,7 @@ class RobotMotionAvgRewardTask(MDPMazeTask):
 
     TOLERANCE = 1e-7
 
-    def __init__(self, environment, senseRange, **argv):
+    def __init__(self, environment, senseRange):
         MDPMazeTask.__init__(self, environment)
         self.senseRange = senseRange
 
