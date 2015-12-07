@@ -83,7 +83,7 @@ elif SCENE_SELECT == 'large':
 # iniTheta = (10, 10)
 # iniTheta = [10, 10]
 # iniTheta = [0, 0]
-iniTheta = [-3, 30]
+iniTheta = [0, 5]
 
 
 n = len(iniTheta) # dimension of the theta

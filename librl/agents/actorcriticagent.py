@@ -30,9 +30,16 @@ class ActorCriticAgent(LoggingAgent):
         self.lastaction = self.policy.activate(self.lastobs)
         return self.lastaction
 
+    def reset(self):
+        """ Clear the history of the agent and resets the module and learner. """
+        LoggingAgent.reset(self)
+        if self.learning:
+            self.learner.resetStepSize()
+
     #TODO(jingconanwang): extend learn to handle episodic experiment. Right
     #now we focus on average reward experiment.
     def learn(self):
+        #  self.learner.learnOnDataSet(self.history)
         historyLength = self.history.getLength()
         if historyLength >= 2:
             self.learner.learnOnDataSet(self.history,

@@ -31,32 +31,36 @@ task.GOAL_REWARD = 100
 task.TRAP_REWARD = 0
 
 policy = BoltzmanPolicy(4, T, iniTheta)
-learner = TDLearner(policy, 0.9, 0.8, 1)
+learner = TDLearner(policy, 0.9, 8, 1)
 agent = ActorCriticAgent(learner, sdim=8, adim=1)
 experiment = Experiment(task, agent)
 
 #####################
 #    Parameters     #
 #####################
-ITER_NUM = 100000
-RECORD_INTERVAL = 10
+ITER_NUM = 1000000
+#  LEARN_INTERVAL = 10
+LEARN_INTERVAL = 1
 OUTPUT_FILENAME = 'tdac.tr'
 
 trace = defaultdict(list)
 def loop():
-    i = -1
-    while i < ITER_NUM:
-        i += 1
-        reward = experiment._oneInteraction()
+    for i in xrange(ITER_NUM):
+        reward = 0
+        for j in xrange(LEARN_INTERVAL):
+            reward += experiment._oneInteraction()
         agent.learn()
-        if i % RECORD_INTERVAL == 0:
-            print 'theta value: [%f, %f], reward: %i '%(policy.theta[0],
-                                                        policy.theta[1], reward)
-            print 'theta value: [%f, %f]'%tuple(policy.theta)
-            trace['iter'].append(i)
-            trace['theta0'].append(policy.theta[0])
-            trace['theta1'].append(policy.theta[1])
-            trace['reward'].append(reward)
+
+        # periodically reset stepsize to increase learning speed.
+        if i % 1000 == 0:
+            learner.resetStepSize()
+        print 'theta value: [%f, %f], reward: %i '%(policy.theta[0],
+                                                    policy.theta[1], reward)
+        print 'theta value: [%f, %f]'%tuple(policy.theta)
+        trace['iter'].append(i)
+        trace['theta0'].append(policy.theta[0])
+        trace['theta1'].append(policy.theta[1])
+        trace['reward'].append(reward)
 
 try:
     loop()

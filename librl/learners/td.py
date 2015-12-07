@@ -49,10 +49,12 @@ class TDLearner(ActorCriticLearner):
 
     def critic(self, lastreward, lastfeature, reward, feature):
         gam = 1.0 / (self.k+1)
+        # Update critic parameter
         self.d = lastreward - self.alpha + inner(self.r, feature - lastfeature)
-        self.alpha += gam * (reward - self.alpha)
         self.r += gam * self.d * self.z
-
+        # Estimate of avg reward.
+        self.alpha += gam * (reward - self.alpha)
+        # Update eligiblity trace
         self.z = self.tracestepsize * self.z + feature
 
     def actor(self, obs, action, feature):
@@ -65,8 +67,12 @@ class TDLearner(ActorCriticLearner):
         if self.k > 1:
             beta = (self.actorstepsize + 0.0 ) / ( self.k * log(self.k) )
 
-        self.module.theta += beta * tao * inner(self.r, feature) * \
+        # Update policy parameter.
+        update = beta * tao * inner(self.r, feature) * \
                              feature[:self.feadim]
+        # TODO(jingconanwang) somehow we cannot use += operator. Check the
+        # reason.
+        self.module.theta =  self.module.theta + update
 
     def _updateWeights(self, lastobs, lastaction, lastreward, obs, action,
                        reward):
