@@ -37,9 +37,12 @@ class TrapMazeTestCase(unittest.TestCase):
         self.maze.performAction(2)
         self.assertFalse(self.maze.bang)
         assert_array_almost_equal((1, 2), self.maze.perseus)
-        # hit trap and go back to start position.
+        # hit trap.
         self.maze.performAction(3)
-        self.assertTrue(self.maze.bang)
+        self.assertFalse(self.maze.bang)
+        assert_array_almost_equal((1, 1), self.maze.perseus)
+        # will go back regardless of action.
+        self.maze.performAction(3)
         assert_array_almost_equal((0, 1), self.maze.perseus)
 
     def testMoveOutbound(self):

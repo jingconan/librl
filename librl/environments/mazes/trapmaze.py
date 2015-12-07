@@ -50,6 +50,12 @@ class TrapMaze(Maze):
         goto the east direction, instead there is some transition probability to W, N, S, too.
         if the next position is out of the scene, the robot will not move. If the next position
         is a trap, the robot to go back to starting position and the self.bang flag is set."""
+        # if the current state is a trap, move to startPos regardless of the
+        # action.
+        if self.isTrap(self.perseus):
+            self.perseus = self.startPos
+            return
+
         assert action >= 0 and action < self.numActions
         actions = range(self.numActions)
         realActionIndex = scipy.random.choice(actions,
@@ -57,15 +63,14 @@ class TrapMaze(Maze):
         realAction = self.allActions[realActionIndex]
         nextPos = self._moveInDir(self.perseus, realAction)
 
-        if self.isOutBound(nextPos) or self.isWall(nextPos): # Short-Cricuit Effect
+        # If outside or reach wall, don't move and set bang as true
+        if self.isOutBound(nextPos) or self.isWall(nextPos):
             # position (perseus) is not changed.
             self.bang = True
-        elif self.isTrap(nextPos):
-            self.perseus = self.startPos
-            self.bang = True
-        else:
-            self.perseus = nextPos
-            self.bang = False
+            return
+
+        self.perseus = nextPos
+        self.bang = False
 
     def reset(self):
         self.bang = False
