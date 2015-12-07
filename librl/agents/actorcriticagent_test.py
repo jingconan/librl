@@ -3,21 +3,7 @@ import unittest
 import scipy
 from numpy.testing import assert_array_almost_equal
 from .actorcriticagent import ActorCriticAgent
-
-class MockPolicyFeatureModule(object):
-    def __init__(self, policy):
-        self.policy = policy
-
-class MockLearner(object):
-    def __init__(self, policy):
-        self.module = MockPolicyFeatureModule(policy)
-
-class MockPolicy(object):
-    def __init__(self, data):
-        self.data = data
-
-    def activate(self, obs):
-        return self.data[obs]
+from ..testutil import MockPolicy, MockLearner
 
 class TDLearnerTestCase(unittest.TestCase):
     def setUp(self):

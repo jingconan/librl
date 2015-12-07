@@ -14,15 +14,18 @@ from ..policies.boltzmann import PolicyFeatureModule
 
 class TDLearner(ActorCriticLearner):
     """User TD Learner to learn the projection coefficient r of Q on the basis surface"""
-    def __init__(self, policy, tracestepsize, actorstepsize, maxcriticnorm):
+    def __init__(self, policy, tracestepsize, actorstepsize, maxcriticnorm,
+                 module=None):
         ActorCriticLearner.__init__(self)
-        self.module = None
         # parameter
         self.tracestepsize = tracestepsize
         self.actorstepsize = actorstepsize
         self.maxcriticnorm = maxcriticnorm
 
-        self.module = PolicyFeatureModule(policy, 'policywrapper')
+        if module is None:
+            self.module = PolicyFeatureModule(policy, 'policywrapper')
+        else:
+            self.module = module
         self.feadim = len(self.module.theta)
         self.reset()
         self.newEpisode()
