@@ -12,14 +12,16 @@ class LSTDLearner(TDLearner):
         self.A = zeros((self.module.outdim, self.module.outdim))
 
     def critic(self, lastreward, lastfeature, reward, feature):
-        gam = 1.0 / (self.k+1)
+        self.invA = pinv(self.A)
         # Update critic parameter
-        self.r = -1 * dot(pinv(self.A), self.b)
+        self.r = -1 * dot(self.invA, self.b)
         # Update estimates
-        self.b += (gam * (lastreward - self.alpha) * self.z - self.b)
+        self.b += self.gamma * ((lastreward - self.alpha) * self.z -
+                   self.b)
         featureDifference = feature - lastfeature
-        self.A += (gam * outer(self.z, featureDifference) - self.A)
+        self.A += self.gamma * (outer(self.z, featureDifference) -
+                   self.A)
         # Estimate of avg reward.
-        self.alpha += gam * (reward - self.alpha)
+        self.alpha += self.gamma * (reward - self.alpha)
         # Update eligiblity trace
         self.z = self.tracestepsize * self.z + feature

@@ -4,7 +4,7 @@ from ..testutil import MockPolicy, MockPolicyFeatureModule
 
 import unittest
 import scipy
-from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_almost_equal, assert_almost_equal
 
 from pybrain.datasets import ReinforcementDataSet
 from librl.policies.boltzmann import BoltzmanPolicy
@@ -25,14 +25,16 @@ class TDLearnerTestCase(unittest.TestCase):
         assert_array_almost_equal([0, 0], self.learner.b)
 
         self.learner.A = scipy.array([[2, 0],
-                                      [0, 4]])
-        self.learner.b = scipy.array([2, 3])
-        self.learner.z = scipy.array([-1, 1])
+                                      [0, 4]], dtype=float)
+        self.learner.b = scipy.array([2, 3], dtype=float)
+        self.learner.z = scipy.array([-1, 1], dtype=float)
+        self.learner.k = 1
         self.learner.critic(1, scipy.array([1, 2]), 2, scipy.array([4, 3]))
         # r = -inv(A) * b
         assert_array_almost_equal([-1, -0.75], self.learner.r)
-        # featureDifference = [3, 1], gam = 1
-        # A += [-1] * [3, 1] - [[2, 0]
-        #      [ 1]             [0, 4]]
-        assert_array_almost_equal([[-3, -1],
-                                   [3, 1]], self.learner.A)
+        # featureDifference = [3, 1], gamma = 0.5
+        # A += 0.5 * ( [-1] * [3, 1] - [[2, 0] )
+        #              [ 1]             [0, 4]]
+        assert_array_almost_equal(0.5, self.learner.gamma)
+        assert_array_almost_equal([[-0.5, -0.5],
+                                   [1.5, 2.5]], self.learner.A)

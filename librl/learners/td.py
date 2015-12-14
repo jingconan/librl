@@ -51,31 +51,43 @@ class TDLearner(ActorCriticLearner):
         self.reachProbCal = reachProbCal
 
     def critic(self, lastreward, lastfeature, reward, feature):
-        gam = 1.0 / (self.k+1)
         # Update critic parameter
         self.d = lastreward - self.alpha + inner(self.r, feature - lastfeature)
-        self.r += gam * self.d * self.z
+        self.r += self.gamma * self.d * self.z
         # Estimate of avg reward.
-        self.alpha += gam * (reward - self.alpha)
+        self.alpha += self.gamma * (reward - self.alpha)
         # Update eligiblity trace
         self.z = self.tracestepsize * self.z + feature
 
-    def actor(self, obs, action, feature):
-        normR = norm(self.r)
-        tao = 1
-        if normR > self.maxcriticnorm:
-            tao = self.maxcriticnorm / (normR + 0.0)
+    @property
+    def gamma(self):
+        return 1.0 / (self.k + 1)
 
-        beta = 1
+    @property
+    def beta(self):
         if self.k > 1:
-            beta = (self.actorstepsize + 0.0 ) / ( self.k * log(self.k) )
+            return (self.actorstepsize + 0.0 ) / ( self.k * log(self.k) )
+        else:
+            return 1
 
+    @property
+    def tao(self):
+        normR = norm(self.r)
+        if normR > self.maxcriticnorm:
+            return self.maxcriticnorm / (normR + 0.0)
+        else:
+            return 1
+
+    def stateActionValue(self, feature):
+        return self.tao * inner(self.r, feature)
+
+    def actor(self, obs, action, feature):
+        self.scaledFeature = (self.stateActionValue(feature) *
+                              feature[:self.feadim])
         # Update policy parameter.
-        update = beta * tao * inner(self.r, feature) * \
-                             feature[:self.feadim]
         # TODO(jingconanwang) somehow we cannot use += operator. Check the
         # reason.
-        self.module.theta =  self.module.theta + update
+        self.module.theta =  self.module.theta + self.beta * self.scaledFeature
 
     def _updateWeights(self, lastobs, lastaction, lastreward, obs, action,
                        reward):
