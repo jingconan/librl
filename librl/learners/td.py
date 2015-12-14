@@ -70,16 +70,15 @@ class TDLearner(ActorCriticLearner):
         else:
             return 1
 
-    @property
-    def tao(self):
-        normR = norm(self.r)
+    def tao(self, r):
+        normR = norm(r)
         if normR > self.maxcriticnorm:
             return self.maxcriticnorm / (normR + 0.0)
         else:
             return 1
 
     def stateActionValue(self, feature):
-        return self.tao * inner(self.r, feature)
+        return self.tao(self.r) * inner(self.r, feature)
 
     def actor(self, obs, action, feature):
         self.scaledFeature = (self.stateActionValue(feature) *
