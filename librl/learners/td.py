@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function, division, absolute_import
 
-from scipy import dot, ravel, zeros, array, log, inner, outer, concatenate
+from scipy import dot, ravel, ones, zeros, array, log, inner, outer, concatenate
 from scipy.linalg import norm
 
 from pybrain.rl.learners.directsearch.policygradient import LoglhDataSet
@@ -26,7 +26,7 @@ class TDLearner(ActorCriticLearner):
             self.module = PolicyFeatureModule(policy, 'policywrapper')
         else:
             self.module = module
-        self.feadim = len(self.module.theta)
+        self.paramdim = len(self.module.theta)
         self.reset()
         self.newEpisode()
 
@@ -81,12 +81,12 @@ class TDLearner(ActorCriticLearner):
         return self.tao(self.r) * inner(self.r, feature)
 
     def actor(self, obs, action, feature):
-        self.scaledFeature = (self.stateActionValue(feature) *
-                              feature[:self.feadim])
+        self.scaledfeature = (self.stateActionValue(feature) *
+                              feature[:self.paramdim])
         # Update policy parameter.
         # TODO(jingconanwang) somehow we cannot use += operator. Check the
         # reason.
-        self.module.theta =  self.module.theta + self.beta * self.scaledFeature
+        self.module.theta =  self.module.theta + self.beta * self.scaledfeature
 
     def _updateWeights(self, lastobs, lastaction, lastreward, obs, action,
                        reward):

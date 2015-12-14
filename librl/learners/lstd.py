@@ -18,9 +18,8 @@ class LSTDLearner(TDLearner):
         # Update estimates
         self.b += self.gamma * ((lastreward - self.alpha) * self.z -
                    self.b)
-        featureDifference = feature - lastfeature
-        self.A += self.gamma * (outer(self.z, featureDifference) -
-                   self.A)
+        featurediff = feature - lastfeature
+        self.A += self.gamma * (outer(self.z, featurediff) - self.A)
         # Estimate of avg reward.
         self.alpha += self.gamma * (reward - self.alpha)
         # Update eligiblity trace
