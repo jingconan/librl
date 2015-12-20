@@ -69,7 +69,7 @@ for i in xrange(fileNumber):
 
 rewardMean = P.mean(combinedResult, axis=1)
 rewardStdDev = P.std(combinedResult, axis=1)
-yerr = ss.t.ppf(0.95, fileNumber) * rewardStdDev
+yerr = ss.t.ppf(0.95, fileNumber-1) * rewardStdDev
 P.errorbar(range(ptNumber), rewardMean, yerr=yerr, fmt='--o', ecolor='g',
            capthick=2)
 P.show()

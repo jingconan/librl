@@ -20,6 +20,7 @@ Sample Commands: (in top folder)
 import multiprocessing
 from subprocess import check_call
 from librl.util import createShardFilenames
+import datetime
 
 import argparse
 parser = argparse.ArgumentParser(description='run script multiple times')
@@ -32,9 +33,18 @@ parser.add_argument('output_filename',
 args = parser.parse_args()
 
 def myExecute(filename):
+    startTime = datetime.datetime.now()
     check_call('./blaze run %s > %s' % (args.script_filename, filename),
                shell=True)
-    check_call('touch %s.done' % (filename), shell=True)
+    endTime = datetime.datetime.now()
+    timeDelta = endTime - startTime
+    fmt = "%Y-%m-%d %H:%M:%S"
+    message = ("start time: %s \n"
+              "end time: %s \n"
+              "elapsed time: %i seconds\n") % (startTime.strftime(fmt),
+                                              endTime.strftime(fmt),
+                                              timeDelta.total_seconds())
+    check_call('echo "%s" > %s.done' % (message, filename), shell=True)
 
 tokens = args.output_filename.split('@')
 assert len(tokens) == 2, 'wrong format of output file'
