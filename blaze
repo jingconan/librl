@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description='build command')
 parser.add_argument('cmd', help='the command that will be executed.')
 parser.add_argument('target', help='target for the command')
 
-args = parser.parse_args()
+args, unknown = parser.parse_known_args()
 
 PYBRAIN_PATH = os.getcwd() + '/pybrain'
 NOSE_BIN = 'nosetests'
@@ -47,7 +47,7 @@ elif args.cmd == 'coverage':
 elif args.cmd == 'run':
     #  BLAZE_TARGET = args.target.replace('/', '.').replace('.py', '')
     #  cmds.append('python -m %s' % (BLAZE_TARGET))
-    cmds.append('python %s' % (args.target))
+    cmds.append('python %s %s' % (args.target, ' '.join(unknown)))
 else:
     raise Exception('unknown blaze command')
 

@@ -71,3 +71,11 @@ from numpy import dot
 def angle(v1, v2):
     # return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2))) if length(v1) * length(v2) != 0 else None
     return math.acos(dot(v1.reshape(-1), v2.reshape(-1)) / (length(v1) * length(v2))) if length(v1) * length(v2) != 0 else None
+
+def createShardFilenames(prefix, shardnumber):
+    outputFilenames = []
+    suffixLength = len(str(shardnumber))
+    formatString = '%s_%0' + str(suffixLength) + 'd_of_' + str(shardnumber)
+    for i in xrange(shardnumber):
+        outputFilenames.append(formatString % (prefix, i))
+    return outputFilenames
