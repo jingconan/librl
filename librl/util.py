@@ -56,6 +56,9 @@ def WriteTrace(trace, fname):
     for r in res:
         fid.write(' '.join([str(val) for val in r]) + '\n')
 
+def cPrint(**kwargs):
+    print ','.join(['%s:%s' % (k, v) for k, v in kwargs.iteritems()])
+
 
 # def dotproduct(v1, v2):
     # return sum((a*b) for a, b in zip(v1, v2))

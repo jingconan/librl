@@ -12,7 +12,7 @@ from librl.environments.mazes.trapmaze import TrapMaze
 from librl.environments.mazes.tasks.robottask import RobotMotionAvgRewardTask
 from librl.learners.td import TDLearner
 from librl.agents.actorcriticagent import ActorCriticAgent
-from librl.util import WriteTrace
+from librl.util import WriteTrace, cPrint
 
 # import global parameters
 from problem_settings import gridSize, unsafeStates, iniState, goalStates, TP, DF, senRange
@@ -38,7 +38,7 @@ experiment = Experiment(task, agent)
 #####################
 #    Parameters     #
 #####################
-ITER_NUM = 1000000
+ITER_NUM = 500000
 #  LEARN_INTERVAL = 10
 LEARN_INTERVAL = 1
 OUTPUT_FILENAME = 'tdac.tr'
@@ -54,14 +54,8 @@ def loop():
         # periodically reset stepsize to increase learning speed.
         if i % 1000 == 0:
             learner.resetStepSize()
-        print 'theta value: [%f, %f], reward: %i '%(policy.theta[0],
-                                                    policy.theta[1], reward)
-        print 'theta value: [%f, %f]'%tuple(policy.theta)
-        trace['iter'].append(i)
-        trace['theta0'].append(policy.theta[0])
-        trace['theta1'].append(policy.theta[1])
-        trace['reward'].append(reward)
-
+        cPrint(iteration=i, th0=policy.theta[0], th1=policy.theta[1],
+               reward=reward)
 try:
     loop()
 except KeyboardInterrupt:
