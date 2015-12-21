@@ -5,8 +5,14 @@ import os
 import sys
 
 parser = argparse.ArgumentParser(description='build command')
-parser.add_argument('cmd', help='the command that will be executed.')
+parser.add_argument('cmd', help=('the command that will be executed. avaliable '
+                                 'commands are 1. test, 2. coverage, 3. '
+                                 'profile'))
 parser.add_argument('target', help='target for the command')
+
+if len(sys.argv) <= 1:
+    parser.print_help()
+    sys.exit(0)
 
 args, unknown = parser.parse_known_args()
 
@@ -16,11 +22,15 @@ NOSE_BIN = 'nosetests'
 MY_ENV = os.environ.copy()
 MY_ENV['PYTHONPATH'] = PYBRAIN_PATH + ":" + MY_ENV.get('PYTHONPATH', '')
 
-def run_cmds(cmds):
+def runCmds(cmds):
     for cmd in cmds:
         print '--> ', cmd
         p = subprocess.Popen(cmd, env=MY_ENV, shell=True)
         p.wait()
+
+def ensureDir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 from sys import platform as _platform
 if _platform == 'linux' or _platform == 'linux2':
@@ -33,23 +43,26 @@ else:
     raise Exception('unsupported systems')
 
 BLAZE_BASE = 'blaze-output/'
+targetBase = BLAZE_BASE + args.target + '/'
+ensureDir(targetBase)
 
 cmds = []
 if args.cmd == 'test':
     cmds.append('%s %s' % (NOSE_BIN, args.target))
 elif args.cmd == 'coverage':
-    COVERAGE_DIR = BLAZE_BASE + args.target + '/coverage_html_output/'
+    coverageDir = targetBase + '/coverage_html_output/'
     NOSE_COVERAGE_CMD = ('%s %s --with-coverage --cover-html --cover-html-dir %s' %
-                        (NOSE_BIN, args.target, COVERAGE_DIR))
+                        (NOSE_BIN, args.target, coverageDir))
     cmds.append(NOSE_COVERAGE_CMD)
-    NOSE_VIEW_CMD = '%s %s/index.html' % (BROSWER, COVERAGE_DIR)
-    cmds.append(NOSE_VIEW_CMD)
+    noseViewCmd = '%s %s/index.html' % (BROSWER, coverageDir)
+    cmds.append(noseViewCmd)
 elif args.cmd == 'run':
-    #  BLAZE_TARGET = args.target.replace('/', '.').replace('.py', '')
-    #  cmds.append('python -m %s' % (BLAZE_TARGET))
     cmds.append('python %s %s' % (args.target, ' '.join(unknown)))
+elif args.cmd == 'profile':
+    profileOutput = targetBase + 'out.profile'
+    cmds.append('python -m cProfile -o %s %s %s' % (profileOutput, args.target, ' '.join(unknown)))
+    cmds.append('runsnake %s' % (profileOutput))
 else:
     raise Exception('unknown blaze command')
 
-run_cmds(cmds)
-
+runCmds(cmds)
