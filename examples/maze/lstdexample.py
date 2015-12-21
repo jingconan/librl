@@ -38,7 +38,7 @@ experiment = Experiment(task, agent)
 #####################
 #    Parameters     #
 #####################
-ITER_NUM = 1000000
+ITER_NUM = 10000
 #  LEARN_INTERVAL = 10
 LEARN_INTERVAL = 1
 OUTPUT_FILENAME = 'lstdac.tr'
