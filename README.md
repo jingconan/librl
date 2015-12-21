@@ -46,17 +46,18 @@ function check_process() {
 Add this to ~/.bashrc and run
 
 ```bash
-	source ~/.bashrc
-	check_process ./sample_results/
+source ~/.bashrc
+check_process ./sample_results/
 ```
 The output is
 
-	0 out of 4 runs has finished
-
+```
+0 out of 4 runs has finished
+```
 It means that 4 runs have started and 0 of them have finished. After all job finishes, type the following command
 
-	./blaze run tools/analyzetrace.py  ./sample_results/lstd_example@5
+```bash
+./blaze run tools/analyzetrace.py  ./sample_results/lstd_example@5
+```
 
 to inspect the results.
-
-	
