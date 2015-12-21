@@ -36,7 +36,7 @@ def addRecord(data, record):
     for k, v in record:
         data[k].append(v)
 
-def loadTrace(filename):
+def loadTrace(filename, fields=None):
     print 'load file: ', filename
     data = defaultdict(list)
     i = 0
@@ -51,6 +51,10 @@ def loadTrace(filename):
                 tokens = line.split(',')
                 for t in tokens:
                     subtokens = t.split(':')
+                    if fields is not None and subtokens[0] in fields:
+                        data[subtokens[0]].append(float(subtokens[1]))
+                        break
+
                     data[subtokens[0]].append(float(subtokens[1]))
     return data
 
@@ -60,6 +64,22 @@ def rollingMean(data, windowSize, interval):
     for i in xrange(0, N, interval):
         result.append(np.mean(data[i:i+windowSize]))
     return result
+
+def multipleRunRollingMean(mData, field, windowSize, interval):
+    minLen = min([len(data[field]) for data in mData])
+    windowStats = defaultdict(list)
+    for i in xrange(0, minLen, interval):
+        windowData = []
+        for data in mData:
+            windowData.extend(data[field][i:i+windowSize])
+        windowStats['mean'].append(np.mean(windowData))
+        windowStats['std'].append(np.std(windowData))
+    return windowStats
+
+def plotWithCI(x, y, yerr):
+    P.plot(x, y, '-')
+    P.plot(x, y+yerr, '--g')
+    P.plot(x, y-yerr, '--g')
 
 parser = argparse.ArgumentParser(description='Analyze run output')
 parser.add_argument('filename', help='the path of trace files')
@@ -72,32 +92,18 @@ if '@' in args.filename:
 else:
     filenames = [args.filename]
 
-# Analyze data
-multiRunData = []
-minLen = float('inf')
-for filename in filenames:
-    data = loadTrace(filename)
-    #  rm = pandas.rolling_mean(data.reward, windowSize) #mean of reward
-    rm = rollingMean(data['reward'], windowSize, plotInterval) #mean of reward
-    if len(rm) < minLen:
-        minLen = len(rm)
-    multiRunData.append(rm)
+mData = [loadTrace(filename, ('reward')) for filename in filenames]
+windowStats = multipleRunRollingMean(mData, 'reward', windowSize, plotInterval)
+ptNumber = len(windowStats['mean'])
 
-fileNumber = len(filenames)
-#  ptNumber = int(minLen / plotInterval)
-ptNumber = int(minLen)
-print('ptNumber', ptNumber)
-combinedResult = P.zeros((ptNumber, fileNumber))
-for i in xrange(fileNumber):
-    #  combinedResult[:, i] = multiRunData[i][0:minLen:plotInterval]
-    combinedResult[:, i] = multiRunData[i][0:minLen]
-
-rewardMean = P.mean(combinedResult, axis=1)
-rewardStd= P.std(combinedResult, axis=1)
-rewardSem = rewardStd / (P.sqrt(fileNumber))
+runNumber = len(filenames)
+rewardMean = windowStats['mean']
+rewardStd= windowStats['std']
+sampleNumber = runNumber * windowSize
+rewardSem = rewardStd / (P.sqrt(sampleNumber))
 confidenceLevel = 0.95
-yerr = ss.t.ppf((confidenceLevel + 1) / 2.0, fileNumber-1) * rewardSem
-P.errorbar(range(ptNumber), rewardMean, yerr=yerr, fmt='--o', ecolor='g',
-           capthick=2)
+yerr = ss.t.ppf((confidenceLevel + 1) / 2.0, sampleNumber-1) * rewardSem
+plotWithCI(range(ptNumber), rewardMean, yerr)
+#  P.errorbar(range(ptNumber), rewardMean, yerr=yerr, fmt='--o', ecolor='g',
+#             capthick=2)
 P.show()
-import ipdb;ipdb.set_trace()
