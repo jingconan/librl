@@ -10,13 +10,23 @@ import librl
 from librl.policies import BoltzmanPolicy
 from librl.environments.mazes.trapmaze import TrapMaze
 from librl.environments.mazes.tasks.robottask import RobotMotionAvgRewardTask
-from librl.learners.bsgl import BSGLRegularGradientActorCriticLearner
+from librl.learners.bsgl import BSGLRegularGradientActorCriticLearner, BSGLFisherInfoActorCriticLearner
 from librl.agents.actorcriticagent import ActorCriticAgent
-from librl.util import WriteTrace, cPrint
+from librl.util import cPrint
 
 # import global parameters
 from problem_settings import gridSize, unsafeStates, iniState, goalStates, TP, DF, senRange
 from problem_settings import iniTheta, T
+
+#####################
+#    Parameters     #
+#####################
+ITER_NUM = 500000
+#  LEARN_INTERVAL = 10
+LEARN_INTERVAL = 1
+#  learnerClass = BSGLRegularGradientActorCriticLearner
+learnerClass = BSGLFisherInfoActorCriticLearner
+
 
 # Create environment
 # Add unsafe states
@@ -31,27 +41,19 @@ task.GOAL_REWARD = 100
 task.TRAP_REWARD = 0
 
 policy = BoltzmanPolicy(4, T, iniTheta)
-learner = BSGLRegularGradientActorCriticLearner(policy=policy,
-                                                cssinitial=0.1,
-                                                cssdecay=1000, # css means critic step size
-                                                assinitial=0.01,
-                                                assdecay=1000, # ass means actor steps size
-                                                rdecay=0.95, # reward decay weight
-                                                parambound=None # bound for the parameters
-                                                )
+learner = learnerClass(policy=policy,
+                       cssinitial=0.1,
+                       cssdecay=1000, # css means critic step size
+                       assinitial=0.01,
+                       assdecay=1000, # ass means actor steps size
+                       rdecay=0.95, # reward decay weight
+                       #  parambound=None # bound for the parameters
+                       parambound=[[-50, 150], [-50, 50]]# bound for the parameters
+                       )
 
 agent = ActorCriticAgent(learner, sdim=8, adim=1)
 experiment = Experiment(task, agent)
 
-#####################
-#    Parameters     #
-#####################
-ITER_NUM = 500000
-#  LEARN_INTERVAL = 10
-LEARN_INTERVAL = 1
-OUTPUT_FILENAME = 'tdac.tr'
-
-trace = defaultdict(list)
 def loop():
     for i in xrange(ITER_NUM):
         reward = 0
@@ -68,5 +70,3 @@ try:
     loop()
 except KeyboardInterrupt:
     pass
-
-WriteTrace(trace, OUTPUT_FILENAME)

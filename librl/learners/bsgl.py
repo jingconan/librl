@@ -65,3 +65,27 @@ class BSGLRegularGradientActorCriticLearner(ActorCriticLearner):
     def actor(self, obs, action, feature):
         update = self.beta() * self.d * feature[:self.paramdim]
         self.module.theta = self.ensureBound(self.module.theta + update)
+
+class BSGLFisherInfoActorCriticLearner(BSGLRegularGradientActorCriticLearner):
+
+    def reset(self):
+        """reset all parameters"""
+        super(BSGLFisherInfoActorCriticLearner, self).reset()
+        # inverse fisher information matrix.
+        self.ifim = scipy.eye(self.paramdim)
+
+    def critic(self, lastreward, lastfeature, reward, feature):
+        super(BSGLFisherInfoActorCriticLearner, self).critic(lastreward,
+                                                             lastfeature,
+                                                             reward, feature)
+        # Here we use Sherman-Morrison matrix inversion lemma.
+        css = self.gamma()
+        psi = feature[:self.paramdim]
+        tmp = scipy.inner(self.ifim, psi)
+        update = scipy.outer(tmp, tmp) / (1 - css + css * scipy.inner(psi, tmp))
+        self.ifim = (1.0 / (1 - css)) * (self.ifim - css * update)
+
+    def actor(self, obs, action, feature):
+        update = self.beta() * self.d * scipy.inner(self.ifim, feature[:self.paramdim])
+        self.module.theta = self.ensureBound(self.module.theta + update)
+
