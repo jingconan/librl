@@ -1,34 +1,18 @@
 #!/usr/bin/env python
 from __future__ import print_function, division, absolute_import
-
-from scipy import dot, ravel, ones, zeros, array, log, inner, outer, concatenate
+import scipy
 from scipy.linalg import norm
-
-from pybrain.rl.learners.directsearch.policygradient import LoglhDataSet
-from pybrain.structure.modules.module import Module
-from pybrain.structure.networks.network import Network
-from pybrain.structure.parametercontainer import ParameterContainer
-
 from .actorcritic import ActorCriticLearner
-from ..policies.boltzmann import PolicyFeatureModule
 
 class TDLearner(ActorCriticLearner):
     """User TD Learner to learn the projection coefficient r of Q on the basis surface"""
     def __init__(self, policy, tracestepsize, actorstepsize, maxcriticnorm,
                  module=None):
-        ActorCriticLearner.__init__(self)
+        ActorCriticLearner.__init__(self, policy, module)
         # parameter
         self.tracestepsize = tracestepsize
         self.actorstepsize = actorstepsize
         self.maxcriticnorm = maxcriticnorm
-
-        if module is None:
-            self.module = PolicyFeatureModule(policy, 'policywrapper')
-        else:
-            self.module = module
-        self.paramdim = len(self.module.theta)
-        self.reset()
-        self.newEpisode()
 
     def resetStepSize(self):
         self.k = 0
@@ -36,8 +20,8 @@ class TDLearner(ActorCriticLearner):
     def reset(self):
         """reset all parameters"""
         self.k = 0
-        self.z = zeros((self.module.outdim,))
-        self.r = zeros((self.module.outdim,))
+        self.z = scipy.zeros((self.module.outdim,))
+        self.r = scipy.zeros((self.module.outdim,))
         self.alpha = 0
         self.lastobs = None
 
@@ -52,7 +36,7 @@ class TDLearner(ActorCriticLearner):
 
     def critic(self, lastreward, lastfeature, reward, feature):
         # Update critic parameter
-        self.d = lastreward - self.alpha + inner(self.r, feature - lastfeature)
+        self.d = lastreward - self.alpha + scipy.inner(self.r, feature - lastfeature)
         self.r += self.gamma * self.d * self.z
         # Estimate of avg reward.
         self.alpha += self.gamma * (reward - self.alpha)
@@ -66,7 +50,7 @@ class TDLearner(ActorCriticLearner):
     @property
     def beta(self):
         if self.k > 1:
-            return (self.actorstepsize + 0.0 ) / ( self.k * log(self.k) )
+            return (self.actorstepsize + 0.0 ) / ( self.k * scipy.log(self.k) )
         else:
             return 1
 
@@ -78,7 +62,7 @@ class TDLearner(ActorCriticLearner):
             return 1
 
     def stateActionValue(self, feature):
-        return self.tao(self.r) * inner(self.r, feature)
+        return self.tao(self.r) * scipy.inner(self.r, feature)
 
     def actor(self, obs, action, feature):
         self.scaledfeature = (self.stateActionValue(feature) *
@@ -87,31 +71,3 @@ class TDLearner(ActorCriticLearner):
         # TODO(jingconanwang) somehow we cannot use += operator. Check the
         # reason.
         self.module.theta =  self.module.theta + self.beta * self.scaledfeature
-
-    def _updateWeights(self, lastobs, lastaction, lastreward, obs, action,
-                       reward):
-        """Update weights of Critic and Actor based on the (state, action, reward) pair for
-        current time and last time"""
-        lastfeature = self.module.activate(concatenate((lastobs, lastaction)))
-        feature = self.module.activate(concatenate((obs, action)))
-        self.critic(lastreward, lastfeature, reward, feature)
-        self.actor(obs, action, feature)
-
-    def learnOnDataSet(self, dataset, startIndex=0, endIndex=None):
-        """dataset is a sequence of (state, action, reward). update weights based on
-        dataset"""
-        self.dataset = dataset
-        if endIndex is None:
-            endIndex = dataset.getLength()
-        assert endIndex <= dataset.getLength(), ('end index is larger '
-                                                 'than dataset length')
-        for n in range(startIndex, endIndex):
-            obs, action, reward = self.dataset.getLinked(n)
-            if self.lastobs is not None:
-                self._updateWeights(self.lastobs, self.lastaction, self.lastreward,
-                        obs, action, reward)
-            self.k += 1
-
-            self.lastobs = obs
-            self.lastaction = action
-            self.lastreward = reward
