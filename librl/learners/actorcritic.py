@@ -20,6 +20,9 @@ class ActorCriticLearner(object):
     def actor(self, obs, action, feature):
         abstractMethod()
 
+    def resetStepSize(self):
+        self.k = 0
+
     def _updateWeights(self, lastobs, lastaction, lastreward, obs, action,
                        reward):
         """Update weights of Critic and Actor based on the (state, action, reward) pair for

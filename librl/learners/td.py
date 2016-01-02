@@ -14,12 +14,9 @@ class TDLearner(ActorCriticLearner):
         self.actorstepsize = actorstepsize
         self.maxcriticnorm = maxcriticnorm
 
-    def resetStepSize(self):
-        self.k = 0
-
     def reset(self):
         """reset all parameters"""
-        self.k = 0
+        self.resetStepSize()
         self.z = scipy.zeros((self.module.outdim,))
         self.r = scipy.zeros((self.module.outdim,))
         self.alpha = 0
