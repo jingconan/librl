@@ -106,3 +106,24 @@ class BSGLFisherInfoActorCriticLearner(BSGLRegularGradientActorCriticLearner):
     def actor(self, obs, action, feature):
         update = self.beta() * self.d * scipy.inner(self.ifim, feature[:self.paramdim])
         self.module.theta = self.ensureBound(self.module.theta + update)
+
+class BSGLAdvParamActorCriticLearner(BSGLRegularGradientActorCriticLearner):
+    def reset(self):
+        """reset all parameters"""
+        super(BSGLAdvParamActorCriticLearner, self).reset()
+        # natural gradient.
+        self.ngrad = scipy.ones((self.paramdim,))
+
+    def critic(self, lastreward, lastfeature, reward, feature):
+        super(BSGLAdvParamActorCriticLearner, self).critic(lastreward,
+                                                           lastfeature,
+                                                           reward, feature)
+        css = 0.001 * self.gamma()
+        psi = feature[:self.paramdim]
+        tmp = scipy.eye(self.paramdim) - css * scipy.outer(psi, psi)
+        self.ngrad = scipy.inner(tmp, self.ngrad) + css * self.d * psi
+
+    def actor(self, obs, action, feature):
+        update = self.beta() * self.ngrad
+        self.module.theta = self.ensureBound(self.module.theta + update)
+        #  self.module.theta = self.module.theta + update

@@ -10,7 +10,7 @@ import librl
 from librl.policies import BoltzmanPolicy, PolicyValueFeatureModule
 from librl.environments.mazes.trapmaze import TrapMaze
 from librl.environments.mazes.tasks.robottask import RobotMotionAvgRewardTask
-from librl.learners.bsgl import BSGLRegularGradientActorCriticLearner, BSGLFisherInfoActorCriticLearner
+from librl.learners.bsgl import *
 from librl.agents.actorcriticagent import ActorCriticAgent
 from librl.util import cPrint
 
@@ -25,7 +25,8 @@ ITER_NUM = 500000
 #  LEARN_INTERVAL = 10
 LEARN_INTERVAL = 1
 #  learnerClass = BSGLRegularGradientActorCriticLearner
-learnerClass = BSGLFisherInfoActorCriticLearner
+#  learnerClass = BSGLFisherInfoActorCriticLearner
+learnerClass = BSGLAdvParamActorCriticLearner
 
 
 # Create environment
