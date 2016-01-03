@@ -123,7 +123,7 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
 
 
 class PolicyFeatureModule(Module):
-    """A Module to calculate features used for linear approximator.
+    """Module to calculate features for state-action value function approximiation.
     Input: a vector whose the last element is the action, and the rest elements are
            observation.
     Output: a vector of features which is used for approximate state-action
@@ -182,3 +182,30 @@ class PolicyFeatureModule(Module):
     def get_theta(self): return self.policy.theta.reshape(-1)
     def set_theta(self, val): self.policy._setParameters(val.reshape(-1))
     theta = property(fget = get_theta, fset = set_theta)
+
+
+class PolicyValueFeatureModule(PolicyFeatureModule):
+    """Module to generate feature for approximating state value function
+
+    The first part of the output is the _firstOrderFeature as in
+    PolicyFeatureModule. The second part is value function is appended.
+    """
+
+    def getFeatureDescritor(self):
+        def _firstOrderFeature(policy, feature, action):
+            return self.getFeatureSlice(policy.calBasisFuncVal(feature).reshape(-1),
+                                        action)
+
+        def _stateFeature(policy, feature, action):
+            return policy.calBasisFuncVal(feature).reshape(-1)
+
+        return [
+            {
+                'dimension': self.feadim,
+                'constructor': _firstOrderFeature,
+            },
+            {
+                'dimension': self.feadim * self.actionnum,
+                'constructor': _stateFeature,
+            },
+        ]

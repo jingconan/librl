@@ -7,7 +7,7 @@ from collections import defaultdict
 
 from pybrain.rl.experiments import Experiment
 import librl
-from librl.policies import BoltzmanPolicy
+from librl.policies import BoltzmanPolicy, PolicyValueFeatureModule
 from librl.environments.mazes.trapmaze import TrapMaze
 from librl.environments.mazes.tasks.robottask import RobotMotionAvgRewardTask
 from librl.learners.bsgl import BSGLRegularGradientActorCriticLearner, BSGLFisherInfoActorCriticLearner
@@ -41,6 +41,7 @@ task.GOAL_REWARD = 100
 task.TRAP_REWARD = 0
 
 policy = BoltzmanPolicy(4, T, iniTheta)
+featureModule = PolicyValueFeatureModule(policy, 'bsglpolicywrapper')
 learner = learnerClass(policy=policy,
                        cssinitial=0.1,
                        cssdecay=1000, # css means critic step size
@@ -48,7 +49,9 @@ learner = learnerClass(policy=policy,
                        assdecay=1000, # ass means actor steps size
                        rdecay=0.95, # reward decay weight
                        #  parambound=None # bound for the parameters
-                       parambound=[[-50, 150], [-50, 50]]# bound for the parameters
+                       parambound=[[-50, 150], [-50, 50]], # bound for the parameters
+                       maxcriticnorm=1000000,
+                       module=featureModule
                        )
 
 agent = ActorCriticAgent(learner, sdim=8, adim=1)
