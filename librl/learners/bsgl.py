@@ -127,3 +127,35 @@ class BSGLAdvParamActorCriticLearner(BSGLRegularGradientActorCriticLearner):
         update = self.beta() * self.ngrad
         self.module.theta = self.ensureBound(self.module.theta + update)
         #  self.module.theta = self.module.theta + update
+
+
+class BSGLAdvParamFisherInfoActorCriticLearner(BSGLRegularGradientActorCriticLearner):
+    INITIAL_IFIM = 2.5
+    def reset(self):
+        """reset all parameters"""
+        super(BSGLAdvParamFisherInfoActorCriticLearner, self).reset()
+        # natural gradient.
+        self.ngrad = scipy.zeros((self.paramdim,))
+        # inverse fisher information matrix.
+        self.ifim = self.INITIAL_IFIM * scipy.eye(self.paramdim)
+
+    def critic(self, lastreward, lastfeature, reward, feature):
+        super(BSGLAdvParamFisherInfoActorCriticLearner, self).critic(lastreward,
+                                                                     lastfeature,
+                                                                     reward, feature)
+        css = self.gamma()
+        psi = feature[:self.paramdim]
+        self.ngrad = (1 - css) * self.ngrad + css * self.d * scipy.inner(self.ifim, psi)
+
+        # Here we use Sherman-Morrison matrix inversion lemma to estimate
+        # finisher infomation matrix.
+        # A 0.001 scaling factor is used for numerical stability.
+        css = 0.001 * self.gamma()
+        psi = feature[:self.paramdim]
+        tmp = scipy.inner(self.ifim, psi)
+        update = scipy.outer(tmp, tmp) / (1 - css + css * scipy.inner(psi, tmp))
+        self.ifim = (1.0 / (1 - css)) * (self.ifim - css * update)
+
+    def actor(self, obs, action, feature):
+        update = self.beta() * self.ngrad
+        self.module.theta = self.ensureBound(self.module.theta + update)

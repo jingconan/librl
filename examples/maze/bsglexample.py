@@ -26,7 +26,8 @@ ITER_NUM = 500000
 LEARN_INTERVAL = 1
 #  learnerClass = BSGLRegularGradientActorCriticLearner
 #  learnerClass = BSGLFisherInfoActorCriticLearner
-learnerClass = BSGLAdvParamActorCriticLearner
+#  learnerClass = BSGLAdvParamActorCriticLearner
+learnerClass = BSGLAdvParamFisherInfoActorCriticLearner
 
 
 # Create environment
@@ -46,8 +47,8 @@ featureModule = PolicyValueFeatureModule(policy, 'bsglpolicywrapper')
 learner = learnerClass(policy=policy,
                        cssinitial=0.1,
                        cssdecay=1000, # css means critic step size
-                       assinitial=0.01,
-                       assdecay=1000, # ass means actor steps size
+                       assinitial=0.001,
+                       assdecay=10000, # ass means actor steps size
                        rdecay=0.95, # reward decay weight
                        #  parambound=None # bound for the parameters
                        parambound=[[-50, 150], [-50, 50]], # bound for the parameters
