@@ -57,7 +57,8 @@ def WriteTrace(trace, fname):
         fid.write(' '.join([str(val) for val in r]) + '\n')
 
 def cPrint(**kwargs):
-    print ','.join(['%s:%s' % (k, v) for k, v in kwargs.iteritems()])
+    items = sorted(kwargs.items())
+    print ','.join(['%s:%s' % (k, v) for k, v in items])
 
 
 # def dotproduct(v1, v2):
@@ -79,3 +80,24 @@ def createShardFilenames(prefix, shardnumber):
     for i in xrange(shardnumber):
         outputFilenames.append(formatString % (prefix, i))
     return outputFilenames
+
+
+###############################
+# Data Storage and Load
+###############################
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+import gzip
+proto = pickle.HIGHEST_PROTOCOL
+def zdump(obj, f_name):
+    f = gzip.open(f_name,'wb', proto)
+    pickle.dump(obj,f)
+    f.close()
+
+def zload(f_name):
+    f = gzip.open(f_name,'rb', proto)
+    obj = pickle.load(f)
+    f.close()
+    return obj
