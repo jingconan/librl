@@ -36,6 +36,7 @@ class BSGLRegularGradientActorCriticLearner(ActorCriticLearner):
         self.resetStepSize()
         # state feature dimension
         self.sfdim = self.module.statefeadim
+        # Coefficients of linear approximator for state value function.
         self.r = scipy.zeros((self.sfdim,))
         self.alpha = 0
         self.lastobs = None
@@ -46,8 +47,15 @@ class BSGLRegularGradientActorCriticLearner(ActorCriticLearner):
         self.k = 0
         self.lastobs = None
 
+    # TODO(hbhzwj): right now different types of feature are encoded and
+    # decoded based on their absolute position in the feature vector. We need
+    # to implement a more systemtic to encode and decode features.
     def critic(self, lastreward, lastfeature, reward, feature):
-        # Get state features
+        # The feature consists of two parts. The first part is the gradient of
+        # log likelihood of policy for the corresponding state-feature pair,
+        # the second part is the state feature used by the policy. In the
+        # critic, we only use state feature.
+        # Get state feature.
         slastfeature = lastfeature[-self.sfdim:]
         sfeature = feature[-self.sfdim:]
 
@@ -58,7 +66,7 @@ class BSGLRegularGradientActorCriticLearner(ActorCriticLearner):
 
         # Update critic parameter
         self.d = reward - self.alpha + scipy.inner(self.r, sfeature - slastfeature)
-        self.r += self.gamma() * self.d * sfeature
+        self.r += self.gamma() * self.d * slastfeature
 
         normr = norm(self.r)
         if normr > self.maxcriticnorm:
