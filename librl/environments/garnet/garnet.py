@@ -75,9 +75,8 @@ class GarnetEnvironment(Environment):
             self._load(loadPath)
         else:
             self._genTransitionTable()
-            self.stateObs = scipy.random.choice(2 ** feaDim,
-                                                self.numStates,
-                                                False)
+            self._genStateObs()
+
         if savePath is not None:
             self._save(savePath)
 
@@ -98,6 +97,16 @@ class GarnetEnvironment(Environment):
         self.transitionProb = message['transitionProb']
         self.stateObs = message['stateObs']
 
+    def _genStateObs(self):
+        pos = range(self.feaDim)
+        stateObs = set()
+        while len(stateObs) < self.numStates:
+            obs = scipy.zeros((self.feaDim,), dtype=int)
+            ones = scipy.random.choice(pos, self.feaSum, False)
+            obs[ones] = 1
+            stateObs.add(tuple(obs.tolist()))
+        self.stateObs = list(stateObs)
+
     def _genTransitionTable(self):
         # generate state that will be transited to and corresponding
         # probabilities.
@@ -115,10 +124,7 @@ class GarnetEnvironment(Environment):
                 self.transitionProb[u, i, :] = scipy.diff(cutPoints)
 
     def getSensors(self):
-        obs = self.stateObs[self.curState]
-        strObs = scipy.binary_repr(obs, self.feaDim)
-        binObs = scipy.array([int(x) for x in strObs], dtype=scipy.float64)
-        return binObs
+        return self.stateObs[self.curState]
 
     def performAction(self, action):
         action = action[0]

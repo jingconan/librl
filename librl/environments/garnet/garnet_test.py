@@ -9,11 +9,12 @@ from librl.util import zdump
 
 class GarnetEnvironmentTestCase(unittest.TestCase):
     def setUp(self):
+        scipy.random.seed(0)
         self.testDir = tempfile.mkdtemp()
 
         self.numStates = 3
         self.numActions = 2
-        self.branching = 2
+        self.branching = 1
         self.feaDim = 5
         self.feaSum = 2
 
@@ -32,10 +33,10 @@ class GarnetEnvironmentTestCase(unittest.TestCase):
         self.transitionStates = scipy.array([ts0, ts1])
         self.transitionProb = scipy.array([tp0, tp1],
                                           dtype=float)
-        self.arrayStateObs = scipy.array([[1, 1, 0, 0, 0],
-                                          [1, 0, 1, 0, 0],
-                                          [0, 1, 0, 1, 0]])
-        self.stateObs = scipy.array([24, 20, 10])
+        self.stateObs = [(1, 1, 0, 0, 0),
+                         (1, 0, 1, 0, 0),
+                         (0, 1, 0, 1, 0)]
+
         message = {
             'transitionStates': self.transitionStates,
             'transitionProb': self.transitionProb,
@@ -51,13 +52,35 @@ class GarnetEnvironmentTestCase(unittest.TestCase):
                                      feaSum=self.feaSum,
                                      loadPath=self.loadPath)
 
+    def testGenStateObs(self):
+        self.env._genStateObs()
+        self.assertEqual(self.numStates, len(set(self.stateObs)))
+        p = scipy.sum(scipy.array(self.env.stateObs), axis=1)
+        expected = self.feaSum * scipy.ones((self.numStates,))
+        assert_array_almost_equal(expected, p)
+
+    def testGenTransitionTable(self):
+        branching = 2
+        self.env.branching = branching
+        self.env._genTransitionTable()
+        # Assert the the shape of generated transitionStates and transitionProb.
+        assert_array_almost_equal([self.numActions, self.numStates,
+                                   branching],
+                                  self.env.transitionStates.shape)
+        assert_array_almost_equal([self.numActions, self.numStates,
+                                   branching],
+                                  self.env.transitionProb.shape)
+        assert_array_almost_equal(scipy.ones((self.numActions,
+                                              self.numStates)),
+                                  scipy.sum(self.env.transitionProb, axis=2))
+
     def testGetSensors(self):
         self.env.curState = 0
-        assert_array_almost_equal(self.arrayStateObs[0], self.env.getSensors())
+        assert_array_almost_equal(self.stateObs[0], self.env.getSensors())
         self.env.curState = 1
-        assert_array_almost_equal(self.arrayStateObs[1], self.env.getSensors())
+        assert_array_almost_equal(self.stateObs[1], self.env.getSensors())
         self.env.curState = 2
-        assert_array_almost_equal(self.arrayStateObs[2], self.env.getSensors())
+        assert_array_almost_equal(self.stateObs[2], self.env.getSensors())
 
     def testPerformAction(self):
         # test for action 0.
