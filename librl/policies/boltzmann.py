@@ -192,12 +192,14 @@ class PolicyValueFeatureModule(PolicyFeatureModule):
     """
 
     def getFeatureDescritor(self):
+        self.statefeadim = int(self.feadim / self.actionnum)
+
         def _firstOrderFeature(policy, feature, action):
             return self.getFeatureSlice(policy.calBasisFuncVal(feature).reshape(-1),
                                         action)
 
         def _stateFeature(policy, feature, action):
-            return policy.calBasisFuncVal(feature).reshape(-1)
+            return feature[0][:self.statefeadim]
 
         return [
             {
@@ -205,7 +207,7 @@ class PolicyValueFeatureModule(PolicyFeatureModule):
                 'constructor': _firstOrderFeature,
             },
             {
-                'dimension': self.feadim * self.actionnum,
+                'dimension': self.statefeadim,
                 'constructor': _stateFeature,
             },
         ]

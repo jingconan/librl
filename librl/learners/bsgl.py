@@ -35,7 +35,7 @@ class BSGLRegularGradientActorCriticLearner(ActorCriticLearner):
         """reset all parameters"""
         self.resetStepSize()
         # state feature dimension
-        self.sfdim = self.module.feadim * self.module.actionnum
+        self.sfdim = self.module.statefeadim
         self.r = scipy.zeros((self.sfdim,))
         self.alpha = 0
         self.lastobs = None
