@@ -7,6 +7,7 @@ import scipy
 from scipy.linalg import norm
 from .actorcritic import ActorCriticLearner
 
+# TODO(hbhzwj): add unittest for BSGL methods.
 class BSGLRegularGradientActorCriticLearner(ActorCriticLearner):
     """Regular gradient"""
 
