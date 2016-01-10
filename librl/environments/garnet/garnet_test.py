@@ -101,11 +101,12 @@ class MockGarnetEnvironment(object):
         return self.sensors
 
     def performAction(self, action):
-        self.lastAction = lastAction
+        self.lastAction = action
 
 class GarnetTaskTestCase(unittest.TestCase):
     def setUp(self):
-        self.env = MockGarnetEnvironment(3, 2, 0, 1, 0,
+        self.env = MockGarnetEnvironment(3, 2, 0, 1,
+                                         scipy.array([0]),
                                          scipy.array([1, 1, 0,
                                                       0, 0],
                                                      dtype=float))

@@ -28,11 +28,12 @@ class GarnetTask(Task):
         return self.rewardCache[key]
 
     def performAction(self, action):
-        self.lastAction = action
+        self.env.lastAction = action
         super(GarnetTask, self).performAction(action)
 
     def getReward(self):
-        key = (self.env.prevState, self.env.curState, self.env.lastAction)
+        key = (self.env.prevState, self.env.curState,
+               int(self.env.lastAction[0]))
         expectedReward = self._getExpectedReward(key)
         reward = self.sigma * scipy.random.randn() + expectedReward
         return reward
@@ -82,7 +83,7 @@ class GarnetEnvironment(Environment):
 
         self.curState = self.initState
         # null value for action
-        self.lastAction = -1
+        self.lastAction = scipy.array([-1])
 
     def _save(self, savePath):
         message = dict()
