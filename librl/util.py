@@ -101,3 +101,25 @@ def zload(f_name):
     obj = pickle.load(f)
     f.close()
     return obj
+
+
+## Feature encoding and decoding.
+import scipy
+def encodeTriuAs1DArray(mat):
+    """Encode the upper-triangular matrix as 1D array."""
+    assert mat.shape[0] == mat.shape[1], 'only square matrix is supported!'
+    iu = scipy.triu_indices(n=mat.shape[0], k=0)
+    return mat[iu]
+
+def decode1DArrayAsTriu(arr, n):
+    "Decode 1D array as upper-triangular matrix"
+    expectedLength = (n * n - n) / 2 + n
+    assert expectedLength == len(arr), 'invalid input array.'
+    iu = scipy.triu_indices(n)
+    res = scipy.zeros((n, n))
+    res[iu] = arr
+    return res
+
+def decode1DArrayAsSymMat(arr, n):
+    res = decode1DArrayAsTriu(arr, n)
+    return res + res.T - scipy.diag(scipy.diag(res))

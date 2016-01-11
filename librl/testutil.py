@@ -1,4 +1,5 @@
 from __future__ import print_function, division, absolute_import
+
 class MockPolicyFeatureModule(object):
     def __init__(self, policy):
         self.policy = policy
@@ -7,6 +8,14 @@ class MockPolicyFeatureModule(object):
     def get_theta(self): return self.policy.theta
     def set_theta(self, val): self.policy.theta = val
     theta = property(fget = get_theta, fset = set_theta)
+
+    def decodeFeature(self, feature, name):
+        el = self.outdim * self.outdim + self.outdim
+        assert len(feature) == el, 'invalid feature for MockPolicyFeatureModule'
+        if name == 'first_order':
+            return feature[:self.outdim]
+        else:
+            return feature[self.outdim:].reshape((self.outdim, self.outdim))
 
 class MockLearner(object):
     def __init__(self, policy):

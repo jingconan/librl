@@ -30,7 +30,7 @@ class TDLearnerTestCase(unittest.TestCase):
         assert_array_almost_equal([6, 10], self.learner.module.theta)
 
     def testCritic(self):
-        #  self.module.outdim = 6
+        self.module.outdim = 2
         self.learner.A = scipy.eye(6)
         self.learner.b = -1 * scipy.ones((6,))
         self.learner.V = scipy.array([[1,  0],

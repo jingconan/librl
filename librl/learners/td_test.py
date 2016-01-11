@@ -58,12 +58,10 @@ class TDLearnerTestCase(unittest.TestCase):
                                    0.0955041449,
                                    -0.006562892692,
                                    0.009694943872,
-                                   0.009694943872,
                                    -0.04286319107], learner.r)
         assert_array_almost_equal([-0.0952710795,
                                    -0.2401405293,
                                    -0.0374024173,
-                                   0.0552522117,
                                    0.0552522117,
                                    -0.2442805382], learner.z)
     def testActor(self):

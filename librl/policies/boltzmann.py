@@ -1,6 +1,8 @@
+import copy
 import scipy
 from scipy import array, exp, zeros, arange, dot, eye
 
+from librl.util import encodeTriuAs1DArray,decode1DArrayAsSymMat
 from pybrain.structure.modules.module import Module
 from pybrain.structure.parametercontainer import ParameterContainer
 from pybrain.utilities import abstractMethod
@@ -133,11 +135,9 @@ class PolicyFeatureModule(Module):
         self.policy = policy
         self.feadim = policy.feadim
         self.actionnum = policy.actionnum
-        self.featuredescriptor = self.getFeatureDescritor()
 
-        outdim = 0
-        for feature in self.featuredescriptor:
-            outdim += feature['dimension']
+        self.feadesc, outdim = self._transformFeatureDescriptor(
+            self.getFeatureDescriptor())
 
         super(PolicyFeatureModule, self).__init__(
             indim = self.feadim * self.actionnum + 1,
@@ -145,22 +145,64 @@ class PolicyFeatureModule(Module):
             name = name
         )
 
-    def getFeatureDescritor(self):
+    def _transformFeatureDescriptor(self, feadesc):
+        # parse feature descriptor.
+        bd = [0] # boundary
+        feanames = []
+        outdim = 0
+        for feature in feadesc:
+            outdim += feature['dimension']
+            feanames.append(feature['name'])
+            bd.append(outdim)
+
+        newfeadesc = dict()
+        for i, name in enumerate(feanames):
+            desc = copy.deepcopy(feadesc[i])
+            desc['fea_range'] = (bd[i], bd[i+1])
+            desc['fea_index'] = i
+            newfeadesc[name] = desc
+        return newfeadesc, outdim
+
+    def decodeFeature(self, feature, name):
+        decoder = self.feadesc[name]['decoder']
+        r = self.feadesc[name]['fea_range']
+        feature = feature[r[0]:r[1]]
+        return decoder(feature)
+
+    def getFeatureDescriptor(self):
+        # first order feature
         def _firstOrderFeature(policy, feature, action):
             return self.getFeatureSlice(policy.calBasisFuncVal(feature).reshape(-1),
                                         action)
 
+        def _identityDecoder(feature):
+            return feature
+
+        # second order feature
+        n = self.feadim
+        sofl = (n * n - n) / 2 + n # second order feature length
+
         def _secondOrderFeature(policy, feature, action):
-            return policy.calSecondBasisFuncVal(feature).reshape(-1)
+            hessian = policy.calSecondBasisFuncVal(feature)
+            return encodeTriuAs1DArray(hessian)
+
+        def _secondOrderFeatureDecoder(feature):
+            assert sofl == len(feature), ('invalid feature'
+                                          'to decode')
+            return decode1DArrayAsSymMat(feature, self.feadim)
 
         return [
             {
+                'name': 'first_order',
                 'dimension': self.feadim,
                 'constructor': _firstOrderFeature,
+                'decoder': _identityDecoder,
             },
             {
-                'dimension': self.feadim * self.feadim,
+                'name': 'second_order',
+                'dimension': sofl,
                 'constructor': _secondOrderFeature,
+                'decoder': _secondOrderFeatureDecoder,
             },
         ]
 
@@ -173,11 +215,10 @@ class PolicyFeatureModule(Module):
         fea = self.policy.obs2fea(inbuf[:-1])
         action = inbuf[-1]
         offset = 0
-        for desc in self.featuredescriptor:
-            newoffset = offset + desc['dimension']
-            outbuf[offset:newoffset] = desc['constructor'](self.policy,
+        for name, desc in self.feadesc.iteritems():
+            fearange = desc ['fea_range']
+            outbuf[fearange[0]:fearange[1]] = desc['constructor'](self.policy,
                                                            fea, action)
-            offset = newoffset
 
     def get_theta(self): return self.policy.theta.reshape(-1)
     def set_theta(self, val): self.policy._setParameters(val.reshape(-1))
@@ -191,7 +232,7 @@ class PolicyValueFeatureModule(PolicyFeatureModule):
     PolicyFeatureModule. The second part is value function is appended.
     """
 
-    def getFeatureDescritor(self):
+    def getFeatureDescriptor(self):
         self.statefeadim = int(self.feadim / self.actionnum)
 
         def _firstOrderFeature(policy, feature, action):

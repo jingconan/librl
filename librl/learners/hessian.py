@@ -47,8 +47,8 @@ class HessianLearner(LSTDLearner):
         # The first n elements in the first-order basis (i.e., \nabla
         # \log(\mu)), the following n^2 elements are the second-order basis
         # (i.e., \nabla^2 \log(\mu)).
-        loglhgrad = feature[0:n]
-        loglhhessian = feature[n:(n+n*n)].reshape((n, n))
+        loglhgrad = self.module.decodeFeature(feature, 'first_order')
+        loglhhessian = self.module.decodeFeature(feature, 'second_order')
 
         term1 = self.qvalue * (loglhhessian - outer(loglhgrad, loglhgrad))
         term2 = outer(qgradient, loglhgrad)
