@@ -164,19 +164,21 @@ class PolicyFeatureModule(Module):
         return newfeadesc, outdim
 
     def decodeFeature(self, feature, name):
-        decoder = self.feadesc[name]['decoder']
+        decoder = self.feadesc[name].get('decoder', self._identityDecoder)
         r = self.feadesc[name]['fea_range']
         feature = feature[r[0]:r[1]]
         return decoder(feature)
+
+    # the default decoder.
+    @staticmethod
+    def _identityDecoder(feature):
+        return feature
 
     def getFeatureDescriptor(self):
         # first order feature
         def _firstOrderFeature(policy, feature, action):
             return self.getFeatureSlice(policy.calBasisFuncVal(feature).reshape(-1),
                                         action)
-
-        def _identityDecoder(feature):
-            return feature
 
         # second order feature
         n = self.feadim
@@ -196,7 +198,7 @@ class PolicyFeatureModule(Module):
                 'name': 'first_order',
                 'dimension': self.feadim,
                 'constructor': _firstOrderFeature,
-                'decoder': _identityDecoder,
+                'decoder': self._identityDecoder,
             },
             {
                 'name': 'second_order',
@@ -244,10 +246,12 @@ class PolicyValueFeatureModule(PolicyFeatureModule):
 
         return [
             {
+                'name': 'first_order',
                 'dimension': self.feadim,
                 'constructor': _firstOrderFeature,
             },
             {
+                'name': 'state_feature',
                 'dimension': self.statefeadim,
                 'constructor': _stateFeature,
             },

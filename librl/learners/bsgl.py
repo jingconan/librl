@@ -48,17 +48,15 @@ class BSGLRegularGradientActorCriticLearner(ActorCriticLearner):
         self.k = 0
         self.lastobs = None
 
-    # TODO(hbhzwj): right now different types of feature are encoded and
-    # decoded based on their absolute position in the feature vector. We need
-    # to implement a more systemtic to encode and decode features.
     def critic(self, lastreward, lastfeature, reward, feature):
-        # The feature consists of two parts. The first part is the gradient of
-        # log likelihood of policy for the corresponding state-feature pair,
-        # the second part is the state feature used by the policy. In the
-        # critic, we only use state feature.
-        # Get state feature.
-        slastfeature = lastfeature[-self.sfdim:]
-        sfeature = feature[-self.sfdim:]
+        # The feature consists of two parts:
+        #    1. gradient of log likelihood of policy for the corresponding
+        #    state-feature pair.
+        #    2. the state feature used to approximate the state-value
+        #    function.
+        # In the critic, we only use state feature.
+        slastfeature = self.module.decodeFeature(lastfeature, 'state_feature')
+        sfeature = self.module.decodeFeature(feature, 'state_feature')
 
         # Estimate of avg reward.
         # reward learning rate = reward decay factor x critic step size.
@@ -88,7 +86,8 @@ class BSGLRegularGradientActorCriticLearner(ActorCriticLearner):
         return scipy.clip(v, self.parambound[:, 0], self.parambound[:, 1])
 
     def actor(self, lastobs, lastaction, lastfeature):
-        update = self.beta() * self.d * lastfeature[:self.paramdim]
+        safeature = self.module.decodeFeature(lastfeature, 'first_order')
+        update = self.beta() * self.d * safeature
         self.module.theta = self.ensureBound(self.module.theta + update)
 
 class BSGLFisherInfoActorCriticLearner(BSGLRegularGradientActorCriticLearner):
