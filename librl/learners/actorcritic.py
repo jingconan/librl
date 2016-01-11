@@ -17,7 +17,7 @@ class ActorCriticLearner(object):
     def critic(self, lastreward, lastfeature, reward, feature):
         abstractMethod()
 
-    def actor(self, obs, action, feature):
+    def actor(self, lastobs, lastaction, lastfeature):
         abstractMethod()
 
     def resetStepSize(self):
@@ -30,7 +30,7 @@ class ActorCriticLearner(object):
         lastfeature = self.module.activate(scipy.concatenate((lastobs, lastaction)))
         feature = self.module.activate(scipy.concatenate((obs, action)))
         self.critic(lastreward, lastfeature, reward, feature)
-        self.actor(obs, action, feature)
+        self.actor(lastobs, lastaction, lastfeature)
 
     def learnOnDataSet(self, dataset, startIndex=0, endIndex=None):
         """dataset is a sequence of (state, action, reward). update weights based on

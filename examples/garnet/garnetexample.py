@@ -72,6 +72,8 @@ def loop():
                th_max=max(policy.theta),
                th_min=min(policy.theta),
                th_mean=scipy.mean(policy.theta),
+               #  th_std=scipy.std(policy.theta),
+               #  obs=sum(agent.lastobs),
                reward=reward)
 try:
     loop()

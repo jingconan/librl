@@ -61,9 +61,9 @@ class TDLearner(ActorCriticLearner):
     def stateActionValue(self, feature):
         return self.tao(self.r) * scipy.inner(self.r, feature)
 
-    def actor(self, obs, action, feature):
-        self.scaledfeature = (self.stateActionValue(feature) *
-                              feature[:self.paramdim])
+    def actor(self, lastobs, lastaction, lastfeature):
+        self.scaledfeature = (self.stateActionValue(lastfeature) *
+                              lastfeature[:self.paramdim])
         # Update policy parameter.
         # TODO(jingconanwang) somehow we cannot use += operator. Check the
         # reason.

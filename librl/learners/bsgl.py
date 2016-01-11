@@ -87,8 +87,8 @@ class BSGLRegularGradientActorCriticLearner(ActorCriticLearner):
             return v
         return scipy.clip(v, self.parambound[:, 0], self.parambound[:, 1])
 
-    def actor(self, obs, action, feature):
-        update = self.beta() * self.d * feature[:self.paramdim]
+    def actor(self, lastobs, lastaction, lastfeature):
+        update = self.beta() * self.d * lastfeature[:self.paramdim]
         self.module.theta = self.ensureBound(self.module.theta + update)
 
 class BSGLFisherInfoActorCriticLearner(BSGLRegularGradientActorCriticLearner):
@@ -112,8 +112,9 @@ class BSGLFisherInfoActorCriticLearner(BSGLRegularGradientActorCriticLearner):
         update = scipy.outer(tmp, tmp) / (1 - css + css * scipy.inner(psi, tmp))
         self.ifim = (1.0 / (1 - css)) * (self.ifim - css * update)
 
-    def actor(self, obs, action, feature):
-        update = self.beta() * self.d * scipy.inner(self.ifim, feature[:self.paramdim])
+    def actor(self, lastobs, lastaction, lastfeature):
+        update = self.beta() * self.d * scipy.inner(self.ifim,
+                                                    lastfeature[:self.paramdim])
         self.module.theta = self.ensureBound(self.module.theta + update)
 
 class BSGLAdvParamActorCriticLearner(BSGLRegularGradientActorCriticLearner):
@@ -132,7 +133,7 @@ class BSGLAdvParamActorCriticLearner(BSGLRegularGradientActorCriticLearner):
         tmp = scipy.eye(self.paramdim) - css * scipy.outer(psi, psi)
         self.ngrad = scipy.inner(tmp, self.ngrad) + css * self.d * psi
 
-    def actor(self, obs, action, feature):
+    def actor(self, lastobs, lastaction, lastfeature):
         update = self.beta() * self.ngrad
         self.module.theta = self.ensureBound(self.module.theta + update)
         #  self.module.theta = self.module.theta + update
@@ -165,6 +166,6 @@ class BSGLAdvParamFisherInfoActorCriticLearner(BSGLRegularGradientActorCriticLea
         update = scipy.outer(tmp, tmp) / (1 - css + css * scipy.inner(psi, tmp))
         self.ifim = (1.0 / (1 - css)) * (self.ifim - css * update)
 
-    def actor(self, obs, action, feature):
+    def actor(self, lastobs, lastaction, lastfeature):
         update = self.beta() * self.ngrad
         self.module.theta = self.ensureBound(self.module.theta + update)
