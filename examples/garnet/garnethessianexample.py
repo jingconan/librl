@@ -36,8 +36,9 @@ task = GarnetTask(env, sigma=0.1)
 
 bound = [(-100, 100)] * (numActions * feaDim)
 policy = BoltzmanPolicy(4, T=1, theta=scipy.zeros((paramDim,)))
-learner = HessianLearner(hessianlearningrate=0.9, policy=policy,
-#  learner = LSTDLearner(policy=policy,
+#  learner = HessianLearner(hessianlearningrate=0.9, policy=policy,
+LSTDLearner.enableOnlyEssentialFeatureInCritic = True
+learner = LSTDLearner(policy=policy,
                     tracestepsize=0.9,
                     actorstepsize=1,
                     maxcriticnorm=10)

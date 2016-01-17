@@ -21,7 +21,7 @@ class TDLearnerTestCase(unittest.TestCase):
                                    self.module)
 
     def testCritic(self):
-        assert_array_almost_equal([[0, 0], [0, 0]], self.learner.A)
+        assert_array_almost_equal([[1, 0], [0, 1]], self.learner.A)
         assert_array_almost_equal([0, 0], self.learner.b)
 
         self.learner.A = scipy.array([[2, 0],

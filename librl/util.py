@@ -123,3 +123,15 @@ def decode1DArrayAsTriu(arr, n):
 def decode1DArrayAsSymMat(arr, n):
     res = decode1DArrayAsTriu(arr, n)
     return res + res.T - scipy.diag(scipy.diag(res))
+
+
+# sherman-morrison update for inverse of A where A is updated according to
+# the following rule.
+# A = A + stepsize * (zv' - A)
+def shermanMorrisonUpdate(invA, stepsize, z, v):
+    if stepsize >= 1:
+        return invA
+    nom= invA.dot(scipy.outer(z, v)).dot(invA)
+    denom = (1.0 - stepsize) + stepsize * scipy.dot(v, scipy.dot(invA, z))
+    return 1.0 / (1.0 - stepsize) * (invA - stepsize * nom / denom)
+

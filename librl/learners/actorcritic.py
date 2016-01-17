@@ -4,13 +4,18 @@ from ..policies.boltzmann import PolicyFeatureModule
 
 class ActorCriticLearner(object):
     """This is the basis class for all actor-critic method"""
-
+    enableOnlyEssentialFeatureInCritic = False
     def __init__(self, policy, module=None):
         if module is None:
             self.module = PolicyFeatureModule(policy, 'policywrapper')
         else:
             self.module = module
         self.paramdim = len(self.module.theta)
+        if self.enableOnlyEssentialFeatureInCritic:
+            self.criticdim = self.paramdim
+        else:
+            self.criticdim = self.module.outdim
+
         self.reset()
         self.newEpisode()
 
@@ -29,7 +34,10 @@ class ActorCriticLearner(object):
         current time and last time"""
         lastfeature = self.module.activate(scipy.concatenate((lastobs, lastaction)))
         feature = self.module.activate(scipy.concatenate((obs, action)))
-        self.critic(lastreward, lastfeature, reward, feature)
+        self.critic(lastreward,
+                    lastfeature[:self.criticdim],
+                    reward,
+                    feature[:self.criticdim])
         self.actor(lastobs, lastaction, lastfeature)
 
     def learnOnDataSet(self, dataset, startIndex=0, endIndex=None):

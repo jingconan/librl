@@ -69,12 +69,12 @@ class TDLearnerTestCase(unittest.TestCase):
                             tracestepsize=0.9,
                             actorstepsize= 1,
                             maxcriticnorm=1000)
-        learner.r = scipy.array([1, 1, 1, 1, 1, 1], dtype=float)
-        lastfeature = scipy.array([1, 2, 3, 4, 5, 6])
+        learner.r = scipy.array([1, 1, 1, 1, 1], dtype=float)
+        lastfeature = scipy.array([1, 2, 3, 4, 5])
         learner.actor([], [], lastfeature)
-        # the stateActionValue = 1*1 + 1*2 + 1*3 + 1*4 + ... + 1*7 = 21.
-        # the initial theta is [0.4, 1.1], the update is [1, 2] * 21.
-        assert_array_almost_equal([21.4, 43.1], learner.module.theta)
+        # the stateActionValue = 1*1 + 1*2 + 1*3 + 1*4 + ... + 1*5 = 15.
+        # the initial theta is [0.4, 1.1], the update is [1, 2] * 15.
+        assert_array_almost_equal([15.4, 31.1], learner.module.theta)
 
 if __name__ == "__main__":
     unittest.main()

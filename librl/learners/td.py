@@ -17,8 +17,8 @@ class TDLearner(ActorCriticLearner):
     def reset(self):
         """reset all parameters"""
         self.resetStepSize()
-        self.z = scipy.zeros((self.module.outdim,))
-        self.r = scipy.zeros((self.module.outdim,))
+        self.z = scipy.zeros((self.criticdim,))
+        self.r = scipy.zeros((self.criticdim,))
         self.alpha = 0
         self.lastobs = None
 
@@ -59,7 +59,9 @@ class TDLearner(ActorCriticLearner):
             return 1
 
     def stateActionValue(self, feature):
-        return self.tao(self.r) * scipy.inner(self.r, feature)
+        r = self.tao(self.r) * self.r
+        assert len(r) == self.criticdim, 'Wrong dimension of r'
+        return scipy.inner(r, feature[:self.criticdim])
 
     def actor(self, lastobs, lastaction, lastfeature):
         self.scaledfeature = (self.stateActionValue(lastfeature) *
