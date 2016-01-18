@@ -14,6 +14,7 @@ from librl.environments.garnet import *
 from librl.learners import *
 from librl.agents.actorcriticagent import ActorCriticAgent
 from librl.util import cPrint
+from librl.experiments import *
 
 
 ITER_NUM = 50000
@@ -52,26 +53,9 @@ learner = TDLearner(module=featureModule,
                     )
 
 agent = ActorCriticAgent(learner, sdim=paramDim*numActions, adim=1)
-experiment = Experiment(task, agent)
+experiment = SessionExperiment(task, agent, policy=policy)
 
-def loop():
-    for i in xrange(ITER_NUM):
-        reward = 0
-        for j in xrange(LEARN_INTERVAL):
-            reward += experiment._oneInteraction()
-        agent.learn()
-
-        # periodically reset stepsize to increase learning speed.
-        if i % 1000 == 0:
-            learner.resetStepSize()
-        cPrint(iteration=i,
-               th_max=max(policy.theta),
-               th_min=min(policy.theta),
-               th_mean=scipy.mean(policy.theta),
-               #  th_std=scipy.std(policy.theta),
-               #  obs=sum(agent.lastobs),
-               reward=reward)
 try:
-    loop()
+    experiment.doSessionsAndPrint(sessionNumber=ITER_NUM, sessionSize=LEARN_INTERVAL)
 except KeyboardInterrupt:
     pass
