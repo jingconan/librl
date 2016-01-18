@@ -33,15 +33,23 @@ env = GarnetEnvironment(numStates=30,
 
 # Create task
 task = GarnetTask(env, sigma=0.1)
+#  task = GarnetLookForwardTask(env, sigma=0.1)
 
 bound = [(-100, 100)] * (numActions * feaDim)
 policy = BoltzmanPolicy(4, T=1, theta=scipy.zeros((paramDim,)))
+featureModule = PolicyValueFeatureModule(policy, 'bsglpolicywrapper')
 #  learner = HessianLearner(hessianlearningrate=0.9, policy=policy,
-LSTDLearner.enableOnlyEssentialFeatureInCritic = True
-learner = LSTDLearner(policy=policy,
-                    tracestepsize=0.9,
-                    actorstepsize=1,
-                    maxcriticnorm=10)
+#  LSTDLearner.enableOnlyEssentialFeatureInCritic = False
+#  learner = LSTDLearner(policy=policy,
+learner = TDLearner(module=featureModule,
+                    cssinitial=0.1,
+                    cssdecay=1000,
+                    assinitial=0.01,
+                    assdecay=1000, # ass means actor steps size
+                    rdecay=0.95,
+                    maxcriticnorm=10000, # maximum critic norm
+                    tracestepsize=0.9 # stepsize of trace
+                    )
 
 agent = ActorCriticAgent(learner, sdim=paramDim*numActions, adim=1)
 experiment = Experiment(task, agent)

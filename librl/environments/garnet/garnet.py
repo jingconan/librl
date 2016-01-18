@@ -12,6 +12,12 @@ class GarnetTask(Task):
     variable with mean 0 and unit variance. The actual reward id selected
     randomly according to a normal distribution with mean equal to the
     expected reward and standard deviation \sigma.
+
+    The state-action observation is created based on pg. 29 of
+    Bhatnagar, Shalabh, et al. "Natural actor-critic algorithms." Automatica
+    45.11 (2009): 2471-2482.
+    phi(x, u) = (0...0, fs, 0...0)
+                  u-1        m-i
     """
     def __init__(self, environment, sigma):
         super(GarnetTask, self).__init__(environment)
@@ -44,6 +50,27 @@ class GarnetTask(Task):
         feature = scipy.zeros((self.numActions, fd * self.numActions))
         for i in xrange(self.numActions):
             feature[i, (i*fd):((i+1)*fd)] = sensors
+        return feature.reshape(-1)
+
+class GarnetLookForwardTask(GarnetTask):
+    """Garnet task whose feature is created by looking forward.
+
+    This class is a garnet task with a new feature. The state-action feature is
+    the expected state feature value given this action.
+    phi(x, u) = E(fs|u) - fs
+    """
+    def getObservation(self):
+        sensors = self.env.getSensors()
+        fd = len(sensors)
+        feature = scipy.zeros((self.numActions, fd))
+        for i in xrange(self.numActions):
+            nextStates = self.env.transitionStates[i, self.env.curState, :]
+            prob = self.env.transitionProb[i, self.env.curState, :]
+            res = scipy.zeros((fd,))
+            for ss, p in zip(nextStates, prob):
+                obs = self.env.getSensors(int(ss))
+                res += scipy.array(obs)* p
+            feature[i, :] = res - scipy.array(sensors)
         return feature.reshape(-1)
 
 class GarnetEnvironment(Environment):
@@ -123,8 +150,10 @@ class GarnetEnvironment(Environment):
                 cutPoints = sorted(cutPoints.tolist() + [0, 1])
                 self.transitionProb[u, i, :] = scipy.diff(cutPoints)
 
-    def getSensors(self):
-        return self.stateObs[self.curState]
+    def getSensors(self, state=None):
+        if state is None:
+            state = self.curState
+        return self.stateObs[state]
 
     def performAction(self, action):
         action = action[0]

@@ -20,11 +20,9 @@ class HessianLearner(LSTDLearner):
         self.T = zeros((self.module.outdim, self.paramdim))
         self.H = zeros((self.paramdim, self.paramdim))
 
-    @property
     def gamma(self):
-        return sqrt(self.zeta * self.beta)
+        return sqrt(self.zeta() * self.beta())
 
-    @property
     def zeta(self):
         return 1.0 / (self.k + 1)
 
@@ -75,9 +73,9 @@ class HessianLearner(LSTDLearner):
         # Update estimates
         self.scaledfeature = (self.stateActionValue(feature) *
                               feature[:self.paramdim])
-        self.eta += self.zeta * self.scaledfeature
+        self.eta += self.zeta() * self.scaledfeature
         vupdate = outer(self.z, self.scaledfeature - self.eta)
-        self.V += self.zeta * (vupdate - self.V)
+        self.V += self.zeta() * (vupdate - self.V)
 
     def getScalingMatrix(self):
         # Here we add one to avoid division by zero.
@@ -88,4 +86,4 @@ class HessianLearner(LSTDLearner):
     # scaledfeature has been calculated in critic and reused here.
     def actor(self, obs, action, feature):
         scaledgradient = dot(self.getScalingMatrix(), self.scaledfeature)
-        self.module.theta =  self.module.theta + self.beta * scaledgradient
+        self.module.theta =  self.module.theta + self.beta() * scaledgradient

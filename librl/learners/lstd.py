@@ -20,15 +20,15 @@ class LSTDLearner(TDLearner):
         self.r = -1 * dot(self.invA, self.b)
         #  self.r = self.r * self.tao(self.r)
         # Update estimates
-        self.b += self.gamma * ((lastreward - self.alpha) * self.z -
+        self.b += self.gamma() * ((lastreward - self.alpha) * self.z -
                    self.b)
         featurediff = feature - lastfeature
-        self.A += self.gamma * (outer(self.z, featurediff) - self.A)
+        self.A += self.gamma() * (outer(self.z, featurediff) - self.A)
         # We use sherman-morrison inversion
         #  self.invA = shermanMorrisonUpdate(self.invA, self.gamma, self.z,
         #                                    featurediff)
 
         # Estimate of avg reward.
-        self.alpha += self.gamma * (reward - self.alpha)
+        self.alpha += self.gamma() * (reward - self.alpha)
         # Update eligiblity trace
         self.z = self.tracestepsize * self.z + feature

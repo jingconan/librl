@@ -43,16 +43,16 @@ policy = BoltzmanPolicy(actionnum=numActions, T=1, theta=scipy.zeros((paramDim))
 featureModule = PolicyValueFeatureModule(policy, 'bsglpolicywrapper')
 bound = [(-100, 100)] * (numActions * feaDim)
 #  import ipdb;ipdb.set_trace()
-learner = learnerClass(policy=policy,
+learner = learnerClass(module=featureModule,
                        cssinitial=0.1,
                        cssdecay=1000, # css means critic step size
                        assinitial=0.01,
-                       assdecay=100000, # ass means actor steps size
+                       #  assdecay=100000, # ass means actor steps size
+                       assdecay=1000, # ass means actor steps size
                        rdecay=0.95, # reward decay weight
                        #  parambound=None # bound for the parameters
                        parambound=bound, # bound for the parameters
                        maxcriticnorm=1000000,
-                       module=featureModule
                        )
 
 agent = ActorCriticAgent(learner, sdim=paramDim*numActions, adim=1)

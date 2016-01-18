@@ -7,7 +7,7 @@ from collections import defaultdict
 
 from pybrain.rl.experiments import Experiment
 import librl
-from librl.policies import BoltzmanPolicy
+from librl.policies import BoltzmanPolicy, PolicyFeatureModule
 from librl.environments.mazes.trapmaze import TrapMaze
 from librl.environments.mazes.tasks.robottask import RobotMotionAvgRewardTask
 from librl.learners.td import TDLearner
@@ -30,9 +30,23 @@ task = RobotMotionAvgRewardTask(env, senRange)
 task.GOAL_REWARD = 100
 task.TRAP_REWARD = 0
 
-policy = BoltzmanPolicy(4, T, iniTheta)
-learner = TDLearner(policy, 0.9, 8, 1)
-agent = ActorCriticAgent(learner, sdim=8, adim=1)
+feaDim = 8
+numActions = 4
+
+policy = BoltzmanPolicy(numActions, T, iniTheta)
+module = PolicyFeatureModule(policy, 'policywrapper')
+#  learner = TDLearner(module=module, 0.9, 8, 1)
+learner = TDLearner(module=module,
+                    cssinitial=0.1,
+                    cssdecay=1000,
+                    assinitial=0.01,
+                    assdecay=1000, # ass means actor steps size
+                    rdecay=0.95,
+                    maxcriticnorm=10000, # maximum critic norm
+                    tracestepsize=0.9 # stepsize of trace
+                    )
+
+agent = ActorCriticAgent(learner, sdim=feaDim, adim=1)
 experiment = Experiment(task, agent)
 
 #####################

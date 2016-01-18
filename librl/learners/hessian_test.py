@@ -14,13 +14,19 @@ class TDLearnerTestCase(unittest.TestCase):
         self.policy = MockPolicy({}, [0, 0])
         self.module = MockPolicyFeatureModule(self.policy)
         self.module.outdim = 6
-        self.tracestepsize = 0.9
-        self.actorstepsize = 3
-        self.maxcriticnorm = 1000
         self.hessianlearningrate = 0.9
-        self.learner = HessianLearner(self.hessianlearningrate, self.policy, self.tracestepsize,
-                                      self.actorstepsize, self.maxcriticnorm,
-                                      self.module)
+        self.learner = HessianLearner(self.hessianlearningrate,
+                                      module=self.module,
+                                      cssinitial=1,
+                                      cssdecay=1, # css means critic step size
+                                      assinitial=1,
+                                      assdecay=1, # ass means actor steps size
+                                      rdecay=1, # reward decay weight
+                                      maxcriticnorm=100, # maximum critic norm
+                                      tracestepsize=0.9, # trace stepsize
+                                      parambound = None # bound for the parameters
+                                      )
+
 
     def testActor(self):
         self.learner.H = scipy.array([[2, 0], [0, 3]])

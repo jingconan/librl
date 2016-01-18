@@ -6,13 +6,29 @@ from .actorcritic import ActorCriticLearner
 
 class TDLearner(ActorCriticLearner):
     """User TD Learner to learn the projection coefficient r of Q on the basis surface"""
-    def __init__(self, policy, tracestepsize, actorstepsize, maxcriticnorm,
-                 module=None):
-        ActorCriticLearner.__init__(self, policy, module)
-        # parameter
-        self.tracestepsize = tracestepsize
-        self.actorstepsize = actorstepsize
+    def __init__(self,
+                 module,
+                 cssinitial, cssdecay, # css means critic step size
+                 assinitial, assdecay, # ass means actor steps size
+                 rdecay, # reward decay weight
+                 maxcriticnorm, # maximum critic norm
+                 tracestepsize, # stepsize of trace
+                 parambound = None # bound for the parameters
+                 ):
+        super(TDLearner, self).__init__(module)
+
+        self.cssinitial = cssinitial
+        self.cssdecay = cssdecay
+        self.assinitial = assinitial
+        self.assdecay = assdecay
+        self.rdecay = rdecay
         self.maxcriticnorm = maxcriticnorm
+        self.tracestepsize = tracestepsize
+
+        if parambound is None:
+            self.parambound = None
+        else:
+            self.parambound = scipy.array(parambound)
 
     def reset(self):
         """reset all parameters"""
@@ -33,26 +49,27 @@ class TDLearner(ActorCriticLearner):
 
     def critic(self, lastreward, lastfeature, reward, feature):
         if self.enableOnlyEssentialFeatureInCritic:
-            lastfeature = self.module.decodeFeature(lastfeature, 'first_order')
-            feature = self.module.decodeFeature(feature, 'first_order')
+            lastfeature = self.module.decodeFeature(lastfeature, self.essentialFeature)
+            feature = self.module.decodeFeature(feature, self.essentialFeature)
+
+        # Estimate of avg reward.
+        rweight = self.rdecay * self.gamma()
+        self.alpha = (1 - rweight) * self.alpha + rweight * reward
+
         # Update critic parameter
         self.d = lastreward - self.alpha + scipy.inner(self.r, feature - lastfeature)
-        self.r += self.gamma * self.d * self.z
-        # Estimate of avg reward.
-        self.alpha += self.gamma * (reward - self.alpha)
+        self.r += self.gamma() * self.d * self.z
+
         # Update eligiblity trace
         self.z = self.tracestepsize * self.z + feature
 
-    @property
     def gamma(self):
-        return 1.0 / (self.k + 1)
+        return self.cssinitial * self.cssdecay / (self.cssdecay + self.k **
+                                                  (2.0 / 3))
 
-    @property
+    # actor step size
     def beta(self):
-        if self.k > 1:
-            return (self.actorstepsize + 0.0 ) / ( self.k * scipy.log(self.k) )
-        else:
-            return 1
+        return self.assinitial * self.assdecay / (self.assdecay + self.k)
 
     def tao(self, r):
         normR = norm(r)
@@ -63,17 +80,18 @@ class TDLearner(ActorCriticLearner):
 
     def stateActionValue(self, feature):
         r = self.tao(self.r) * self.r
+        if self.enableOnlyEssentialFeatureInCritic:
+            feature = self.module.decodeFeature(feature,
+                                                self.essentialFeature)
         assert len(r) == self.criticdim, 'Wrong dimension of r'
-        return scipy.inner(r, feature[:self.criticdim])
+        return scipy.inner(r, feature)
 
     def actor(self, lastobs, lastaction, lastfeature):
         safeature = self.module.decodeFeature(lastfeature, 'first_order')
-        if self.enableOnlyEssentialFeatureInCritic:
-            Q = self.stateActionValue(safeature)
-        else:
-            Q = self.stateActionValue(lastfeature)
+        Q = self.stateActionValue(lastfeature)
+        #  Q = self.d
         self.scaledfeature = Q * safeature
         # Update policy parameter.
         # TODO(jingconanwang) somehow we cannot use += operator. Check the
         # reason.
-        self.module.theta =  self.module.theta + self.beta * self.scaledfeature
+        self.module.theta =  self.module.theta + self.beta() * self.scaledfeature

@@ -4,15 +4,14 @@ from ..policies.boltzmann import PolicyFeatureModule
 
 class ActorCriticLearner(object):
     """This is the basis class for all actor-critic method"""
-    enableOnlyEssentialFeatureInCritic = False
-    def __init__(self, policy, module=None):
-        if module is None:
-            self.module = PolicyFeatureModule(policy, 'policywrapper')
-        else:
-            self.module = module
+    def __init__(self, module,
+                 enableOnlyEssentialFeatureInCritic=False,
+                 essentialFeature='first_order'):
+        self.module = module
         self.paramdim = len(self.module.theta)
+        self.enableOnlyEssentialFeatureInCritic = enableOnlyEssentialFeatureInCritic
         if self.enableOnlyEssentialFeatureInCritic:
-            self.criticdim = self.model.feadesc['first_order']['dimension']
+            self.criticdim = self.module.feadesc[self.essentialFeature]['dimension']
         else:
             self.criticdim = self.module.outdim
 
