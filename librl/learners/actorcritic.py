@@ -12,7 +12,7 @@ class ActorCriticLearner(object):
             self.module = module
         self.paramdim = len(self.module.theta)
         if self.enableOnlyEssentialFeatureInCritic:
-            self.criticdim = self.paramdim
+            self.criticdim = self.model.feadesc['first_order']['dimension']
         else:
             self.criticdim = self.module.outdim
 
@@ -34,10 +34,7 @@ class ActorCriticLearner(object):
         current time and last time"""
         lastfeature = self.module.activate(scipy.concatenate((lastobs, lastaction)))
         feature = self.module.activate(scipy.concatenate((obs, action)))
-        self.critic(lastreward,
-                    lastfeature[:self.criticdim],
-                    reward,
-                    feature[:self.criticdim])
+        self.critic(lastreward, lastfeature, reward, feature)
         self.actor(lastobs, lastaction, lastfeature)
 
     def learnOnDataSet(self, dataset, startIndex=0, endIndex=None):

@@ -32,6 +32,9 @@ class TDLearner(ActorCriticLearner):
         self.reachProbCal = reachProbCal
 
     def critic(self, lastreward, lastfeature, reward, feature):
+        if self.enableOnlyEssentialFeatureInCritic:
+            lastfeature = self.module.decodeFeature(lastfeature, 'first_order')
+            feature = self.module.decodeFeature(feature, 'first_order')
         # Update critic parameter
         self.d = lastreward - self.alpha + scipy.inner(self.r, feature - lastfeature)
         self.r += self.gamma * self.d * self.z
@@ -64,8 +67,12 @@ class TDLearner(ActorCriticLearner):
         return scipy.inner(r, feature[:self.criticdim])
 
     def actor(self, lastobs, lastaction, lastfeature):
-        self.scaledfeature = (self.stateActionValue(lastfeature) *
-                              lastfeature[:self.paramdim])
+        safeature = self.module.decodeFeature(lastfeature, 'first_order')
+        if self.enableOnlyEssentialFeatureInCritic:
+            Q = self.stateActionValue(safeature)
+        else:
+            Q = self.stateActionValue(lastfeature)
+        self.scaledfeature = Q * safeature
         # Update policy parameter.
         # TODO(jingconanwang) somehow we cannot use += operator. Check the
         # reason.
