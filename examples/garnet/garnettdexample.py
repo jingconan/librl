@@ -24,7 +24,6 @@ LEARN_INTERVAL = 1
 # Add unsafe states
 feaDim = 8
 numActions = 4
-paramDim = numActions * feaDim
 env = GarnetEnvironment(numStates=30,
                         numActions=numActions,
                         branching=2,
@@ -33,12 +32,14 @@ env = GarnetEnvironment(numStates=30,
                         savePath='./garnet_testbed.pkz')
 
 # Create task
-task = GarnetTask(env, sigma=0.1)
-#  task = GarnetLookForwardTask(env, sigma=0.1)
+#  paramDim = numActions * feaDim
+#  task = GarnetTask(env, sigma=0.1)
+paramDim = feaDim
+task = GarnetLookForwardTask(env, sigma=0.1)
 
 bound = [(-100, 100)] * (numActions * feaDim)
 policy = BoltzmanPolicy(4, T=1, theta=scipy.zeros((paramDim,)))
-featureModule = PolicyValueFeatureModule(policy, 'bsglpolicywrapper')
+featureModule = PolicyFeatureModule(policy, 'bsglpolicywrapper')
 #  learner = HessianLearner(hessianlearningrate=0.9, policy=policy,
 #  LSTDLearner.enableOnlyEssentialFeatureInCritic = False
 #  learner = LSTDLearner(policy=policy,
