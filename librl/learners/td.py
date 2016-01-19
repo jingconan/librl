@@ -78,6 +78,11 @@ class TDLearner(ActorCriticLearner):
         else:
             return 1
 
+    def ensureBound(self, v):
+        if self.parambound is None:
+            return v
+        return scipy.clip(v, self.parambound[:, 0], self.parambound[:, 1])
+
     def stateActionValue(self, feature):
         r = self.tao(self.r) * self.r
         if self.enableOnlyEssentialFeatureInCritic:
