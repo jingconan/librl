@@ -99,4 +99,5 @@ class TDLearner(ActorCriticLearner):
         # Update policy parameter.
         # TODO(jingconanwang) somehow we cannot use += operator. Check the
         # reason.
-        self.module.theta =  self.module.theta + self.beta() * self.scaledfeature
+        self.module.theta =  self.ensureBound(self.module.theta + self.beta()
+                                              * self.scaledfeature)
