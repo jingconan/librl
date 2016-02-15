@@ -43,6 +43,8 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         self.theta = theta
         self.actionnum = actionnum
 
+        self.cachedActionProb = None
+
     def get_theta(self): return self._params
     def set_theta(self, val): self._setParameters(val)
     theta = property(fget = get_theta, fset = set_theta)
@@ -108,6 +110,7 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         """
         feaMat = scipy.array(feaList)
         action_prob = self._getActionProb(feaList, self.theta)
+        self.cachedActionProb = action_prob
         self.g = scipy.dot(action_prob, feaMat)
         self.bf = feaMat - self.g
         return self.bf
@@ -117,7 +120,13 @@ class BoltzmanPolicy(Module, ParameterContainer, PolicyInterface):
         Please see https://goo.gl/PRnu58 for mathematical deduction.
         """
         feaMat = scipy.array(feaList)
-        action_prob = self._getActionProb(feaList, self.theta)
+        # We assume second order basis calculation followe first order basis
+        # calculation, so we just use the cachedActionProb.
+        if self.cachedActionProb is not None:
+            action_prob = self.cachedActionProb
+            self.cachedActionProb = None
+        else:
+            action_prob = self._getActionProb(feaList, self.theta)
         mat1 = scipy.dot(feaMat.T * action_prob, feaMat)
         tmp = scipy.dot(feaMat.T, action_prob)
         log_likelihood_hessian = -1 * mat1 + scipy.outer(tmp, tmp.T)
