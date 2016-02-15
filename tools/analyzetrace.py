@@ -26,7 +26,7 @@ VARS = dict(
     sampleInterval = 1, # sample the raw data
     #  plotInterval = 1000 # limit # of pts in the output
     plotInterval = 1, # limit # of pts in the output
-    exportFigPath = '',
+    exportFigPath = 'fig.json',
     showFig = True,
 )
 
@@ -37,7 +37,14 @@ parser.add_argument('filename', help='the path of trace files')
 
 # Add flag to override vars
 for k, v in VARS.iteritems():
-    parser.add_argument('--' + k, default=v, type=type(v))
+    vType = type(v)
+    if vType == bool:
+      parser.add_argument('--' + k, dest=k, action='store_true')
+      parser.add_argument('--no-' + k, dest=k, action='store_false')
+    else:
+      parser.add_argument('--' + k, type=vType)
+
+parser.set_defaults(**VARS)
 
 ARGS = parser.parse_args()
 print 'ARGS: ', pprint.pformat(ARGS.__dict__)
