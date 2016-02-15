@@ -19,9 +19,11 @@ from librl.util import createShardFilenames
 
 #########################
 # Parameters
-windowSize = 5000
+#  windowSize = 5000
+windowSize = 1
 sampleInterval = 1 # sample the raw data
-plotInterval = 1000 # limit # of pts in the output
+#  plotInterval = 1000 # limit # of pts in the output
+plotInterval = 1 # limit # of pts in the output
 #########################
 
 def parseLine(line):

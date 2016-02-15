@@ -1,8 +1,7 @@
 from librl.environments.garnet import *
 
 # Number of states (n in the paper).
-#  numStates = 50
-numStates = 10 # tmp for testing
+numStates = 50
 # Number of actions at each state (m in the paper).
 numActions = 4
 # Number of next states (b in the paper).
