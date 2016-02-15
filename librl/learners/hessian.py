@@ -8,7 +8,7 @@ from .lstd import LSTDLearner
 from .td import TDLearner
 
 class HessianBase(object):
-    rewardRange = [0, 1]
+    rewardRange = [0, 400]
     def __init__(self, hessianlearningrate):
         self.hessianlearningrate = hessianlearningrate
         self.hessiansamplenumber = 0
@@ -49,13 +49,15 @@ class HessianBase(object):
     def getScalingMatrix(self):
         # Here we add one to avoid division by zero.
         #  rho = 1.0 / (self.hessiansamplenumber + 1)
+        if self.hessiansamplenumber < 30:
+            rho = 0
+        else:
+            # get scale weight to reduce noise
+            rr = self.rewardRange
+            rho = (self.alpha - rr[0]) / (rr[1] - rr[0])
+            rho = scipy.clip(rho, 0, 1)
 
-        # get scale weight to reduce noise
-        rr = self.rewardRange
-        rho = (self.alpha - rr[0]) / (rr[1] - rr[0])
-        rho = scipy.clip(rho, 0, 1)
-
-        mat = (1 - rho) *  self.H + rho * scipy.eye(self.paramdim)
+        mat = rho *  self.H + (1 - rho) * scipy.eye(self.paramdim)
         return pinv(mat)
 
     # It is intended that obs, action, and feature are not used.
@@ -135,5 +137,5 @@ class HessianTDLearner(HessianBase, TDLearner):
 
         # Update estimate of Hessian
         self.U = self.getHessianEstimate(feature)
-        self.H = self.hessianlearningrate * self.H + self.U
+        self.H = self.hessianlearningrate * self.zeta() * self.H + self.U
         self.hessiansamplenumber += 1
