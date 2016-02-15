@@ -20,7 +20,7 @@ import garnetproblem as prob
 ####### parameters ##############
 # Learner will learn after every session.
 #  sessionNumber = 50000
-sessionNumber = 500
+sessionNumber = 1000
 sessionSize = 1000
 
 # the dimensionality of parameters in our policy is equal to the
