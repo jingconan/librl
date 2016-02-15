@@ -7,24 +7,40 @@ confidence interval.
 Sample Command:
 ./blaze run ./tools/analyzetrace.py ./sample_results/lstd_new_test@50
 """
-import fileinput
-import numpy as np
-import pylab as P
-import pandas
 import argparse
-import scipy.stats as ss
+import fileinput
 import librl
+import numpy as np
+import pandas
+import pprint
+import pylab as P
+import scipy.stats as ss
 from collections import defaultdict
 from librl.util import createShardFilenames
 
 #########################
 # Parameters
 #  windowSize = 5000
-windowSize = 1
-sampleInterval = 1 # sample the raw data
-#  plotInterval = 1000 # limit # of pts in the output
-plotInterval = 1 # limit # of pts in the output
+VARS = dict(
+    windowSize = 1,
+    sampleInterval = 1, # sample the raw data
+    #  plotInterval = 1000 # limit # of pts in the output
+    plotInterval = 1, # limit # of pts in the output
+    exportFigPath = '',
+    showFig = True,
+)
+
 #########################
+
+parser = argparse.ArgumentParser(description='Analyze run output')
+parser.add_argument('filename', help='the path of trace files')
+
+# Add flag to override vars
+for k, v in VARS.iteritems():
+    parser.add_argument('--' + k, default=v, type=type(v))
+
+ARGS = parser.parse_args()
+print 'ARGS: ', pprint.pformat(ARGS.__dict__)
 
 def parseLine(line):
     tokens = line.split(',')
@@ -47,7 +63,7 @@ def loadTrace(filename, fields=None):
             if not line or line[0] == '-':
                 continue
             i += 1
-            if i == sampleInterval:
+            if i == ARGS.sampleInterval:
                 i = 0
                 # parse the line and extract values
                 tokens = line.split(',')
@@ -83,29 +99,39 @@ def plotWithCI(x, y, yerr):
     P.plot(x, y+yerr, '--g')
     P.plot(x, y-yerr, '--g')
 
-parser = argparse.ArgumentParser(description='Analyze run output')
-parser.add_argument('filename', help='the path of trace files')
-args = parser.parse_args()
+def main():
+    if '@' in ARGS.filename:
+        tokens = ARGS.filename.split('@')
+        assert len(tokens) == 2, 'wrong format of shared file'
+        filenames = createShardFilenames(tokens[0], int(tokens[1]))
+    else:
+        filenames = [ARGS.filename]
 
-if '@' in args.filename:
-    tokens = args.filename.split('@')
-    assert len(tokens) == 2, 'wrong format of shared file'
-    filenames = createShardFilenames(tokens[0], int(tokens[1]))
-else:
-    filenames = [args.filename]
+    mData = [loadTrace(filename, ('reward')) for filename in filenames]
+    windowStats = multipleRunRollingMean(mData, 'reward', ARGS.windowSize,
+                                         ARGS.plotInterval)
+    ptNumber = len(windowStats['mean'])
 
-mData = [loadTrace(filename, ('reward')) for filename in filenames]
-windowStats = multipleRunRollingMean(mData, 'reward', windowSize, plotInterval)
-ptNumber = len(windowStats['mean'])
+    runNumber = len(filenames)
+    rewardMean = windowStats['mean']
+    rewardStd= windowStats['std']
+    sampleNumber = runNumber * ARGS.windowSize
+    rewardSem = rewardStd / (P.sqrt(sampleNumber))
+    confidenceLevel = 0.95
+    yerr = ss.t.ppf((confidenceLevel + 1) / 2.0, sampleNumber-1) * rewardSem
+    plotWithCI(range(ptNumber), rewardMean, yerr)
+    if ARGS.exportFigPath:
+        import json
+        data = {
+            'x': range(ptNumber),
+            'y': rewardMean,
+        }
+        json.dump(data, open(ARGS.exportFigPath, 'w'))
 
-runNumber = len(filenames)
-rewardMean = windowStats['mean']
-rewardStd= windowStats['std']
-sampleNumber = runNumber * windowSize
-rewardSem = rewardStd / (P.sqrt(sampleNumber))
-confidenceLevel = 0.95
-yerr = ss.t.ppf((confidenceLevel + 1) / 2.0, sampleNumber-1) * rewardSem
-plotWithCI(range(ptNumber), rewardMean, yerr)
 #  P.errorbar(range(ptNumber), rewardMean, yerr=yerr, fmt='--o', ecolor='g',
 #             capthick=2)
-P.show()
+    if ARGS.showFig:
+        P.show()
+
+if __name__ == '__main__':
+    main()
