@@ -18,7 +18,7 @@ env = GarnetEnvironment(numStates=numStates,
                         branching=branching,
                         feaDim=feaDim,
                         feaSum=feaSum,
-                        loadPath='tac_results/garnet/garnet_testbed.pkz')
+                        loadPath='examples/tac/garnet/garnet_testbed.pkz')
 
 
 task = GarnetLookForwardTask(env, sigma=sigma)
