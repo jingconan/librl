@@ -20,16 +20,17 @@ import garnetproblem as prob
 import librl
 
 ####### parameters ##############
-#  learnerClass = BSGLRegularGradientActorCriticLearner
-#  learnerClass = BSGLFisherInfoActorCriticLearner
+learnerClass = BSGLRegularGradientActorCriticLearner
+# learnerClass = BSGLFisherInfoActorCriticLearner
 #  learnerClass = BSGLAdvParamActorCriticLearner
-learnerClass = BSGLAdvParamFisherInfoActorCriticLearner
+#  learnerClass = BSGLAdvParamFisherInfoActorCriticLearner
 
 
 # Learner will learn after every session.
 #  sessionNumber = 50000
-sessionNumber = 1000000
-sessionSize = 1
+#  sessionNumber = 1000000
+sessionNumber = 1000
+sessionSize = 1000
 
 # the dimensionality of parameters in our policy is equal to the
 # dimensionality of state feature vector.
@@ -79,8 +80,8 @@ learner = learnerClass(module=featureModule,
                       parambound=bound
                       )
 
-agent = ActorCriticAgent(learner, sdim=obsDim, adim=1)
-experiment = SessionExperiment(prob.task, agent, policy=policy)
+agent = ActorCriticAgent(learner, sdim=obsDim, adim=1, batch=True)
+experiment = SessionExperiment(prob.task, agent, policy=policy, batch=True)
 
 try:
     experiment.doSessionsAndPrint(sessionNumber=sessionNumber,
