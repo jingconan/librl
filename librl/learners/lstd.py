@@ -8,41 +8,45 @@ from .td import TDLearner
 from ..util import shermanMorrisonUpdate
 
 class LSTDLearner(TDLearner):
+    actorUpdateInterval = 10
+    criticResetInterval = 200
     def reset(self):
         super(LSTDLearner, self).reset()
         self.b = zeros((self.criticdim,))
         self.invA = scipy.eye(self.criticdim)
         self.A = scipy.eye(self.criticdim)
-
-    def gamma(self):
-        return 1.0 / (self.k + 1)
-
-    def beta(self):
-        return 1.0 / ((self.k + 2) * log(self.k + 2))
+        self.alpha = 0
 
     def critic(self, lastreward, lastfeature, reward, feature):
+        if self.k % self.criticResetInterval == 0:
+            self.reset()
 
         # Estimate of avg reward.
-        rweight = self.rdecay * self.gamma()
+        rweight = 1.0 / (self.k + 1)
         self.alpha = (1 - rweight) * self.alpha + rweight * reward
         gamma = self.gamma()
         fd = lastfeature - feature
         rd = lastreward - self.alpha
 
-        #  self.r = self.r * self.tao(self.r)
         # Update critic estimate
-        self.b = (1 - gamma) * self.b + gamma * rd * self.z
-        self.A = (1 - gamma) * self.A + gamma * outer(self.z, fd)
-        self.invA = pinv(self.A)
-        if self.k % 10 == 0:
-            self.r = dot(self.invA, self.b)
-
-        #  self.d = rd - scipy.inner(self.r, fd)
-        #  self.r += gamma * self.d * self.z
-
-        # We use sherman-morrison inversion
-        #  self.invA = shermanMorrisonUpdate(self.invA, self.gamma, self.z,
-        #                                    featurediff)
+        self.b += rd * self.z
+        self.A += outer(self.z, fd)
 
         # Update eligiblity trace
         self.z = self.tracestepsize * self.z + feature
+
+    def updateCriticPara(self):
+        # get inverse of A.
+        try:
+          self.invA = inv(self.A)
+        except LinAlgError:
+            pass
+
+        self.r = dot(self.invA, self.b)
+
+    def actor(self, lastobs, lastaction, lastfeature):
+        if self.k % self.actorUpdateInterval != 0:
+            return
+
+        self.updateCriticPara()
+        super(LSTDLearner, self).actor(lastobs, lastaction, lastfeature)
