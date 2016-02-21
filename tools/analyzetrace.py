@@ -8,6 +8,7 @@ Sample Command:
 ./blaze run ./tools/analyzetrace.py ./sample_results/lstd_new_test@50
 """
 import argparse
+import os.path
 import fileinput
 import librl
 import numpy as np
@@ -114,7 +115,8 @@ def main():
     else:
         filenames = [ARGS.filename]
 
-    mData = [loadTrace(filename, ('reward')) for filename in filenames]
+    mData = [loadTrace(filename, ('reward')) for filename in filenames if
+             os.path.isfile(filename)]
     windowStats = multipleRunRollingMean(mData, 'reward', ARGS.windowSize,
                                          ARGS.plotInterval)
     ptNumber = len(windowStats['mean'])
