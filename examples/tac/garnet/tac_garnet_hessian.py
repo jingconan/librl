@@ -36,7 +36,8 @@ cssinitial = 0.1
 cssdecay = 1000
 
 # initial actor stepsize (beta_0 in the paper).
-assinitial = 0.01
+#  assinitial = 0.01
+assinitial = 0.1
 # actor stepsize decay factor (beta_c in the paper).
 assdecay = 1000
 
@@ -51,7 +52,7 @@ T = 1
 maxcriticnorm = 100000
 
 # trace stepsize (lambda in the paper).
-tracestepsize = 0.9
+tracestepsize = 0.5
 
 # initial value for parameters.
 initialTheta = scipy.zeros((paramDim,))
@@ -63,18 +64,18 @@ obsDim = prob.feaDim * prob.numActions
 
 policy = BoltzmanPolicy(prob.numActions, T=T, theta=initialTheta)
 featureModule = PolicyFeatureModule(policy, 'bsglpolicywrapper')
-learner = HessianTDLearner(hessianlearningrate=1,
-                           module=featureModule,
-                           cssinitial=cssinitial,
-                           cssdecay=cssdecay,
-                           assinitial=assinitial,
-                           assdecay=assdecay, # ass means actor steps size
-                           rdecay=rdecay,
-                           maxcriticnorm=maxcriticnorm, # maximum critic norm
-                           tracestepsize=tracestepsize, # stepsize of trace
-                           parambound=bound
-                           )
-learner.rewardRange = [0, 400]
+learner = HessianLSTDLearner(hessianlearningrate=1,
+                             module=featureModule,
+                             cssinitial=cssinitial,
+                             cssdecay=cssdecay,
+                             assinitial=assinitial,
+                             assdecay=assdecay, # ass means actor steps size
+                             rdecay=rdecay,
+                             maxcriticnorm=maxcriticnorm, # maximum critic norm
+                             tracestepsize=tracestepsize, # stepsize of trace
+                             parambound=bound
+                             )
+learner.rewardRange = [0, 500]
 
 agent = ActorCriticAgent(learner, sdim=obsDim, adim=1, batch=True)
 experiment = SessionExperiment(prob.task, agent, policy=policy, batch=True)

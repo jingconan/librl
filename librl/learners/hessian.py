@@ -2,13 +2,14 @@
 from __future__ import print_function, division, absolute_import
 
 import scipy
-from scipy import dot, zeros, inner, outer, concatenate, sqrt
+from scipy import dot, zeros, inner, outer, concatenate, sqrt, log
 from scipy.linalg import norm, pinv, inv, LinAlgError
 from .lstd import LSTDLearner
 from .td import TDLearner
 
 class HessianBase(object):
     rewardRange = [0, 400]
+    enableDamptingRatio = False
     def __init__(self, hessianlearningrate):
         self.hessianlearningrate = hessianlearningrate
         self.hessiansamplenumber = 0
@@ -16,8 +17,16 @@ class HessianBase(object):
     def gamma(self):
         return sqrt(self.zeta() * self.beta())
 
+    def beta(self):
+    #      return 1.0 / ((self.k + 2) * log(self.k + 2))
+        return self.assinitial * self.assdecay / (self.assdecay + self.k)
+
     def zeta(self):
-        return 1.0 / (self.k + 1)
+        return self.cssinitial * self.cssdecay / (self.cssdecay + self.k **
+                                                  (2.0 / 3))
+
+    #  def zeta(self):
+    #      return 10.0 / (self.k + 1)
 
     def stateActionValue(self, feature, weight=None):
         if weight is None:
@@ -29,7 +38,7 @@ class HessianBase(object):
         # Estimate gradient of state action value function w.r.t. parameters.
         n = self.paramdim
         # state-action value
-        self.qvalue  = self.stateActionValue(feature, self.r)
+        #  self.qvalue  = self.stateActionValue(feature, self.r)
         # gradient of the state-action value function w.r.t. the parameters
         qgradient = zeros((n,))
         for i in xrange(n):
@@ -38,36 +47,52 @@ class HessianBase(object):
         # The first n elements in the first-order basis (i.e., \nabla
         # \log(\mu)), the following n^2 elements are the second-order basis
         # (i.e., \nabla^2 \log(\mu)).
-        self.loglhgrad = self.module.decodeFeature(feature, 'first_order')
+        #  self.loglhgrad = self.module.decodeFeature(feature, 'first_order')
+        #  self.loglhgrad = self.cacheFeature
         loglhhessian = self.module.decodeFeature(feature, 'second_order')
 
         term1 = self.qvalue * (loglhhessian - outer(self.loglhgrad, self.loglhgrad))
         term2 = outer(qgradient, self.loglhgrad)
 
         return term1 + term2 + term2.T
+        #  return outer(self.loglhgrad, self.loglhgrad)
+        #  return term1
 
     def getScalingMatrix(self):
         # Here we add one to avoid division by zero.
         #  rho = 1.0 / (self.hessiansamplenumber + 1)
-        if self.hessiansamplenumber < 30:
+        if self.hessiansamplenumber < 100:
             rho = 0
         else:
-            # get scale weight to reduce noise
-            rr = self.rewardRange
-            rho = (self.alpha - rr[0]) / (rr[1] - rr[0])
-            rho = scipy.clip(rho, 0, 1)
+            if self.enableDamptingRatio:
+                # get scale weight to reduce noise
+                rr = self.rewardRange
+                rho = (self.alpha - rr[0]) / (rr[1] - rr[0])
+                rho = scipy.clip(rho, 0, 1)
 
-        mat = rho *  self.H + (1 - rho) * scipy.eye(self.paramdim)
-        return pinv(mat)
+                # FOR TEST DISABLE DAMPING RATIO
+            else:
+                rho = 1
+
+
+        I = scipy.eye(self.paramdim)
+        mat = rho *  self.H + (1 - rho) * I
+        try:
+          scaleMatrix = inv(mat)
+        except:
+          scaleMatrix = I
+        return scaleMatrix
 
     # It is intended that obs, action, and feature are not used.
     # scaledfeature has been calculated in critic and reused here.
     def actor(self, obs, action, feature):
         scaledgradient = dot(self.getScalingMatrix(), self.scaledfeature)
+        if norm(scaledgradient) > 1:
+            scaledgradient = self.scaledfeature
         self.module.theta = self.ensureBound(self.module.theta + self.beta() *
                                              scaledgradient)
 
-class HessianLearner(HessianBase, LSTDLearner):
+class HessianLSTDLearner(HessianBase, LSTDLearner):
     def __init__(self, hessianlearningrate, *args, **kwargs):
         HessianBase.__init__(self, hessianlearningrate)
         LSTDLearner.__init__(self, *args, **kwargs)
@@ -86,6 +111,11 @@ class HessianLearner(HessianBase, LSTDLearner):
         LSTDLearner.critic(self, lastreward, lastfeature, reward,
                            feature)
 
+        self.updateCriticPara()
+
+        self.qvalue = self.stateActionValue(feature)
+        self.loglhgrad = self.module.decodeFeature(feature, 'first_order')
+
         # Update Q-tilde critic. Note that different with the notation in the
         # papar, we have minus here because of difference definition of
         # featureDifference.
@@ -93,7 +123,8 @@ class HessianLearner(HessianBase, LSTDLearner):
 
         # Update estimate of Hessian
         self.U = self.getHessianEstimate(feature)
-        self.H = self.hessianlearningrate * self.H + self.U
+        rweight = 1.0 / (self.k + 1)
+        self.H = rweight * self.H + self.U
         self.hessiansamplenumber += 1
 
         # Update estimates
@@ -113,6 +144,7 @@ class HessianTDLearner(HessianBase, TDLearner):
         self.eta = zeros((self.paramdim,))
         self.T = zeros((self.module.outdim, self.paramdim))
         self.H = zeros((self.paramdim, self.paramdim))
+        self.hessiansamplenumber = 0
 
     def critic(self, lastreward, lastfeature, reward, feature):
         TDLearner.critic(self, lastreward, lastfeature, reward,
@@ -120,8 +152,13 @@ class HessianTDLearner(HessianBase, TDLearner):
         zeta = self.zeta()
 
         ff = self.module.decodeFeature(feature, 'first_order')
-        preward = self.stateActionValue(feature) * ff
+        # Cache q value to boost speed
+        self.qvalue = self.stateActionValue(feature)
+        preward = self.qvalue * ff
+
+        # cache the first order feature to boost speed
         lff = self.module.decodeFeature(lastfeature, 'first_order')
+
         lastpreward = self.stateActionValue(lastfeature) * lff
         self.scaledfeature = lastpreward
 
@@ -137,5 +174,7 @@ class HessianTDLearner(HessianBase, TDLearner):
 
         # Update estimate of Hessian
         self.U = self.getHessianEstimate(feature)
-        self.H = self.hessianlearningrate * self.zeta() * self.H + self.U
+        K = self.hessiansamplenumber + 1
+        #  self.H = (1-1.0/K) * self.H + (1.0 / K) * self.U
+        self.H = (1-1.0/K) * self.H + (1.0 / K) * self.U
         self.hessiansamplenumber += 1
