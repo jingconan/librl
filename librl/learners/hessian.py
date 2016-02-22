@@ -10,6 +10,7 @@ from .td import TDLearner
 class HessianBase(object):
     rewardRange = [0, 400]
     enableDamptingRatio = False
+    minHessianSampleNumber = 100
     def __init__(self, hessianlearningrate):
         self.hessianlearningrate = hessianlearningrate
         self.hessiansamplenumber = 0
@@ -61,7 +62,7 @@ class HessianBase(object):
     def getScalingMatrix(self):
         # Here we add one to avoid division by zero.
         #  rho = 1.0 / (self.hessiansamplenumber + 1)
-        if self.hessiansamplenumber < 100:
+        if self.hessiansamplenumber < self.minHessianSampleNumber:
             rho = 0
         else:
             if self.enableDamptingRatio:

@@ -6,6 +6,8 @@ class SessionExperiment(Experiment):
     def __init__(self, task, agent, policy, batch=False):
         self.policy = policy
         self.batch = batch
+        assert batch == agent.batch, ('batch mode of agent and experiment'
+                                      'should be consistent')
         super(SessionExperiment, self).__init__(task, agent)
 
     def doInteractionsAndLearn(self, number = 1000):
