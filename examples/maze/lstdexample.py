@@ -10,7 +10,8 @@ import librl
 from librl.policies import BoltzmanPolicy, PolicyFeatureModule
 from librl.environments.mazes.trapmaze import TrapMaze
 from librl.environments.mazes.tasks.robottask import RobotMotionAvgRewardTask
-from librl.learners.lstd import LSTDLearner
+from librl.experiments import *
+from librl.learners import *
 from librl.agents.actorcriticagent import ActorCriticAgent
 from librl.util import WriteTrace, cPrint
 
@@ -27,11 +28,19 @@ env = TrapMaze(envMatrix, iniState, TP)
 
 # Create task
 task = RobotMotionAvgRewardTask(env, senRange)
-task.GOAL_REWARD = 100
-task.TRAP_REWARD = 0
+task.GOAL_REWARD = 10
+task.TRAP_REWARD = -1
 
-policy = BoltzmanPolicy(4, T, iniTheta)
+
+sessionNumber = 1000
+sessionSize = 100
+
+feaDim = 8
+numActions = 4
+
+policy = BoltzmanPolicy(numActions, T, iniTheta)
 module = PolicyFeatureModule(policy, 'policywrapper')
+#  learner = TDLearner(module=module, 0.9, 8, 1)
 learner = LSTDLearner(module=module,
                       cssinitial=0.1,
                       cssdecay=1000,
@@ -42,31 +51,11 @@ learner = LSTDLearner(module=module,
                       tracestepsize=0.9 # stepsize of trace
                       )
 
-agent = ActorCriticAgent(learner, sdim=8, adim=1)
-experiment = Experiment(task, agent)
+agent = ActorCriticAgent(learner, sdim=feaDim, adim=1, batch=True)
+experiment = SessionExperiment(task, agent, policy=policy, batch=True)
 
-#####################
-#    Parameters     #
-#####################
-ITER_NUM = 300000
-#  LEARN_INTERVAL = 10
-LEARN_INTERVAL = 1
-OUTPUT_FILENAME = 'lstdac.tr'
-
-trace = defaultdict(list)
-def loop():
-    for i in xrange(ITER_NUM):
-        reward = 0
-        for j in xrange(LEARN_INTERVAL):
-            reward += experiment._oneInteraction()
-        agent.learn()
-
-        # periodically reset stepsize to increase learning speed.
-        if i % 1000 == 0:
-            learner.resetStepSize()
-        cPrint(iteration=i, th0=policy.theta[0], th1=policy.theta[1],
-               reward=reward)
 try:
-    loop()
+    experiment.doSessionsAndPrint(sessionNumber=sessionNumber,
+                                  sessionSize=sessionSize)
 except KeyboardInterrupt:
     pass

@@ -11,7 +11,7 @@ from librl.policies import BoltzmanPolicy, PolicyFeatureModule
 from librl.environments.mazes.trapmaze import TrapMaze
 from librl.environments.mazes.tasks.robottask import RobotMotionAvgRewardTask
 from librl.experiments import *
-from librl.learners.td import TDLearner
+from librl.learners import *
 from librl.agents.actorcriticagent import ActorCriticAgent
 from librl.util import WriteTrace, cPrint
 
@@ -41,16 +41,18 @@ numActions = 4
 policy = BoltzmanPolicy(numActions, T, iniTheta)
 module = PolicyFeatureModule(policy, 'policywrapper')
 #  learner = TDLearner(module=module, 0.9, 8, 1)
-learner = TDLearner(module=module,
-                    cssinitial=0.1,
-                    cssdecay=1000,
-                    assinitial=0.01,
-                    assdecay=1000, # ass means actor steps size
-                    rdecay=0.95,
-                    maxcriticnorm=10000, # maximum critic norm
-                    tracestepsize=0.9 # stepsize of trace
-                    )
+learner = HessianLSTDLearner(hessianlearningrate=1,
+                             module=module,
+                             cssinitial=0.1,
+                             cssdecay=1000,
+                             assinitial=0.01,
+                             assdecay=1000, # ass means actor steps size
+                             rdecay=0.95,
+                             maxcriticnorm=10000, # maximum critic norm
+                             tracestepsize=0.9 # stepsize of trace
+                             )
 
+learner.minHessianSampleNumber = 10
 agent = ActorCriticAgent(learner, sdim=feaDim, adim=1, batch=True)
 experiment = SessionExperiment(task, agent, policy=policy, batch=True)
 
