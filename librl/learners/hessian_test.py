@@ -1,5 +1,5 @@
 from __future__ import print_function, division, absolute_import
-from .hessian import HessianLearner
+from .hessian import HessianLSTDLearner
 from ..testutil import MockPolicy, MockPolicyFeatureModule
 
 import unittest
@@ -15,17 +15,17 @@ class TDLearnerTestCase(unittest.TestCase):
         self.module = MockPolicyFeatureModule(self.policy)
         self.module.outdim = 6
         self.hessianlearningrate = 0.9
-        self.learner = HessianLearner(self.hessianlearningrate,
-                                      module=self.module,
-                                      cssinitial=1,
-                                      cssdecay=1, # css means critic step size
-                                      assinitial=1,
-                                      assdecay=1, # ass means actor steps size
-                                      rdecay=1, # reward decay weight
-                                      maxcriticnorm=100, # maximum critic norm
-                                      tracestepsize=0.9, # trace stepsize
-                                      parambound = None # bound for the parameters
-                                      )
+        self.learner = HessianLSTDLearner(self.hessianlearningrate,
+                                          module=self.module,
+                                          cssinitial=1,
+                                          cssdecay=1, # css means critic step size
+                                          assinitial=1,
+                                          assdecay=1, # ass means actor steps size
+                                          rdecay=1, # reward decay weight
+                                          maxcriticnorm=100, # maximum critic norm
+                                          tracestepsize=0.9, # trace stepsize
+                                          parambound = None # bound for the parameters
+                                          )
 
 
     @unittest.skip('ignore the test before td algorithm is finalized')
