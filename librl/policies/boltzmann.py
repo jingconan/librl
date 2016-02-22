@@ -241,9 +241,13 @@ class PolicyValueFeatureModule(PolicyFeatureModule):
 
     The first part of the output is the _firstOrderFeature as in
     PolicyFeatureModule. The second part is value function is appended.
-    """
 
+    ATTENTION! Please use this module only if the state-action feature is
+    created by padding state feature with zeros. See pg. 29 of
+    https://webdocs.cs.ualberta.ca/~sutton/papers/BSGL-TR.pdf
+    """
     def getFeatureDescriptor(self):
+        assert self.feadim % self.actionnum == 0, 'wrong module is used!'
         self.statefeadim = int(self.feadim / self.actionnum)
 
         def _firstOrderFeature(policy, feature, action):

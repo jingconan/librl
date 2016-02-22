@@ -20,8 +20,8 @@ import garnetproblem as prob
 import librl
 
 ####### parameters ##############
-learnerClass = BSGLRegularGradientActorCriticLearner
-# learnerClass = BSGLFisherInfoActorCriticLearner
+#  learnerClass = BSGLRegularGradientActorCriticLearner
+learnerClass = BSGLFisherInfoActorCriticLearner
 #  learnerClass = BSGLAdvParamActorCriticLearner
 #  learnerClass = BSGLAdvParamFisherInfoActorCriticLearner
 
@@ -34,7 +34,9 @@ sessionSize = 1000
 
 # the dimensionality of parameters in our policy is equal to the
 # dimensionality of state feature vector.
-paramDim = prob.feaDim
+# for garnet task, dimensionality is higher because feaDim is state feature,
+# and action feature = feaDim * numActions
+paramDim = prob.feaDim * prob.numActions
 
 # Bound of parameters.
 bound = [(-100, 100)] * paramDim
@@ -59,12 +61,11 @@ T = 1
 # max norm of the critic parameter.
 maxcriticnorm = 1000000
 
-
 # initial value for parameters.
 initialTheta = scipy.zeros((paramDim,))
 
 # dimensionality of the observation
-obsDim = prob.feaDim * prob.numActions
+obsDim = paramDim * prob.numActions
 
 #################################
 
@@ -81,7 +82,9 @@ learner = learnerClass(module=featureModule,
                       )
 
 agent = ActorCriticAgent(learner, sdim=obsDim, adim=1, batch=True)
-experiment = SessionExperiment(prob.task, agent, policy=policy, batch=True)
+# bsgl method only takes GarnetTask as input in which state action feature is
+# created by padding state feature
+experiment = SessionExperiment(prob.bsgl_task, agent, policy=policy, batch=True)
 
 try:
     experiment.doSessionsAndPrint(sessionNumber=sessionNumber,

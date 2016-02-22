@@ -22,3 +22,4 @@ env = GarnetEnvironment(numStates=numStates,
 
 
 task = GarnetLookForwardTask(env, sigma=sigma)
+bsgl_task = GarnetTask(env, sigma=sigma)
