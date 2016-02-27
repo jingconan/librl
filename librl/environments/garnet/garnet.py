@@ -44,6 +44,11 @@ class GarnetTask(Task):
         reward = self.sigma * scipy.random.randn() + expectedReward
         return reward
 
+    @property
+    def outdim(self):
+        edim = self.env.outdim
+        return self.numActions * edim * self.numActions
+
     def getObservation(self):
         sensors = self.env.getSensors()
         fd = len(sensors)
@@ -59,6 +64,11 @@ class GarnetLookForwardTask(GarnetTask):
     the expected state feature value given this action.
     phi(x, u) = E(fs|u) - fs
     """
+    @property
+    def outdim(self):
+        edim = self.env.outdim
+        return self.numActions * edim
+
     def getObservation(self):
         sensors = self.env.getSensors()
         fd = len(sensors)
@@ -72,6 +82,31 @@ class GarnetLookForwardTask(GarnetTask):
                 res += scipy.array(obs)* p
             feature[i, :] = res - scipy.array(sensors)
         return feature.reshape(-1)
+
+
+class GarnetLookForwardWithStateObsTask(GarnetTask):
+    """Garnet task with both looking forward feature ans state feature"""
+    @property
+    def outdim(self):
+        edim = self.env.outdim
+        return (self.numActions + 1) * edim
+
+    def getObservation(self):
+        sensors = self.env.getSensors()
+        fd = len(sensors)
+        feature = scipy.zeros((self.numActions + 1, fd))
+        for i in xrange(self.numActions):
+            nextStates = self.env.transitionStates[i, self.env.curState, :]
+            prob = self.env.transitionProb[i, self.env.curState, :]
+            res = scipy.zeros((fd,))
+            for ss, p in zip(nextStates, prob):
+                obs = self.env.getSensors(int(ss))
+                res += scipy.array(obs)* p
+            feature[i, :] = res - scipy.array(sensors)
+        feature[self.numActions, :] = scipy.array(sensors)
+
+        return feature.reshape(-1)
+
 
 class GarnetEnvironment(Environment):
     """Generic Average Reward Non-stationary Environment TestBed
@@ -110,6 +145,10 @@ class GarnetEnvironment(Environment):
         self.curState = self.initState
         # null value for action
         self.lastAction = scipy.array([-1])
+
+    @property
+    def outdim(self):
+        return self.feaDim
 
     def _save(self, savePath):
         message = dict()

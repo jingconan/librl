@@ -142,14 +142,14 @@ class PolicyFeatureModule(Module):
     """
     def __init__(self, policy, name=None):
         self.policy = policy
-        self.feadim = policy.feadim
+        self.paramdim = policy.feadim
         self.actionnum = policy.actionnum
 
         self.feadesc, outdim = self._transformFeatureDescriptor(
             self.getFeatureDescriptor())
 
         super(PolicyFeatureModule, self).__init__(
-            indim = self.feadim * self.actionnum + 1,
+            indim = self.paramdim * self.actionnum + 1,
             outdim = outdim,
             name = name
         )
@@ -190,7 +190,7 @@ class PolicyFeatureModule(Module):
                                         action)
 
         # second order feature
-        n = self.feadim
+        n = self.paramdim
         sofl = (n * n - n) / 2 + n # second order feature length
 
         def _secondOrderFeature(policy, feature, action):
@@ -200,12 +200,12 @@ class PolicyFeatureModule(Module):
         def _secondOrderFeatureDecoder(feature):
             assert sofl == len(feature), ('invalid feature'
                                           'to decode')
-            return decode1DArrayAsSymMat(feature, self.feadim)
+            return decode1DArrayAsSymMat(feature, self.paramdim)
 
         return [
             {
                 'name': 'first_order',
-                'dimension': self.feadim,
+                'dimension': self.paramdim,
                 'constructor': _firstOrderFeature,
                 'decoder': self._identityDecoder,
             },
@@ -218,7 +218,7 @@ class PolicyFeatureModule(Module):
         ]
 
     def getFeatureSlice(self, feature, action):
-        featureslice = self.policy.obs2fea(feature[0:(self.feadim *
+        featureslice = self.policy.obs2fea(feature[0:(self.paramdim *
                                                       self.actionnum)])
         return featureslice[action, :]
 
@@ -247,8 +247,8 @@ class PolicyValueFeatureModule(PolicyFeatureModule):
     https://webdocs.cs.ualberta.ca/~sutton/papers/BSGL-TR.pdf
     """
     def getFeatureDescriptor(self):
-        assert self.feadim % self.actionnum == 0, 'wrong module is used!'
-        self.statefeadim = int(self.feadim / self.actionnum)
+        assert self.paramdim % self.actionnum == 0, 'wrong module is used!'
+        self.statefeadim = int(self.paramdim / self.actionnum)
 
         def _firstOrderFeature(policy, feature, action):
             return self.getFeatureSlice(policy.calBasisFuncVal(feature).reshape(-1),
@@ -260,7 +260,7 @@ class PolicyValueFeatureModule(PolicyFeatureModule):
         return [
             {
                 'name': 'first_order',
-                'dimension': self.feadim,
+                'dimension': self.paramdim,
                 'constructor': _firstOrderFeature,
             },
             {
@@ -269,3 +269,76 @@ class PolicyValueFeatureModule(PolicyFeatureModule):
                 'constructor': _stateFeature,
             },
         ]
+
+
+
+class GLFWSBoltzmanPolicy(BoltzmanPolicy):
+    def __init__(self, *args, **kwargs):
+        super(GLFWSBoltzmanPolicy, self).__init__(*args, **kwargs)
+        Module.__init__(self, self.feadim * (self.actionnum + 1), 1, *args,
+                        **kwargs)
+
+    def _forwardImplementation(self, inbuf, outbuf):
+        """ take observation as input, the output is the action
+        """
+        obs = inbuf[:(self.feadim * self.actionnum)]
+        super(GLFWSBoltzmanPolicy, self)._forwardImplementation(obs, outbuf)
+
+
+class GLFWSPolicyFeatureModule(PolicyFeatureModule):
+    """Feature module for GarnetLookForwardWithStateObsTask
+    """
+    def __init__(self, policy, name=None):
+        self.policy = policy
+        self.paramdim = policy.feadim
+        self.actionnum = policy.actionnum
+        self.statefeadim = self.paramdim
+        self.feadesc, outdim = self._transformFeatureDescriptor(
+            self.getFeatureDescriptor())
+
+        self.expectedFeaDim = (self.actionnum + 1) * self.paramdim
+
+        Module.__init__(self,
+                        indim = self.expectedFeaDim + 1,
+                        outdim = outdim,
+                        name = name
+                        )
+
+    def getFeatureDescriptor(self):
+
+        def _firstOrderFeature(policy, feature, action):
+            oneStepAdvantage = feature.reshape(self.actionnum+1,
+                                               self.paramdim)[:self.actionnum, :]
+            return self.getFeatureSlice(policy.calBasisFuncVal(oneStepAdvantage).reshape(-1),
+                                        action)
+
+        def _stateFeature(policy, feature, action):
+            assert self.expectedFeaDim == len(feature), ('Wrong feature'
+                                                         'length!')
+            return feature.reshape(self.actionnum+1,
+                                   self.paramdim)[self.actionnum, :]
+
+
+        return [
+            {
+                'name': 'first_order',
+                'dimension': self.paramdim,
+                'constructor': _firstOrderFeature,
+            },
+            {
+                'name': 'state_feature',
+                'dimension': self.statefeadim,
+                'constructor': _stateFeature,
+            },
+        ]
+
+    def _forwardImplementation(self, inbuf, outbuf):
+        fea = inbuf[:-1]
+        assert self.expectedFeaDim == len(fea), ('Wrong feature'
+                                                     'length!')
+        action = inbuf[-1]
+        offset = 0
+        for name, desc in self.feadesc.iteritems():
+            fearange = desc ['fea_range']
+            outbuf[fearange[0]:fearange[1]] = desc['constructor'](self.policy,
+                                                           fea, action)
