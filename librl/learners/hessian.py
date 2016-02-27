@@ -8,9 +8,10 @@ from .lstd import LSTDLearner
 from .td import TDLearner
 
 class HessianBase(object):
-    rewardRange = [0, 400]
+    rewardRange = [0, 500]
     enableDamptingRatio = False
     minHessianSampleNumber = 100
+    actorUpdateThreshold = 0.5
     def __init__(self, hessianlearningrate):
         self.hessianlearningrate = hessianlearningrate
         self.hessiansamplenumber = 0
@@ -88,7 +89,7 @@ class HessianBase(object):
     # scaledfeature has been calculated in critic and reused here.
     def actor(self, obs, action, feature):
         scaledgradient = dot(self.getScalingMatrix(), self.scaledfeature)
-        if norm(scaledgradient) > 1:
+        if norm(scaledgradient) > self.actorUpdateThreshold:
             scaledgradient = self.scaledfeature
         self.module.theta = self.ensureBound(self.module.theta + self.beta() *
                                              scaledgradient)
@@ -97,6 +98,7 @@ class HessianLSTDLearner(HessianBase, LSTDLearner):
     def __init__(self, hessianlearningrate, *args, **kwargs):
         HessianBase.__init__(self, hessianlearningrate)
         LSTDLearner.__init__(self, *args, **kwargs)
+        self.H = scipy.eye(self.paramdim)
 
     def reset(self):
         LSTDLearner.reset(self)
