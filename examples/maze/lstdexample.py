@@ -28,7 +28,7 @@ env = TrapMaze(envMatrix, iniState, TP)
 
 # Create task
 task = RobotMotionAvgRewardTask(env, senRange)
-task.GOAL_REWARD = 10
+task.GOAL_REWARD = 1
 task.TRAP_REWARD = -1
 
 

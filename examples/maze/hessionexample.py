@@ -24,11 +24,14 @@ from problem_settings import iniTheta, T
 envMatrix = zeros(gridSize)
 envMatrix[zip(*unsafeStates)] = TrapMaze.TRAP_FLAG
 envMatrix[zip(*goalStates)] = TrapMaze.GOAL_FLAG
+#  import pylab as P
+#  P.pcolor(envMatrix.T)
+#  P.show(True)
 env = TrapMaze(envMatrix, iniState, TP)
 
 # Create task
 task = RobotMotionAvgRewardTask(env, senRange)
-task.GOAL_REWARD = 10
+task.GOAL_REWARD = 1
 task.TRAP_REWARD = -1
 
 
@@ -49,10 +52,13 @@ learner = HessianLSTDLearner(hessianlearningrate=1,
                              assdecay=1000, # ass means actor steps size
                              rdecay=0.95,
                              maxcriticnorm=10000, # maximum critic norm
-                             tracestepsize=0.9 # stepsize of trace
+                             tracestepsize=0.9, # stepsize of trace
+                             parambound = [[-10, 10],
+                                           [-10, 10]]
                              )
 
-learner.minHessianSampleNumber = 10
+learner.minHessianSampleNumber = 30
+learner.actorUpdateThreshold = 0.01
 agent = ActorCriticAgent(learner, sdim=feaDim, adim=1, batch=True)
 experiment = SessionExperiment(task, agent, policy=policy, batch=True)
 

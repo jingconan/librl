@@ -83,6 +83,9 @@ class RobotMotionAvgRewardTask(MDPMazeTask):
         # cache the feature result, boost the speed.
         numActions = self.env.numActions
         # now we only support two features
+        curFea = scipy.array([self.getSafetyScore(state),
+                              -1.0 * self.getMinDistanceToGoal(state)])
+
         feature = scipy.zeros((numActions, 2))
         for i in xrange(numActions):
             # create a action probability arry for only moving to one
@@ -98,6 +101,7 @@ class RobotMotionAvgRewardTask(MDPMazeTask):
                 feature[i, 0] += self.getSafetyScore(s) * p
                 # progress score
                 feature[i, 1] += -1.0 * self.getMinDistanceToGoal(s) * p
+            feature[i, :] -= curFea
 
         return feature
 

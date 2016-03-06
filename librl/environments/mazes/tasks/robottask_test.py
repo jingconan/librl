@@ -25,7 +25,7 @@ class RobotMotionTaskTestCase(unittest.TestCase):
 
     # See https://goo.gl/fmRKbV for spreadsheet that checks this case.
     def testGetObservation(self):
-        expected = [1, -2, 1, -2.777777778, 1, -1.2, 1, -2]
+        expected = [0, 0, 0, -0.777777778, 0, 0.8, 0, 0]
         assert_array_almost_equal(expected, self.task.getObservation())
 
     def testGetReward(self):

@@ -3,8 +3,8 @@
 #############################
 ###      Scene Setting    ###
 #############################
-SCENE_SELECT = 'small'
-#  SCENE_SELECT = 'large'
+# SCENE_SELECT = 'small'
+SCENE_SELECT = 'large'
 
 if SCENE_SELECT == 'small':
 ####### small scene #########
@@ -23,41 +23,51 @@ if SCENE_SELECT == 'small':
         return 0 if (st in unsafeStates) else 1
 elif SCENE_SELECT == 'large':
 #### Scene for CDC Paper #####
-    iniState = (0, 0)
-    goalStates = [ [49, 0], [49, 49], [0, 49] ]
+    iniState = (35, 25)
+    # goalStates = [ [49, 0], [49, 49], [0, 49] ]
+    goalStates = []
     gridSize = [50, 50]
 
-    unsafeRegion = [(15, 0, 9, 6),\
-            (42, 0, 3, 3),\
-            (29, 5, 3, 3),\
-            (5, 7, 6, 3),\
-            (37, 7, 6, 6),\
-            (23, 11, 6, 6),\
-            (0, 15, 3, 3),\
-            (6, 20, 3, 6), \
-            (18, 22, 12, 3),\
-            (44, 20, 6, 3),\
-            (11, 30, 6, 9),\
-            (23, 34, 3, 3),\
-            (32, 33, 9, 9),\
-            (47, 39, 3, 6),\
-            (0, 38, 6, 6),\
-            (17, 47, 9, 3)]
+    regions = [(15, 0, 9, 6),\
+               (42, 0, 3, 3),\
+               (29, 5, 3, 3),\
+               (5, 7, 6, 3),\
+               (37, 7, 6, 6),\
+               (23, 11, 6, 6),\
+               (0, 15, 3, 3),\
+               (6, 20, 3, 6), \
+               (18, 22, 12, 3),\
+               (44, 20, 6, 3),\
+               (11, 30, 6, 9),\
+               (23, 34, 3, 3),\
+               (32, 33, 9, 9),\
+               (47, 39, 3, 6),\
+               (0, 38, 6, 6),\
+               (17, 47, 9, 3)]
+    # zero means unsafe
+    # one means goal
+    regionType = [0, 1, 0, 1,
+                  0, 1, 0, 1,
+                  0, 1, 0, 1,
+                  0, 1, 0, 1]
 
-    def IsSafe(st):
+    def getRegionType(st):
         x, y = st
-        for region in unsafeRegion:
+        for i, region in enumerate(regions):
             (xCoord, yCoord, xLen, yLen) = region
             if ( x - xCoord >= 0 ) and ( x - xCoord < xLen ) \
             and ( y - yCoord >= 0) and ( y - yCoord < yLen ):
-                return 0
-        return 1
+                return regionType[i]
+        return -1
 
     unsafeStates = []
     for x in xrange(gridSize[0]):
         for y in xrange(gridSize[1]):
-            if not IsSafe([x, y]):
+            tp = getRegionType([x, y])
+            if tp == 0:
                 unsafeStates.append([x, y])
+            elif tp == 1:
+                goalStates.append([x, y])
 
 #############################
 ## initial value for theta ##
