@@ -53,8 +53,8 @@ learner = HessianLSTDLearner(hessianlearningrate=1,
                              rdecay=0.95,
                              maxcriticnorm=10000, # maximum critic norm
                              tracestepsize=0.9, # stepsize of trace
-                             parambound = [[-10, 10],
-                                           [-10, 10]]
+                             parambound = [[-100, 100],
+                                           [-100, 100]]
                              )
 
 learner.minHessianSampleNumber = 30
