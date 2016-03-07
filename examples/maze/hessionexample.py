@@ -53,12 +53,12 @@ learner = HessianLSTDLearner(hessianlearningrate=1,
                              rdecay=0.95,
                              maxcriticnorm=10000, # maximum critic norm
                              tracestepsize=0.9, # stepsize of trace
-                             parambound = [[-100, 100],
-                                           [-100, 100]]
+                             parambound = [[0, 100],
+                                           [0, 100]]
                              )
 
 learner.minHessianSampleNumber = 30
-learner.actorUpdateThreshold = 0.01
+learner.actorUpdateThreshold = 0.005
 agent = ActorCriticAgent(learner, sdim=feaDim, adim=1, batch=True)
 experiment = SessionExperiment(task, agent, policy=policy, batch=True)
 
