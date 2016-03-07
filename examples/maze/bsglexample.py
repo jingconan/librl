@@ -7,9 +7,10 @@ from collections import defaultdict
 
 from pybrain.rl.experiments import Experiment
 import librl
-from librl.policies import BoltzmanPolicy, PolicyValueFeatureModule
+from librl.policies import *
 from librl.environments.mazes.trapmaze import TrapMaze
 from librl.environments.mazes.tasks.robottask import RobotMotionAvgRewardTask
+from librl.environments.environments import *
 from librl.experiments import *
 from librl.learners.bsgl import *
 from librl.agents.actorcriticagent import ActorCriticAgent
@@ -31,7 +32,6 @@ learnerClass = BSGLAdvParamActorCriticLearner
 sessionNumber = 1000
 sessionSize = 100
 
-feaDim = 8
 numActions = 4
 
 # Create environment
@@ -42,12 +42,12 @@ envMatrix[zip(*goalStates)] = TrapMaze.GOAL_FLAG
 env = TrapMaze(envMatrix, iniState, TP)
 
 # Create task
-task = RobotMotionAvgRewardTask(env, senRange)
-task.GOAL_REWARD = 10
-task.TRAP_REWARD = -1
+task = StateObsWrapperTask(RobotMotionAvgRewardTask(env, senRange))
+task.task.GOAL_REWARD = 1
+task.task.TRAP_REWARD = -1
 
-policy = BoltzmanPolicy(numActions, T, iniTheta)
-featureModule = PolicyValueFeatureModule(policy, 'bsglpolicywrapper')
+policy = GLFWSBoltzmanPolicy(numActions, T=T, theta=iniTheta)
+featureModule = GLFWSPolicyFeatureModule(policy, 'bsglpolicywrapper')
 learner = learnerClass(cssinitial=0.1,
                        cssdecay=1000, # css means critic step size
                        assinitial=0.001,
@@ -59,7 +59,7 @@ learner = learnerClass(cssinitial=0.1,
                        module=featureModule
                        )
 
-agent = ActorCriticAgent(learner, sdim=feaDim, adim=1, batch=True)
+agent = ActorCriticAgent(learner, sdim=task.outdim, adim=1, batch=True)
 experiment = SessionExperiment(task, agent, policy=policy, batch=True)
 
 try:

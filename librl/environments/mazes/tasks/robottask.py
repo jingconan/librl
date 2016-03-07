@@ -3,8 +3,6 @@ import scipy
 
 from pybrain.rl.environments.mazes import MDPMazeTask
 
-def cityBlockDistance(x, y):
-    return abs(x[0] - y[0]) + abs(x[1] - y[1])
 
 class RobotMotionAvgRewardTask(MDPMazeTask):
     """This is a MDP Maze Task for Robot Motion Control.
@@ -22,19 +20,14 @@ class RobotMotionAvgRewardTask(MDPMazeTask):
     def __init__(self, environment, senseRange):
         MDPMazeTask.__init__(self, environment)
         self.senseRange = senseRange
-
-        # find goal states from env mask.
-        self.goalStates = []
-        for i in xrange(self.env.mazeSize[0]):
-            for j in xrange(self.env.mazeSize[1]):
-                if self.env.isGoal((i, j)):
-                    self.goalStates.append((i, j))
-
         self.cacheTranProbToNextStates = {}
-        self.cacheMinDistanceToGoal = {}
 
     def reset(self):
         self.env.reset()
+
+    @property
+    def outdim(self):
+        return self.env.numActions * self.env.outdim
 
     def getObservation(self):
         """the agent receive its
@@ -59,34 +52,15 @@ class RobotMotionAvgRewardTask(MDPMazeTask):
 
         return reward
 
-    def getMinDistanceToGoal(self, state):
-        """Get the minimium distance to any of goal stats."""
-        searchKey = tuple(state)
-        cacheValue = self.cacheMinDistanceToGoal.get(searchKey)
-        if cacheValue: return cacheValue
-
-        distance = float('inf')
-        for goal in self.goalStates:
-            tmp = cityBlockDistance(goal, state)
-            if tmp < distance:
-                distance = tmp
-
-        self.cacheMinDistanceToGoal[searchKey] = distance
-        return distance
-
-    def getSafetyScore(self, state):
-        return 1.0 - self.env.isTrap(state)
-
     def getFeature(self, state):
         """We can get features for each state. it may be
         distance to goal, safety degree. e.t.c"""
         # cache the feature result, boost the speed.
         numActions = self.env.numActions
         # now we only support two features
-        curFea = scipy.array([self.getSafetyScore(state),
-                              -1.0 * self.getMinDistanceToGoal(state)])
+        curSensors = self.env.getSensors(state)
 
-        feature = scipy.zeros((numActions, 2))
+        feature = scipy.zeros((numActions, self.env.outdim))
         for i in xrange(numActions):
             # create a action probability arry for only moving to one
             # direction.
@@ -97,11 +71,8 @@ class RobotMotionAvgRewardTask(MDPMazeTask):
             tranProb = self.getMultiStepTranProb(state, self.senseRange,
                                                  actionProb)
             for s, p in tranProb.iteritems():
-                # safety score
-                feature[i, 0] += self.getSafetyScore(s) * p
-                # progress score
-                feature[i, 1] += -1.0 * self.getMinDistanceToGoal(s) * p
-            feature[i, :] -= curFea
+                feature[i, :] += (self.env.getSensors(s) * p)
+            feature[i, :] -= curSensors
 
         return feature
 
@@ -164,3 +135,13 @@ class RobotMotionAvgRewardTask(MDPMazeTask):
 
     def isFinished(self):
         return False
+
+class RobotMotionAvgRewardWithStateObsTask(RobotMotionAvgRewardTask):
+    def getObservation(self):
+        """the agent receive its
+        1. featureList for the state and for each possible action in the future.
+           now featureList is [safety, progress]
+        if there are four possible controls. then agen will receive 8x1 array.
+        """
+        fea
+        return self.getFeature(self.env.perseus).reshape(-1)

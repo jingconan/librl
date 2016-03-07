@@ -2,6 +2,9 @@ import scipy
 import types
 from pybrain.rl.environments.mazes import Maze
 
+def cityBlockDistance(x, y):
+    return abs(x[0] - y[0]) + abs(x[1] - y[1])
+
 class TrapMaze(Maze):
     """The difference between TrapMaze and Maze is that
     - in mazeTable, 1 means wall, -1 means trap.
@@ -32,6 +35,20 @@ class TrapMaze(Maze):
         self.bang = False
         self.allActions = [self.N, self.E, self.S, self.W]
         self.numActions = len(self.allActions)
+
+        # find goal states from env mask.
+        self.goalStates = []
+        for i in xrange(self.mazeSize[0]):
+            for j in xrange(self.mazeSize[1]):
+                if self.isGoal((i, j)):
+                    self.goalStates.append((i, j))
+
+
+        self.cacheMinDistanceToGoal = {}
+
+    @property
+    def outdim(self):
+        return self.feaDim
 
     def isTrap(self, pos):
         return self.mazeTable[pos[0], pos[1]] == self.TRAP_FLAG
@@ -75,3 +92,30 @@ class TrapMaze(Maze):
     def reset(self):
         self.bang = False
         self.perseus = self.startPos
+
+    def getSensors(self, state=None):
+        if state is None:
+            state = self.perseus
+
+        safetyScore = 1.0 - self.isTrap(state)
+        return scipy.array([safetyScore,
+                            -1.0 * self.getMinDistanceToGoal(state)])
+
+    @property
+    def outdim(self):
+        return 2
+
+    def getMinDistanceToGoal(self, state):
+        """Get the minimium distance to any of goal stats."""
+        searchKey = tuple(state)
+        cacheValue = self.cacheMinDistanceToGoal.get(searchKey)
+        if cacheValue: return cacheValue
+
+        distance = float('inf')
+        for goal in self.goalStates:
+            tmp = cityBlockDistance(goal, state)
+            if tmp < distance:
+                distance = tmp
+
+        self.cacheMinDistanceToGoal[searchKey] = distance
+        return distance

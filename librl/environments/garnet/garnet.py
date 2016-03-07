@@ -83,7 +83,7 @@ class GarnetLookForwardTask(GarnetTask):
             feature[i, :] = res - scipy.array(sensors)
         return feature.reshape(-1)
 
-
+# TODO(hbhzwj): replace it with StateObsWrapperTask
 class GarnetLookForwardWithStateObsTask(GarnetTask):
     """Garnet task with both looking forward feature ans state feature"""
     @property
