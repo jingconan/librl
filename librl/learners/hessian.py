@@ -56,9 +56,11 @@ class HessianBase(object):
         term1 = self.qvalue * (loglhhessian - outer(self.loglhgrad, self.loglhgrad))
         term2 = outer(qgradient, self.loglhgrad)
 
-        return term1 + term2 + term2.T
-        #  return outer(self.loglhgrad, self.loglhgrad)
-        #  return term1
+        # ATTENTION! This algorighm is designed only for maximization problems
+        # in which the Hessian matrix is negative semidefinite in the optimal
+        # point. As a result, the scaling matrix should be -1 * inverse of the
+        # Hessian to move in the right direction
+        return - 1 * (term1 + term2 + term2.T)
 
     def getScalingMatrix(self):
         # Here we add one to avoid division by zero.
