@@ -27,7 +27,7 @@ VARS = dict(
     sampleInterval = 1, # sample the raw data
     #  plotInterval = 1000 # limit # of pts in the output
     plotInterval = 1, # limit # of pts in the output
-    exportFigPath = 'fig.json',
+    exportFigPath = None,
     showFig = True,
 )
 
@@ -129,13 +129,15 @@ def main():
     confidenceLevel = 0.95
     yerr = ss.t.ppf((confidenceLevel + 1) / 2.0, sampleNumber-1) * rewardSem
     plotWithCI(range(ptNumber), rewardMean, yerr)
-    if ARGS.exportFigPath:
-        import json
-        data = {
-            'x': range(ptNumber),
-            'y': rewardMean,
-        }
-        json.dump(data, open(ARGS.exportFigPath, 'w'))
+    if ARGS.exportFigPath is None:
+        ARGS.exportFigPath = os.path.dirname(ARGS.filename) + '/fig.json'
+
+    import json
+    data = {
+        'x': range(ptNumber),
+        'y': rewardMean,
+    }
+    json.dump(data, open(ARGS.exportFigPath, 'w'))
 
 #  P.errorbar(range(ptNumber), rewardMean, yerr=yerr, fmt='--o', ecolor='g',
 #             capthick=2)
