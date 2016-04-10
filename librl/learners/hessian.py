@@ -7,11 +7,17 @@ from scipy.linalg import norm, pinv, inv, LinAlgError
 from .lstd import LSTDLearner
 from .td import TDLearner
 
+def isPosDef(x):
+    return scipy.all(scipy.linalg.eigvals(x) > 0)
+
 class HessianBase(object):
     rewardRange = [0, 500]
     enableDamptingRatio = False
     minHessianSampleNumber = 100
     actorUpdateThreshold = 0.5
+    # Check whether the scaling matrix is positive definiteness, which will
+    # have some addition cost
+    checkPosDef = False
     def __init__(self, hessianlearningrate):
         self.hessianlearningrate = hessianlearningrate
         self.hessiansamplenumber = 0
@@ -90,9 +96,14 @@ class HessianBase(object):
     # It is intended that obs, action, and feature are not used.
     # scaledfeature has been calculated in critic and reused here.
     def actor(self, obs, action, feature):
-        scaledgradient = dot(self.getScalingMatrix(), self.scaledfeature)
-        if norm(scaledgradient) > self.actorUpdateThreshold:
+        scaleMatrix = self.getScalingMatrix()
+        if self.checkPosDef and not isPosDef(scaleMatrix):
+            #  print('not PD')
             scaledgradient = self.scaledfeature
+        else:
+            scaledgradient = dot(scaleMatrix, self.scaledfeature)
+            if norm(scaledgradient) > self.actorUpdateThreshold:
+                scaledgradient = self.scaledfeature
         self.module.theta = self.ensureBound(self.module.theta + self.beta() *
                                              scaledgradient)
 
