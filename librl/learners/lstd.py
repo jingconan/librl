@@ -2,13 +2,14 @@
 from __future__ import print_function, division, absolute_import
 
 import scipy
-from scipy import dot, ravel, zeros, array, log, inner, outer, concatenate
+from scipy import dot, ravel, zeros, array, log, inner, outer, concatenate, sqrt
 from scipy.linalg import norm, pinv, inv, LinAlgError
 from .td import TDLearner
 from ..util import shermanMorrisonUpdate
 
 class LSTDLearner(TDLearner):
-    actorUpdateInterval = 10
+    # By default, do critic update for every actor update
+    actorUpdateInterval = 1
     criticResetInterval = 200
     def reset(self):
         super(LSTDLearner, self).reset()

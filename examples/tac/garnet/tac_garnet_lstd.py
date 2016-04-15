@@ -28,7 +28,7 @@ sessionSize = 1000
 paramDim = prob.feaDim
 
 # Bound of parameters.
-bound = [(-100, 100)] * paramDim
+bound = [(-50, 50)] * paramDim
 
 # initial critic stepsize (alpha_0 in the paper).
 cssinitial = 0.1
