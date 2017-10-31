@@ -220,7 +220,7 @@ class PolicyFeatureModule(Module):
     def getFeatureSlice(self, feature, action):
         featureslice = self.policy.obs2fea(feature[0:(self.paramdim *
                                                       self.actionnum)])
-        return featureslice[action, :]
+        return featureslice[int(action), :]
 
     def _forwardImplementation(self, inbuf, outbuf):
         fea = self.policy.obs2fea(inbuf[:-1])
